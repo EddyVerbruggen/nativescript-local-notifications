@@ -1,0 +1,4 @@
+dependencies {
+    // TODO try without supprt
+    compile "com.android.support:support-v4:+"
+}
