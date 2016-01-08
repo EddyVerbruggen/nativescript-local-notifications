@@ -1,6 +1,50 @@
 var LocalNotifications = require("./local-notifications-common");
 var application = require("application"); // TODO unused
 
+var pushHandler,
+    pushManager;
+
+(function() {
+  if (!pushHandler) {
+    pushHandler = Push.alloc().init();
+    pushManager = PushManager.alloc().init();
+  }
+})();
+
+// TODO pass the onNotificationReceived callback to this method as well
+LocalNotifications.register = function (arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+
+      LocalNotifications.didRegisterUserNotificationSettingsObserver = LocalNotifications._addObserver("didRegisterUserNotificationSettings", function(result) {
+        //NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.notificationReceivedObserver);
+        //LocalNotifications.notificationReceivedObserver = undefined;
+        //var notificationDetails = result.userInfo.objectForKey('message');
+        console.log("------- received didRegisterUserNotificationSettings in JS: " + result);
+        // invoke the callback here
+        //success(token);
+      });
+
+      LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function(result) {
+        //NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.notificationReceivedObserver);
+        //LocalNotifications.notificationReceivedObserver = undefined;
+        var notificationDetails = result.userInfo.objectForKey('message');
+        console.log("------- received notificationDetails in JS: " + notificationDetails);
+        // invoke the callback here
+        //success(token);
+      });
+
+      pushHandler.registerUserNotificationSettings({foo:'bar'});
+
+      // call registerUserNotificationSettings
+      //resolve(LocalNotifications._hasPermission());
+    } catch (ex) {
+      console.log("Error in LocalNotifications.hasPermission: " + ex);
+      reject(ex);
+    }
+  });
+};
+
 LocalNotifications.hasPermission = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
@@ -36,7 +80,12 @@ LocalNotifications._requestPermission = function () {
   UIApplication.sharedApplication().registerUserNotificationSettings(settings);
 };
 
+LocalNotifications._addObserver = function(eventName, callback) {
+  return NSNotificationCenter.defaultCenter().addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue(), callback);
+};
+
 LocalNotifications._schedulePendingNotifications = function () {
+
   var pending = LocalNotifications.pendingNotifications;
   for (var n in pending) {
     var options = pending[n];
@@ -45,15 +94,17 @@ LocalNotifications._schedulePendingNotifications = function () {
 
     var notification = UILocalNotification.alloc().init();
 
-    notification.fireDate = options.at;
+    notification.fireDate = options.at ? options.at.getTime() : new Date().getTime();
     notification.alertTitle = options.title;
     notification.alertBody = options.body;
     notification.timeZone = NSTimeZone.defaultTimeZone();
     notification.applicationIconBadgeNumber = options.badgeNumber;
 
-    // store the id
-    var userInfoDict = NSMutableDictionary.alloc().initWithCapacity(1);
+    // these are sent back to the plugin when a notification is received
+    var userInfoDict = NSMutableDictionary.alloc().initWithCapacity(3);
     userInfoDict.setObjectForKey(options.id, "id");
+    userInfoDict.setObjectForKey(options.title, "title");
+    userInfoDict.setObjectForKey(options.body, "body");
     notification.userInfo = userInfoDict;
 
     // TODO add these

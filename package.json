@@ -1,6 +1,6 @@
 {
   "name": "nativescript-local-notifications",
-  "version": "0.0.1",
+  "version": "0.0.18",
   "description" : "TODO",
   "main" : "local-notifications.js",
   "nativescript": {
@@ -8,6 +8,9 @@
       "android": "1.4.0",
       "ios": "1.4.0"
     }
+  },
+  "dependencies": {
+    "nativescript-plugin-google-play-services": "26.0.2"
   },
   "repository": {
     "type": "git",

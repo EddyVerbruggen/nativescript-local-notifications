@@ -2,43 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-  <!-- TODO find out why we need it, and if we do we need to add Android M permission stuff (see Mapbox) -->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-            
+
   <application>
-    <receiver
-        android:name="com.telerik.nativescript.plugin.localnotifications.TriggerReceiver"
-        android:exported="false" />
-    
-    <receiver
-        android:name="com.telerik.nativescript.plugin.localnotifications.ClearReceiver"
-        android:exported="false" />
-    
-    <activity
-        android:name="com.telerik.nativescript.plugin.localnotifications.ClickActivity"
-        android:launchMode="singleInstance"
-        android:theme="@android:style/Theme.NoDisplay"
-        android:exported="false" />
-    
-    <receiver
-        android:name="com.telerik.nativescript.plugin.notification.TriggerReceiver"
-        android:exported="false" />
-    
-    <receiver
-        android:name="com.telerik.nativescript.plugin.notification.ClearReceiver"
-        android:exported="false" />
-    
-    <receiver android:name="com.telerik.nativescript.plugin.localnotifications.RestoreReceiver" android:exported="false" >
-        <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
-        </intent-filter>
-    </receiver>
-    
-    <activity
-        android:name="com.telerik.nativescript.plugin.notification.ClickActivity"
-        android:launchMode="singleInstance"
-        android:theme="@android:style/Theme.NoDisplay"
-        android:exported="false" />
+    <receiver android:name="com.telerik.localnotifications.NotificationPublisher" android:exported="false"/>
   </application>
 
 </manifest>

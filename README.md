@@ -1,9 +1,6 @@
 # NativeScript Local Notifications Plugin
 
-TODO all below
-
-
-
+Don't use yet, this is actively being worked on..
 
 
 
