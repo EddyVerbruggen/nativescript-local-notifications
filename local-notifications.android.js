@@ -2,6 +2,20 @@ var application = require("application");
 var utils = require("utils/utils");
 var LocalNotifications = require("./local-notifications-common");
 
+// TODO nice for debuggin, but this should be passed in by the dev of course, like in the tns pushplugin
+(function() {
+  com.telerik.pushplugin.PushPlugin.setOnMessageReceivedCallback(
+      new com.telerik.pushplugin.PushPluginListener(
+          {
+            success: function(notificationData) {
+              console.log("------------- notification received! " + notificationData);
+              var notification = JSON.parse(notificationData);
+              console.log("------------- notification id received: " + notification.id);
+            }
+          })
+  );
+})();
+
 LocalNotifications.schedule = function(arg) {
   return new Promise(function (resolve, reject) {
     try {
@@ -15,9 +29,20 @@ LocalNotifications.schedule = function(arg) {
             .setContentTitle(options.title || "") // mandatory
             .setContentText(options.body || "") // mandatory
             .setSmallIcon(defaultIcon) // mandatory
-          //.setTriggerReceiver(receiver) // TODO
+            .setAutoCancel(true) // removes the notification from the statusbar once tapped
           //.setNumber(2) // TODO badge
             .setTicker(options.ticker || options.body);
+
+        // add the intent that handles the event when the notification is clicked (which should launch the app)
+        var reqCode = new java.util.Random().nextInt();
+        var clickIntent = new android.content.Intent(context, com.telerik.pushplugin.PushHandlerActivity.class) // TODO
+          //.putExtra(Options.EXTRA, options.toString()) // TODO
+            .putExtra("pushBundle", JSON.stringify(options)) // TODO
+            .setFlags(android.content.Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        var pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingContentIntent);
+
 
         // TODO this expanded mode works and is pretty awesome.. add properties one day
         /*
@@ -44,14 +69,17 @@ LocalNotifications.schedule = function(arg) {
          */
 
         var not = builder.build();
-        var triggerTime = options.at ? options.at.getTime() : new Date().getTime();
 
-        var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class); //NotificationPublisher.class);
-        notificationIntent.putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id);
-        notificationIntent.putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, not);
+        // add the intent which schedules the notification
+        var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
+            .setAction(""+options.id)
+            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id)
+            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, not);
 
         var pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
 
+        // configure when we'll show the event
+        var triggerTime = options.at ? options.at.getTime() : new Date().getTime();
         alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
         alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
 
