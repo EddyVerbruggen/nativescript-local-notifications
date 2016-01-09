@@ -5,7 +5,7 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application>
-    <activity android:name="com.telerik.pushplugin.PushHandlerActivity"/>
+    <activity android:name="com.telerik.localnotifications.NotificationClickedActivity"/>
     <receiver android:name="com.telerik.localnotifications.NotificationPublisher" android:exported="false"/>
   </application>
 

@@ -1,6 +1,6 @@
 {
   "name": "nativescript-local-notifications",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description" : "TODO",
   "main" : "local-notifications.js",
   "nativescript": {

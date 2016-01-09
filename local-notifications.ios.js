@@ -88,9 +88,10 @@ LocalNotifications._schedulePendingNotifications = function () {
 
   var pending = LocalNotifications.pendingNotifications;
   for (var n in pending) {
-    var options = pending[n];
-    console.log("options: " + options);
-    console.log(JSON.stringify(options));
+    // TODO this merge is untested, so check the log:
+    console.log("---- options before merge: " + JSON.stringify(pending[n]));
+    var options = LocalNotifications.merge(pending[n], LocalNotifications.defaults);
+    console.log("---- options after merge: " + JSON.stringify(options));
 
     var notification = UILocalNotification.alloc().init();
 
@@ -98,7 +99,7 @@ LocalNotifications._schedulePendingNotifications = function () {
     notification.alertTitle = options.title;
     notification.alertBody = options.body;
     notification.timeZone = NSTimeZone.defaultTimeZone();
-    notification.applicationIconBadgeNumber = options.badgeNumber;
+    notification.applicationIconBadgeNumber = options.badge;
 
     // these are sent back to the plugin when a notification is received
     var userInfoDict = NSMutableDictionary.alloc().initWithCapacity(3);
