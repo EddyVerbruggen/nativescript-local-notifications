@@ -118,13 +118,13 @@ LocalNotifications._schedulePendingNotifications = function () {
   }
 };
 
-LocalNotifications.cancel = function (arg) {
+LocalNotifications.cancel = function (id) {
   return new Promise(function (resolve, reject) {
     try {
       var scheduled = UIApplication.sharedApplication().scheduledLocalNotifications;
       for (var i = 0, l = scheduled.count; i < l; i++) {
         var noti = scheduled.objectAtIndex(i);
-        if (arg == noti.userInfo.valueForKey("id")) {
+        if (id == noti.userInfo.valueForKey("id")) {
           UIApplication.sharedApplication().cancelLocalNotification(noti);
           resolve(true);
           return;
@@ -138,12 +138,12 @@ LocalNotifications.cancel = function (arg) {
   });
 };
 
-LocalNotifications.cancelAll = function (arg) {
+LocalNotifications.cancelAll = function () {
   return new Promise(function (resolve, reject) {
     try {
       UIApplication.sharedApplication().cancelAllLocalNotifications();
       UIApplication.sharedApplication().applicationIconBadgeNumber = 0;
-      resolve();
+      resolve(true);
     } catch (ex) {
       console.log("Error in LocalNotifications.cancelAll: " + ex);
       reject(ex);
@@ -151,7 +151,7 @@ LocalNotifications.cancelAll = function (arg) {
   });
 };
 
-LocalNotifications.getScheduledIds = function (arg) {
+LocalNotifications.getScheduledIds = function () {
   return new Promise(function (resolve, reject) {
     try {
       var scheduledIds = [];

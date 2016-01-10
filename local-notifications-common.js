@@ -1,15 +1,12 @@
 var LocalNotifications = {};
 
-LocalNotifications.DEFAULT_SOUND = 'default';
-
 LocalNotifications.defaults = {
   id: 0,
   title: '',
   body: '',
   ongoing: false,
   autoclear: true,
-  badge: 0,
-  sound: LocalNotifications.DEFAULT_SOUND
+  badge: 0
 };
 
 LocalNotifications.merge = function merge(obj1, obj2){ // Our merge function

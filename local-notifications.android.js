@@ -23,61 +23,48 @@ LocalNotifications.schedule = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
       var context = application.android.foregroundActivity;
-      var defaultIcon = application.android.nativeApp.getApplicationInfo().icon;
 
       for (var n in arg) {
         var options = LocalNotifications.merge(arg[n], LocalNotifications.defaults);
+        options.icon = application.android.nativeApp.getApplicationInfo().icon;
+        options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 
-        if (options.sound != null) {
-          // TODO implement other sounds, always using the default for now
-          if (true || options.sound == LocalNotifications.DEFAULT_SOUND) {
-            options.sound = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION);
-          }
+        // note that setting options.sound to explicitly to null will not add the default sound
+        if (options.sound === undefined) {
+          options.sound = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION).toString();
         }
 
+        // TODO best move this to native lib so we can reuse it in the restorereceiver (dupl for now)
         var builder = new android.support.v4.app.NotificationCompat.Builder(context)
             .setDefaults(0)
             .setContentTitle(options.title)
             .setContentText(options.body)
-            .setSmallIcon(defaultIcon)
+            .setSmallIcon(options.icon)
             .setAutoCancel(true) // removes the notification from the statusbar once tapped
-            .setSound(options.sound)
-          //.setNumber(2) // TODO badge
+            .setSound(options.sound == null? null : android.net.Uri.parse(options.sound))
+            .setNumber(options.badge)
             .setTicker(options.ticker || options.body);
 
         // add the intent that handles the event when the notification is clicked (which should launch the app)
         var reqCode = new java.util.Random().nextInt();
         var clickIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationClickedActivity.class)
-          //.putExtra(Options.EXTRA, options.toString()) // TODO
-            .putExtra("pushBundle", JSON.stringify(options)) // TODO
+            .putExtra("pushBundle", JSON.stringify(options))
             .setFlags(android.content.Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         var pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingContentIntent);
 
 
-        // TODO this expanded mode works and is pretty awesome.. add properties one day
+        // NOTE this expanded mode works and is pretty awesome.. add properties one day
         /*
          var inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
-         var events = [];
-         events.push("a");
-         events.push("b");
-         events.push("c");
+         var events = ["a", "b", "c"];
          // Sets a title for the Inbox in expanded layout
          inboxStyle.setBigContentTitle("Event tracker details:");
          for (var i=0; i < events.length; i++) {
          inboxStyle.addLine(events[i]);
          }
          builder.setStyle(inboxStyle);
-         */
-
-        /*
-         var onReceiveCallback = function onReceiveCallback(ctx, intent) {
-         console.log("---- in onReceiveCallback");
-         //var newConnectionType = getConnectionType();
-         //connectionTypeChangedCallback(newConnectionType);
-         };
-         application.android.registerBroadcastReceiver(android.net.ConnectivityManager.CONNECTIVITY_ACTION, onReceiveCallback);
          */
 
         var not = builder.build();
@@ -88,15 +75,13 @@ LocalNotifications.schedule = function (arg) {
             .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id)
             .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, not);
 
-        var pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+        var pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_CANCEL_CURRENT);
 
         // configure when we'll show the event
-        var triggerTime = options.at ? options.at.getTime() : new Date().getTime();
-        alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
-        alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+        var alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
+        alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
 
-        // TODO persist, see https://github.com/katzer/cordova-plugin-local-notifications/blob/master/src/android/notification/Notification.java#L285
-        //return new Notification(context, options, builder, triggerReceiver);
+        LocalNotifications._persist(options);
       }
 
       resolve();
@@ -105,6 +90,101 @@ LocalNotifications.schedule = function (arg) {
       reject(ex);
     }
   });
+};
+
+/**
+ * Persist notification info to the Android Shared Preferences.
+ * This way we can later retrieve it to cancel it, or restore upon reboot.
+ */
+LocalNotifications._persist = function (options) {
+  var sharedPreferences = LocalNotifications._getSharedPreferences();
+  var sharedPreferencesEditor = sharedPreferences.edit();
+  sharedPreferencesEditor.putString(""+options.id, JSON.stringify(options));
+  sharedPreferencesEditor.apply();
+};
+
+LocalNotifications._unpersist = function (id) {
+  var sharedPreferences = LocalNotifications._getSharedPreferences();
+  var sharedPreferencesEditor = sharedPreferences.edit();
+  sharedPreferencesEditor.remove("" + id);
+  sharedPreferencesEditor.apply();
+};
+
+LocalNotifications._cancelById = function (id) {
+  var context = application.android.foregroundActivity;
+
+  var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
+      .setAction("" + id);
+
+  var pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
+
+  var alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
+  alarmManager.cancel(pendingIntent);
+
+  var notificationManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+  notificationManager.cancel(id);
+
+  LocalNotifications._unpersist(id);
+};
+
+LocalNotifications.cancel = function (id) {
+  return new Promise(function (resolve, reject) {
+    try {
+      LocalNotifications._cancelById(id);
+      resolve(true);
+    } catch (ex) {
+      console.log("Error in LocalNotifications.cancel: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+LocalNotifications.cancelAll = function () {
+  return new Promise(function (resolve, reject) {
+    try {
+      var sharedPreferences = LocalNotifications._getSharedPreferences();
+      var keys = sharedPreferences.getAll().keySet();
+
+      console.log("-----will cancel " + keys.size() + " notification(s): " + keys);
+
+      var iterator = keys.iterator();
+      while (iterator.hasNext()) {
+        LocalNotifications._cancelById(iterator.next());
+      }
+
+      resolve();
+    } catch (ex) {
+      console.log("Error in LocalNotifications.cancelAll: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+LocalNotifications.getScheduledIds = function () {
+  return new Promise(function (resolve, reject) {
+    try {
+      var scheduledIds = [];
+
+      var sharedPreferences = LocalNotifications._getSharedPreferences();
+      var keys = sharedPreferences.getAll().keySet();
+
+      var iterator = keys.iterator();
+      while (iterator.hasNext()) {
+        scheduledIds.push(iterator.next());
+      }
+
+      resolve(scheduledIds);
+    } catch (ex) {
+      console.log("Error in LocalNotifications.getScheduledIds: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+LocalNotifications._getSharedPreferences = function () {
+  var context = application.android.foregroundActivity;
+  var PREF_KEY = "LocalNotificationsPlugin"; // TODO get constant from native, as the restorereceiver needs it as well
+  return context.getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
 };
 
 module.exports = LocalNotifications;
