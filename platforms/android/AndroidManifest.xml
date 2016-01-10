@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-  <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
 
   <application>
     <activity android:name="com.telerik.localnotifications.NotificationClickedActivity"/>
