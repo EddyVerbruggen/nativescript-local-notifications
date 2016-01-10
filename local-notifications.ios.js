@@ -4,7 +4,7 @@ var application = require("application"); // TODO unused
 var pushHandler,
     pushManager;
 
-(function() {
+(function () {
   if (!pushHandler) {
     pushHandler = Push.alloc().init();
     pushManager = PushManager.alloc().init();
@@ -16,7 +16,7 @@ LocalNotifications.register = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
 
-      LocalNotifications.didRegisterUserNotificationSettingsObserver = LocalNotifications._addObserver("didRegisterUserNotificationSettings", function(result) {
+      LocalNotifications.didRegisterUserNotificationSettingsObserver = LocalNotifications._addObserver("didRegisterUserNotificationSettings", function (result) {
         //NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.notificationReceivedObserver);
         //LocalNotifications.notificationReceivedObserver = undefined;
         //var notificationDetails = result.userInfo.objectForKey('message');
@@ -25,7 +25,7 @@ LocalNotifications.register = function (arg) {
         //success(token);
       });
 
-      LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function(result) {
+      LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function (result) {
         //NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.notificationReceivedObserver);
         //LocalNotifications.notificationReceivedObserver = undefined;
         var notificationDetails = result.userInfo.objectForKey('message');
@@ -34,7 +34,7 @@ LocalNotifications.register = function (arg) {
         //success(token);
       });
 
-      pushHandler.registerUserNotificationSettings({foo:'bar'});
+      pushHandler.registerUserNotificationSettings({foo: 'bar'});
 
       // call registerUserNotificationSettings
       //resolve(LocalNotifications._hasPermission());
@@ -80,7 +80,7 @@ LocalNotifications._requestPermission = function () {
   UIApplication.sharedApplication().registerUserNotificationSettings(settings);
 };
 
-LocalNotifications._addObserver = function(eventName, callback) {
+LocalNotifications._addObserver = function (eventName, callback) {
   return NSNotificationCenter.defaultCenter().addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue(), callback);
 };
 

@@ -1,0 +1,492 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		2B6E19381B454A67006A7B46 /* PushPluginLibrary */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 2B6E19391B454A68006A7B46 /* Build configuration list for PBXAggregateTarget "PushPluginLibrary" */;
+			buildPhases = (
+				2B1764CF1B454AF200936DC0 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = PushPluginLibrary;
+			productName = PushPluginLibrary;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		2B1764D41B4567E500936DC0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1764D31B4567E500936DC0 /* UIKit.framework */; };
+		2B1764DD1B46BD0C00936DC0 /* PushManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B1764DB1B46BD0C00936DC0 /* PushManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B1764DE1B46BD0C00936DC0 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1764DC1B46BD0C00936DC0 /* PushManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		2B6E191D1B454838006A7B46 /* PushPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E191C1B454838006A7B46 /* PushPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6E19231B454838006A7B46 /* PushPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6E19171B454838006A7B46 /* PushPlugin.framework */; };
+		2B6E192A1B454838006A7B46 /* PushPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19291B454838006A7B46 /* PushPluginTests.m */; };
+		2B6E19351B45486B006A7B46 /* Push.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E19331B45486A006A7B46 /* Push.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6E19361B45486B006A7B46 /* Push.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19341B45486A006A7B46 /* Push.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2B6E19241B454838006A7B46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B6E190E1B454838006A7B46 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B6E19161B454838006A7B46;
+			remoteInfo = PushPlugin;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2B1764D31B4567E500936DC0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2B1764DB1B46BD0C00936DC0 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
+		2B1764DC1B46BD0C00936DC0 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
+		2B6E19171B454838006A7B46 /* PushPlugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PushPlugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6E191B1B454838006A7B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2B6E191C1B454838006A7B46 /* PushPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PushPlugin.h; sourceTree = "<group>"; };
+		2B6E19221B454838006A7B46 /* PushPluginTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PushPluginTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6E19281B454838006A7B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2B6E19291B454838006A7B46 /* PushPluginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PushPluginTests.m; sourceTree = "<group>"; };
+		2B6E19331B45486A006A7B46 /* Push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Push.h; sourceTree = "<group>"; };
+		2B6E19341B45486A006A7B46 /* Push.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Push.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2B6E19131B454838006A7B46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B1764D41B4567E500936DC0 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B6E191F1B454838006A7B46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B6E19231B454838006A7B46 /* PushPlugin.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2B6E190D1B454838006A7B46 = {
+			isa = PBXGroup;
+			children = (
+				2B1764D31B4567E500936DC0 /* UIKit.framework */,
+				2B6E19191B454838006A7B46 /* PushPlugin */,
+				2B6E19261B454838006A7B46 /* PushPluginTests */,
+				2B6E19181B454838006A7B46 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2B6E19181B454838006A7B46 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2B6E19171B454838006A7B46 /* PushPlugin.framework */,
+				2B6E19221B454838006A7B46 /* PushPluginTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2B6E19191B454838006A7B46 /* PushPlugin */ = {
+			isa = PBXGroup;
+			children = (
+				2B6E191C1B454838006A7B46 /* PushPlugin.h */,
+				2B6E19331B45486A006A7B46 /* Push.h */,
+				2B6E19341B45486A006A7B46 /* Push.m */,
+				2B6E191A1B454838006A7B46 /* Supporting Files */,
+				2B1764DB1B46BD0C00936DC0 /* PushManager.h */,
+				2B1764DC1B46BD0C00936DC0 /* PushManager.m */,
+			);
+			path = PushPlugin;
+			sourceTree = "<group>";
+		};
+		2B6E191A1B454838006A7B46 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2B6E191B1B454838006A7B46 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2B6E19261B454838006A7B46 /* PushPluginTests */ = {
+			isa = PBXGroup;
+			children = (
+				2B6E19291B454838006A7B46 /* PushPluginTests.m */,
+				2B6E19271B454838006A7B46 /* Supporting Files */,
+			);
+			path = PushPluginTests;
+			sourceTree = "<group>";
+		};
+		2B6E19271B454838006A7B46 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2B6E19281B454838006A7B46 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		2B6E19141B454838006A7B46 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B6E19351B45486B006A7B46 /* Push.h in Headers */,
+				2B6E191D1B454838006A7B46 /* PushPlugin.h in Headers */,
+				2B1764DD1B46BD0C00936DC0 /* PushManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2B6E19161B454838006A7B46 /* PushPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2B6E192D1B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPlugin" */;
+			buildPhases = (
+				2B6E19121B454838006A7B46 /* Sources */,
+				2B6E19131B454838006A7B46 /* Frameworks */,
+				2B6E19141B454838006A7B46 /* Headers */,
+				2B6E19151B454838006A7B46 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PushPlugin;
+			productName = PushPlugin;
+			productReference = 2B6E19171B454838006A7B46 /* PushPlugin.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		2B6E19211B454838006A7B46 /* PushPluginTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2B6E19301B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPluginTests" */;
+			buildPhases = (
+				2B6E191E1B454838006A7B46 /* Sources */,
+				2B6E191F1B454838006A7B46 /* Frameworks */,
+				2B6E19201B454838006A7B46 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2B6E19251B454838006A7B46 /* PBXTargetDependency */,
+			);
+			name = PushPluginTests;
+			productName = PushPluginTests;
+			productReference = 2B6E19221B454838006A7B46 /* PushPluginTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2B6E190E1B454838006A7B46 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				ORGANIZATIONNAME = BackendServTestUser;
+				TargetAttributes = {
+					2B6E19161B454838006A7B46 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+					2B6E19211B454838006A7B46 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+					2B6E19381B454A67006A7B46 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = 2B6E19111B454838006A7B46 /* Build configuration list for PBXProject "PushPlugin" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2B6E190D1B454838006A7B46;
+			productRefGroup = 2B6E19181B454838006A7B46 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2B6E19161B454838006A7B46 /* PushPlugin */,
+				2B6E19211B454838006A7B46 /* PushPluginTests */,
+				2B6E19381B454A67006A7B46 /* PushPluginLibrary */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2B6E19151B454838006A7B46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B6E19201B454838006A7B46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2B1764CF1B454AF200936DC0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "UNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"${PROJECT_NAME}\" -configuration ${CONFIGURATION} -sdk iphonesimulator BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\n\n# Step 2. Copy the framework structure to the universal folder\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Step 3. Create universal binary file using lipo and place the combined executable in the copied framework directory\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework/${PROJECT_NAME}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2B6E19121B454838006A7B46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B6E19361B45486B006A7B46 /* Push.m in Sources */,
+				2B1764DE1B46BD0C00936DC0 /* PushManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B6E191E1B454838006A7B46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B6E192A1B454838006A7B46 /* PushPluginTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2B6E19251B454838006A7B46 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2B6E19161B454838006A7B46 /* PushPlugin */;
+			targetProxy = 2B6E19241B454838006A7B46 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2B6E192B1B454838006A7B46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		2B6E192C1B454838006A7B46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		2B6E192E1B454838006A7B46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = PushPlugin/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		2B6E192F1B454838006A7B46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = PushPlugin/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		2B6E19311B454838006A7B46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = PushPluginTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2B6E19321B454838006A7B46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = PushPluginTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		2B6E193A1B454A68006A7B46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2B6E193B1B454A68006A7B46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2B6E19111B454838006A7B46 /* Build configuration list for PBXProject "PushPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B6E192B1B454838006A7B46 /* Debug */,
+				2B6E192C1B454838006A7B46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2B6E192D1B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B6E192E1B454838006A7B46 /* Debug */,
+				2B6E192F1B454838006A7B46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2B6E19301B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPluginTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B6E19311B454838006A7B46 /* Debug */,
+				2B6E19321B454838006A7B46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2B6E19391B454A68006A7B46 /* Build configuration list for PBXAggregateTarget "PushPluginLibrary" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B6E193A1B454A68006A7B46 /* Debug */,
+				2B6E193B1B454A68006A7B46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2B6E190E1B454838006A7B46 /* Project object */;
+}

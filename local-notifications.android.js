@@ -41,7 +41,7 @@ LocalNotifications.schedule = function (arg) {
             .setContentText(options.body)
             .setSmallIcon(options.icon)
             .setAutoCancel(true) // removes the notification from the statusbar once tapped
-            .setSound(options.sound == null? null : android.net.Uri.parse(options.sound))
+            .setSound(options.sound == null ? null : android.net.Uri.parse(options.sound))
             .setNumber(options.badge)
             .setTicker(options.ticker || options.body);
 
@@ -99,7 +99,7 @@ LocalNotifications.schedule = function (arg) {
 LocalNotifications._persist = function (options) {
   var sharedPreferences = LocalNotifications._getSharedPreferences();
   var sharedPreferencesEditor = sharedPreferences.edit();
-  sharedPreferencesEditor.putString(""+options.id, JSON.stringify(options));
+  sharedPreferencesEditor.putString("" + options.id, JSON.stringify(options));
   sharedPreferencesEditor.apply();
 };
 
