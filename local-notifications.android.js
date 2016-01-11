@@ -181,6 +181,30 @@ LocalNotifications.getScheduledIds = function () {
   });
 };
 
+LocalNotifications.hasPermission = function (arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      // nothing to do on this platform
+      resolve(true);
+    } catch (ex) {
+      console.log("Error in LocalNotifications.hasPermission: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+LocalNotifications.requestPermission = function (arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      // nothing to do on this platform
+      resolve(true);
+    } catch (ex) {
+      console.log("Error in LocalNotifications.requestPermission: " + ex);
+      reject(ex);
+    }
+  });
+};
+
 LocalNotifications._getSharedPreferences = function () {
   var context = application.android.foregroundActivity;
   var PREF_KEY = "LocalNotificationsPlugin"; // TODO get constant from native, as the restorereceiver needs it as well
@@ -188,57 +212,3 @@ LocalNotifications._getSharedPreferences = function () {
 };
 
 module.exports = LocalNotifications;
-
-/*
- module.exports = (function () {
- var app = require('application');
- var context = app.android.context;
-
- (function() {
- //debugger;
- // Hook on the application events
- com.telerik.pushplugin.PushLifecycleCallbacks.registerCallbacks(app.android.nativeApp);
- })();
-
- var pluginObject = {
- register: function (options, successCallback, errorCallback) {
- com.telerik.pushplugin.PushPlugin.register(context, options.senderID,
- //Success
- new com.telerik.pushplugin.PushPluginListener(
- {
- success: successCallback,
- error: errorCallback
- })
- );
- },
- unregister: function (onSuccessCallback, onErrorCallback, options) {
- com.telerik.pushplugin.PushPlugin.unregister(context, options.senderID, new com.telerik.pushplugin.PushPluginListener(
- {
- success: onSuccessCallback
- }
- ));
- },
- onMessageReceived: function (callback) {
- com.telerik.pushplugin.PushPlugin.setOnMessageReceivedCallback(
- new com.telerik.pushplugin.PushPluginListener(
- {
- success: callback
- })
- );
- },
- onTokenRefresh : function (callback) {
- com.telerik.pushplugin.PushPlugin.setOnTokenRefreshCallback(
- new com.telerik.pushplugin.PushPluginListener(
- {
- success: callback
- })
- );
- },
- areNotificationsEnabled : function (callback) {
- var bool = com.telerik.pushplugin.PushPlugin.areNotificationsEnabled();
- callback(bool);
- }
- };
- return pluginObject;
- })();
- */
