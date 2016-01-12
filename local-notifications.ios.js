@@ -1,20 +1,18 @@
 var LocalNotifications = require("./local-notifications-common");
-var application = require("application"); // TODO unused
 
 LocalNotifications._addObserver = function (eventName, callback) {
   return NSNotificationCenter.defaultCenter().addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue(), callback);
 };
 
-var pushHandler,
-    pushManager;
-
-var pendingReceivedNotifications = [];
-var receivedNotificationCallback = null;
+var pendingReceivedNotifications = [],
+    notificationHandler,
+    notificationManager,
+    receivedNotificationCallback = null;
 
 (function () {
   // grab 'em here, store em in JS, and give them to the callback when addOnMessageReceivedCallback is wired
   LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function (result) {
-    var notificationDetails = result.userInfo.objectForKey('message');
+    var notificationDetails = JSON.parse(result.userInfo.objectForKey('message'));
     console.log("------- notificationReceivedObserver: " + notificationDetails);
     if (receivedNotificationCallback != null) {
       receivedNotificationCallback(notificationDetails);
@@ -23,8 +21,8 @@ var receivedNotificationCallback = null;
     }
   });
 
-  pushHandler = Notification.alloc().init();
-  pushManager = NotificationManager.alloc().init();
+  notificationHandler = Notification.alloc().init();
+  notificationManager = NotificationManager.alloc().init();
 })();
 
 LocalNotifications.addOnMessageReceivedCallback = function (callback) {
@@ -35,23 +33,6 @@ LocalNotifications.addOnMessageReceivedCallback = function (callback) {
         callback(pendingReceivedNotifications[p]);
       }
       pendingReceivedNotifications = [];
-
-
-      // TODO do we need this for permission stuff?
-      LocalNotifications.didRegisterUserNotificationSettingsObserver = LocalNotifications._addObserver("didRegisterUserNotificationSettings", function (result) {
-        //NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.notificationReceivedObserver);
-        //LocalNotifications.notificationReceivedObserver = undefined;
-        //var notificationDetails = result.userInfo.objectForKey('message');
-        console.log("------- received didRegisterUserNotificationSettings in JS: " + result);
-        // invoke the callback here
-        //success(token);
-        callback(result);
-      });
-
-      //setTimeout(function() {
-      //  console.log("---- checking pending notification");
-      //  pushHandler.checkPendingNotification();
-      //}, 500);
 
       resolve(true);
     } catch (ex) {
@@ -81,7 +62,9 @@ LocalNotifications._hasPermission = function () {
 LocalNotifications.requestPermission = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      resolve(LocalNotifications._requestPermission());
+      LocalNotifications._requestPermission(function(granted) {
+        resolve(granted);
+      })
     } catch (ex) {
       console.log("Error in LocalNotifications.requestPermission: " + ex);
       reject(ex);
@@ -89,7 +72,15 @@ LocalNotifications.requestPermission = function (arg) {
   });
 };
 
-LocalNotifications._requestPermission = function () {
+LocalNotifications._requestPermission = function (callback) {
+
+  LocalNotifications.didRegisterUserNotificationSettingsObserver = LocalNotifications._addObserver("didRegisterUserNotificationSettings", function (result) {
+    NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.didRegisterUserNotificationSettingsObserver);
+    LocalNotifications.didRegisterUserNotificationSettingsObserver = undefined;
+    var granted = result.userInfo.objectForKey('message');
+    callback(granted != "false");
+  });
+
   var settings = UIApplication.sharedApplication().currentUserNotificationSettings();
   var types = settings.types | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   settings = UIUserNotificationSettings.settingsForTypesCategories(types, null);
@@ -116,7 +107,7 @@ LocalNotifications._schedulePendingNotifications = function () {
     userInfoDict.setObjectForKey(options.body, "body");
     notification.userInfo = userInfoDict;
 
-    // TODO add these
+    // TODO add these after v1
     // notification.repeatInterval = 1;
     // notification.soundName = null;
     // notification.resumeApplicationInBackground = true;
@@ -183,11 +174,13 @@ LocalNotifications.schedule = function (arg) {
       LocalNotifications.pendingNotifications = arg;
 
       if (!LocalNotifications._hasPermission()) {
-        LocalNotifications._requestPermission();
-        reject("No permission yet, we asked it now");
+        LocalNotifications._requestPermission(function() {
+          LocalNotifications._schedulePendingNotifications();
+        })
       } else {
-        LocalNotifications._schedulePendingNotifications(); // TODO pass in (resolve, reject)
+        LocalNotifications._schedulePendingNotifications();
       }
+
       resolve();
     } catch (ex) {
       console.log("Error in LocalNotifications.schedule: " + ex);

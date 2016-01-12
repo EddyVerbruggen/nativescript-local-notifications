@@ -7,6 +7,5 @@ FOUNDATION_EXPORT double LocalNotificationsVersionNumber;
 FOUNDATION_EXPORT const unsigned char LocalNotificationsPluginVersionString[];
 
 // In this header, you should import all the public headers of your framework
-
 #import <Notification.h>
 #import <NotificationManager.h>

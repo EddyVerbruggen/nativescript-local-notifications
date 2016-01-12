@@ -6,13 +6,9 @@
 const NSString * badgeKey = @"badge";
 const NSString * soundKey = @"sound";
 const NSString * alertKey = @"alert";
-//const NSString * didRegisterEventName = @"didRegisterForRemoteNotificationsWithDeviceToken";
-const NSString * didRegisterUserNotificationsEventName = @"didRegisterUserNotificationSettings2";
-//const NSString * didFailToRegisterEventName = @"didFailToRegisterForRemoteNotificationsWithError";
+static NSString * didRegisterUserNotificationsEventName = @"didRegisterUserNotificationSettings";
 const NSString * notificationReceivedEventName = @"notificationReceived";
 const NSString * setBadgeNumberEventName = @"setApplicationIconBadgeNumber";
-// HUH!? Kan deze plugin ook al local notifications? Test in een project met de {N} push plugin!!
-// -- ofwel, start een nieuw project met deze plugin en kijk wat ie doet
 const NSString * didRegisterUserNotificationSettingsEventName = @"didRegisterUserNotificationSettings";
 const NSString * failToRegisterUserNotificationSettingsEventName = @"failToRegisterUserNotificationSettings";
 
@@ -33,6 +29,7 @@ static char launchNotificationKey;
     return sharedInstance;
 }
 
+/*
 -(void)register:(NSMutableDictionary *)options
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
@@ -71,6 +68,7 @@ static char launchNotificationKey;
 
     [self notificationReceived];
 }
+*/
 
 - (BOOL)isTrue:(NSString *)key fromOptions:(NSMutableDictionary *)options
 {
@@ -83,114 +81,13 @@ static char launchNotificationKey;
     return false;
 }
 
-- (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+- (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)settings
 {
-    NSLog(@"------ didRegisterUserNotificationSettings");
-
-    
-    
-    NSMutableDictionary *results = [NSMutableDictionary dictionary];
-
-//#if !TARGET_IPHONE_SIMULATOR
-    // Get Bundle Info for Remote Registration (handy if you have more than one app)
-    [results setValue:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"] forKey:@"appName"];
-    [results setValue:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] forKey:@"appVersion"];
-    
-    /*
-    // Check what Notifications the user has turned on.  We registered for all three, but they may have manually disabled some or all of them.
-    NSUInteger rntypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-    
-    // Set the defaults to disabled unless we find otherwise...
-    NSString *pushBadge = @"disabled";
-    NSString *pushAlert = @"disabled";
-    NSString *pushSound = @"disabled";
-    
-    // Check what Registered Types are turned on. This is a bit tricky since if two are enabled, and one is off, it will return a number 2... not telling you which
-    // one is actually disabled. So we are literally checking to see if rnTypes matches what is turned on, instead of by number. The "tricky" part is that the
-    // single notification types will only match if they are the ONLY one enabled.  Likewise, when we are checking for a pair of notifications, it will only be
-    // true if those two notifications are on.  This is why the code is written this way
-    if(rntypes & UIRemoteNotificationTypeBadge){
-        pushBadge = @"enabled";
-    }
-    if(rntypes & UIRemoteNotificationTypeAlert) {
-        pushAlert = @"enabled";
-    }
-    if(rntypes & UIRemoteNotificationTypeSound) {
-        pushSound = @"enabled";
-    }
-    
-    [results setValue:pushBadge forKey:@"pushBadge"];
-    [results setValue:pushAlert forKey:@"pushAlert"];
-    [results setValue:pushSound forKey:@"pushSound"];
-    
-    // Get the users Device Model, Display Name, Token & Version Number
-    UIDevice *dev = [UIDevice currentDevice];
-    [results setValue:dev.name forKey:@"deviceName"];
-    [results setValue:dev.model forKey:@"deviceModel"];
-    [results setValue:dev.systemVersion forKey:@"deviceSystemVersion"];
-    */
-    [self success:didRegisterUserNotificationsEventName WithMessage:[NSString stringWithFormat:@"%@", @"nice"]];
-//#endif
+    UIUserNotificationType types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
+    bool ok = settings.types & types;
+    [self success:didRegisterUserNotificationsEventName WithMessage:[NSString stringWithFormat:@"%@", ok ? @"true" : @"false"]];
 }
 
-
-/*
-- (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
-{
-    NSMutableDictionary *results = [NSMutableDictionary dictionary];
-    NSString *token = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""]
-                        stringByReplacingOccurrencesOfString:@">" withString:@""]
-                       stringByReplacingOccurrencesOfString: @" " withString: @""];
-    [results setValue:token forKey:@"deviceToken"];
-    
-#if !TARGET_IPHONE_SIMULATOR
-    // Get Bundle Info for Remote Registration (handy if you have more than one app)
-    [results setValue:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"] forKey:@"appName"];
-    [results setValue:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] forKey:@"appVersion"];
-    
-    // Check what Notifications the user has turned on.  We registered for all three, but they may have manually disabled some or all of them.
-    NSUInteger rntypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-    
-    // Set the defaults to disabled unless we find otherwise...
-    NSString *pushBadge = @"disabled";
-    NSString *pushAlert = @"disabled";
-    NSString *pushSound = @"disabled";
-    
-    // Check what Registered Types are turned on. This is a bit tricky since if two are enabled, and one is off, it will return a number 2... not telling you which
-    // one is actually disabled. So we are literally checking to see if rnTypes matches what is turned on, instead of by number. The "tricky" part is that the
-    // single notification types will only match if they are the ONLY one enabled.  Likewise, when we are checking for a pair of notifications, it will only be
-    // true if those two notifications are on.  This is why the code is written this way
-    if(rntypes & UIRemoteNotificationTypeBadge){
-        pushBadge = @"enabled";
-    }
-    if(rntypes & UIRemoteNotificationTypeAlert) {
-        pushAlert = @"enabled";
-    }
-    if(rntypes & UIRemoteNotificationTypeSound) {
-        pushSound = @"enabled";
-    }
-    
-    [results setValue:pushBadge forKey:@"pushBadge"];
-    [results setValue:pushAlert forKey:@"pushAlert"];
-    [results setValue:pushSound forKey:@"pushSound"];
-    
-    // Get the users Device Model, Display Name, Token & Version Number
-    UIDevice *dev = [UIDevice currentDevice];
-    [results setValue:dev.name forKey:@"deviceName"];
-    [results setValue:dev.model forKey:@"deviceModel"];
-    [results setValue:dev.systemVersion forKey:@"deviceSystemVersion"];
-    
-    [self success:didRegisterEventName WithMessage:[NSString stringWithFormat:@"%@", token]];
-#endif
-}
-
-- (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
-    [self fail:didFailToRegisterEventName WithMessage:@"" withError:error];
-}
- */
-
-// NOTE: to update the framework in the demo app, copy the built fwk to the /lib/iOS folder, then simply run the project
 - (void)notificationReceived
 {
     if (self.notificationMessage)
@@ -209,13 +106,8 @@ static char launchNotificationKey;
         }
         
         [jsonStr appendString:@"}"];
-        NSLog(@"----- notificationReceived, has notificationMessage 3: %@", jsonStr);
         [self success:notificationReceivedEventName WithMessage:jsonStr];
         self.notificationMessage = nil;
-    }
-    if (self.launchNotification)
-    {
-        NSLog(@"----- notificationReceived, has launchNotification!");
     }
 }
 
@@ -252,6 +144,7 @@ static char launchNotificationKey;
     [self success:setBadgeNumberEventName WithMessage:[NSString stringWithFormat:@"app badge count set to %d", badge]];
 }
 
+/*
 - (void)registerUserNotificationSettings:(NSDictionary*)options
 {
     NSLog(@"--- in registerUserNotificationSettings");
@@ -262,7 +155,6 @@ static char launchNotificationKey;
         return;
     }
     
-    /*
     NSArray *categories = [options objectForKey:@"categories"];
     if (categories == nil) {
         [self fail:failToRegisterUserNotificationSettingsEventName WithMessage:@"No categories specified" withError:nil];
@@ -333,19 +225,19 @@ static char launchNotificationKey;
     
     UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:nsTypes categories:nsCategorySet];
     [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-     
-     */
-    
+
     UIUserNotificationSettings *settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
     UIUserNotificationType types = settings.types|UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
     settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
     
 #endif
-    [self success:didRegisterUserNotificationSettingsEventName WithMessage:[NSString stringWithFormat:@"%@", @"user notifications registered!"]];
+    [self success:didRegisterUserNotificationSettingsEventName
+      WithMessage:[NSString stringWithFormat:@"%@", @"user notifications registered!"]];
 
 //    [self checkPendingNotification];
 }
+*/
 
 /*
 -(void)checkPendingNotification {
@@ -430,13 +322,11 @@ static char launchNotificationKey;
 
 - (void)setLaunchNotification:(UILocalNotification *)notification
 {
-    NSLog(@"---- setLaunchNotification");
     objc_setAssociatedObject(self, &launchNotificationKey, notification, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)dealloc
 {
-    NSLog(@"---- dealloc, nilling launchNotification");
     self.launchNotification	= nil;
 }
 
