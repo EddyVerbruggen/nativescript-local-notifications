@@ -8,7 +8,9 @@ LocalNotifications.addOnMessageReceivedCallback = function (callback) {
       // note that this is ONLY triggered when the user clicked the notification in the statusbar
       com.telerik.localnotifications.LocalNotificationsPlugin.setOnMessageReceivedCallback(
           new com.telerik.localnotifications.LocalNotificationsPluginListener({
-            success: callback
+            success: function(notification) {
+              callback(JSON.parse(notification))
+            }
           })
       );
       resolve();
