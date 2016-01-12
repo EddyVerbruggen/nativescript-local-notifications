@@ -1,125 +1,143 @@
 # NativeScript Local Notifications Plugin
 
-Don't use yet, this is actively being worked on..
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+The Local Notifications plugin allows your app to show notifications when the app is not running.
+Just like remote push notifications, but a few orders of magnitude easier to set up.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
 ```
-tns plugin add nativescript-admob
+tns plugin add nativescript-local-notifications
 ```
 
 ## Usage
 
-If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen/nativescript-admob-demo).
+If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen/nativescript-local-notifications-demo).
 
-Here are the supported functions:
+### schedule
+On iOS you need to ask permission to schedule a notification.
+You can have the `schedule` funtion do that for you automatically (the notification will be scheduled in case the user granted permission),
+or you can manually invoke `requestPermission` if that's your thing.
 
-### function: createBanner
+You can pass several options to this function, everything is optional:
+
+|option|description|
+|------|-----------|
+|`id`     |A number so you can easilty distinguish your notifications. Default 0.|
+|`title`  |The title which is shown in the statusbar. Default empty.|
+|`body`   |The text below the title. Default empty.|
+|`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
+|`at`     |A JavaScript Date object indicating when the notification should be shown. Default 'now'.|
+|`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|
+|`sound`  |Currently this is only used on Android where you can set this to `null` to suppress the sound. Default 'the default notification sound'.|
+
 ```js
-  var admob = require("nativescript-admob");
-
-  admob.createBanner({
-      // if this 'view' property is not set, the banner is overlayed on the current top most view
-      // view: ..,
-      testing: true, // set to false to get actual banners
-      size: size, // anything in admob.AD_SIZE, like admob.AD_SIZE.SMART_BANNER
-      iosBannerId: "ca-app-pub-XXXXXX/YYYYYY", // add your own
-      androidBannerId: "ca-app-pub-AAAAAAAA/BBBBBBB", // add your own
-      // Android automatically adds the connected device as test device with testing:true, iOS does not
-      iosTestDeviceIds: ["yourTestDeviceUDIDs", "canBeAddedHere"],
-      margins: {
-        // if both are set, top wins
-        //top: 10
-        bottom: 50
+  LocalNotifications.schedule([{
+    id: 1,
+    title: 'The title',
+    body: 'The body',
+    ticker: 'The ticker',
+    badge: 1,
+    sound: null, // suppress sound on Android
+    at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
+  }]).then(
+      function() {
+        console.log("Notification scheduled");
+      },
+      function(error) {
+        console.log("scheduling error: " + error);
       }
-    }).then(
-        function() {
-          console.log("admob createBanner done");
-        },
-        function(error) {
-          console.log("admob createBanner error: " + error);
-        }
   )
 ```
 
-### function: hideBanner
-NOTE: If you want to show a different banner than the one showing you don't need to call the `hide` function
-since `show` will do that for you to prevent your app from crashing.
+### addOnMessageReceivedCallback
+Tapping a notification in the notification center will launch your app.
+But what if you scheduled two notifications and you want to know which one the user tapped?
+
+Use this function to have a callback invoked when a notification was used to launch your app.
+Note that on iOS it will even be triggered when your app is in the foreground and a notification is received.
 
 ```js
-  // the .then(.. bit is optional btw
-  admob.hideBanner().then(
-        function() {
-          console.log("admob hideBanner done");
-        },
-        function(error) {
-          console.log("admob hideBanner error: " + error);
-        }
+  LocalNotifications.addOnMessageReceivedCallback(
+      function (notification) {
+        console.log("ID: " + notification.id);
+        console.log("Title: " + notification.title);
+        console.log("Body: " + notification.body);
+      }
+  ).then(
+      function() {
+        console.log("Listener added");
+      }
   )
 ```
 
-### function: createInterstitial
-To show a fullscreen banner you can use this function. Note that Interstitial banners need to be loaded before
-they can be shown, but don't worry: this plugin will manage that transparently for you.
+### getScheduledIds
+If you want to know the ID's of all notifications which have been scheduled, do this:
+
+Note that all functions have an error handler as well (see `schedule`), but to keep things readable we won't repeat ourselves.
 
 ```js
-  admob.createInterstitial({
-      testing: true,
-      iosInterstitialId: "ca-app-pub-XXXXXX/YYYYY2", // add your own
-      androidInterstitialId: "ca-app-pub-AAAAAAAA/BBBBBB2", // add your own
-      // Android automatically adds the connected device as test device with testing:true, iOS does not
-      iosTestDeviceIds: ["ce97330130c9047ce0d4430d37d713b1"]
-    }).then(
-        function() {
-          console.log("admob createInterstitial done");
-        },
-        function(error) {
-          console.log("admob createInterstitial error: " + error);
-        }
+  LocalNotifications.getScheduledIds().then(
+      function(ids) {
+        console.log("ID's: " + ids);
+      }
   )
 ```
+
+### cancel
+If you want to cancel a previously scheduled notification (and you know its ID), you can cancel it:
+
+```js
+  LocalNotifications.cancel(5 /* the ID */).then(
+      function(foundAndCanceled) {
+          if (foundAndCanceled) {
+            console.log("OK, it's gone!");
+          } else {
+            console.log("No ID 5 was scheduled");
+          }
+      }
+  )
+```
+
+### cancelAll
+If you just want to cancel all previously scheduled notifications, do this:
+
+```js
+  LocalNotifications.cancelAll();
+```
+
+### requestPermission
+On Android you don't need permission, but on iOS you do. Android will simply return true.
+
+If the `requestPermission` or `schedule` function previously ran the user has already been prompted to grant permission.
+If the user granted permission this function returns `true`, but if he denied permission this function will return `false`,
+since an iOS can only request permission once. In which case the user needs to go to the iOS settings app and manually
+enable permissions for your app.
+
+```js
+  LocalNotifications.requestPermission().then(
+      function(granted) {
+        console.log("Permission granted? " + granted);
+      }
+  )
+```
+
+### hasPermission
+On Android you don't need permission, but on iOS you do. Android will simply return true.
+
+If the `requestPermission` or `schedule` functions previously ran you may want to check whether or not the user granted permission:
+
+```js
+  LocalNotifications.hasPermission().then(
+      function(granted) {
+        console.log("Permission granted? " + granted);
+      }
+  )
+```
+
+## Future work
+Let us know what you need by opening a Github issue.
+
+We're thinking about adding support for things like:
+- Scheduling repeating notifications (daily, weekly, etc)
+- Custom Notification sounds
+- Interactive Notifications on iOS

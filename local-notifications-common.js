@@ -4,9 +4,9 @@ LocalNotifications.defaults = {
   id: 0,
   title: '',
   body: '',
-  ongoing: false,
-  autoclear: true, // TODO on iOS this doesn't yet clear the badge.. needs to be set to '0' somewhere.. I'm afraid it needs to be in native code
   badge: 0
+  //ongoing: false
+  //autoclear: true
 };
 
 LocalNotifications.merge = function merge(obj1, obj2) { // Our merge function

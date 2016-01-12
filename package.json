@@ -18,8 +18,8 @@
   },
   "keywords": [
     "NativeScript",
-    "Notifications",
-    "Local Notifications"
+    "Notification",
+    "Local Notification"
   ],
   "author": "Telerik / Eddy Verbruggen <eddyverbruggen@gmail.com>",
   "license": {
