@@ -4,18 +4,6 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Headers/LocalNotificationsPlugin.h</key>
-		<data>
-		sUfApKjf6+eg0wI7vHALlhdBa/Q=
-		</data>
-		<key>Headers/Notification.h</key>
-		<data>
-		e3dwpxfjYEztp1uVcdqAFaMw654=
-		</data>
-		<key>Headers/NotificationManager.h</key>
-		<data>
-		4ZQ+jzRUX//WpcQiajbX0VyZASI=
-		</data>
 		<key>Info.plist</key>
 		<data>
 		58NfLV/9dYV1iAnegRu9LldtPeg=
@@ -27,18 +15,6 @@
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Headers/LocalNotificationsPlugin.h</key>
-		<data>
-		sUfApKjf6+eg0wI7vHALlhdBa/Q=
-		</data>
-		<key>Headers/Notification.h</key>
-		<data>
-		e3dwpxfjYEztp1uVcdqAFaMw654=
-		</data>
-		<key>Headers/NotificationManager.h</key>
-		<data>
-		4ZQ+jzRUX//WpcQiajbX0VyZASI=
-		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
 		MfaYZBPv79Y3Nt46R4oZTb2NwcM=

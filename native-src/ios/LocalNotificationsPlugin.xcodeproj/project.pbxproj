@@ -22,13 +22,15 @@
 
 /* Begin PBXBuildFile section */
 		2B1764D41B4567E500936DC0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1764D31B4567E500936DC0 /* UIKit.framework */; };
-		2B1764DD1B46BD0C00936DC0 /* NotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B1764DB1B46BD0C00936DC0 /* NotificationManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B1764DE1B46BD0C00936DC0 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1764DC1B46BD0C00936DC0 /* NotificationManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		2B6E191D1B454838006A7B46 /* LocalNotificationsPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E191C1B454838006A7B46 /* LocalNotificationsPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6E19231B454838006A7B46 /* LocalNotificationsPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6E19171B454838006A7B46 /* LocalNotificationsPlugin.framework */; };
-		2B6E192A1B454838006A7B46 /* LocalNotificationsPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19291B454838006A7B46 /* LocalNotificationsPluginTests.m */; };
-		2B6E19351B45486B006A7B46 /* Notification.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E19331B45486A006A7B46 /* Notification.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B6E19361B45486B006A7B46 /* Notification.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19341B45486A006A7B46 /* Notification.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A325E9471C45871900C9F16B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A325E9411C45871900C9F16B /* Info.plist */; };
+		A325E9481C45871900C9F16B /* LocalNotificationsPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9421C45871900C9F16B /* LocalNotificationsPlugin.h */; };
+		A325E9491C45871900C9F16B /* Notification.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9431C45871900C9F16B /* Notification.h */; };
+		A325E94A1C45871900C9F16B /* Notification.m in Sources */ = {isa = PBXBuildFile; fileRef = A325E9441C45871900C9F16B /* Notification.m */; };
+		A325E94B1C45871900C9F16B /* NotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9451C45871900C9F16B /* NotificationManager.h */; };
+		A325E94C1C45871900C9F16B /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A325E9461C45871900C9F16B /* NotificationManager.m */; };
+		A325E9501C45872300C9F16B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A325E94E1C45872300C9F16B /* Info.plist */; };
+		A325E9511C45872300C9F16B /* LocalNotificationsPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A325E94F1C45872300C9F16B /* LocalNotificationsPluginTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,16 +45,16 @@
 
 /* Begin PBXFileReference section */
 		2B1764D31B4567E500936DC0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		2B1764DB1B46BD0C00936DC0 /* NotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
-		2B1764DC1B46BD0C00936DC0 /* NotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
 		2B6E19171B454838006A7B46 /* LocalNotificationsPlugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalNotificationsPlugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B6E191B1B454838006A7B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2B6E191C1B454838006A7B46 /* LocalNotificationsPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocalNotificationsPlugin.h; sourceTree = "<group>"; };
 		2B6E19221B454838006A7B46 /* LocalNotificationsPlugin.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalNotificationsPlugin.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B6E19281B454838006A7B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2B6E19291B454838006A7B46 /* LocalNotificationsPluginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocalNotificationsPluginTests.m; sourceTree = "<group>"; };
-		2B6E19331B45486A006A7B46 /* Notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notification.h; sourceTree = "<group>"; };
-		2B6E19341B45486A006A7B46 /* Notification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notification.m; sourceTree = "<group>"; };
+		A325E9411C45871900C9F16B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A325E9421C45871900C9F16B /* LocalNotificationsPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationsPlugin.h; sourceTree = "<group>"; };
+		A325E9431C45871900C9F16B /* Notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notification.h; sourceTree = "<group>"; };
+		A325E9441C45871900C9F16B /* Notification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notification.m; sourceTree = "<group>"; };
+		A325E9451C45871900C9F16B /* NotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
+		A325E9461C45871900C9F16B /* NotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
+		A325E94E1C45872300C9F16B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A325E94F1C45872300C9F16B /* LocalNotificationsPluginTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalNotificationsPluginTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,9 +80,9 @@
 		2B6E190D1B454838006A7B46 = {
 			isa = PBXGroup;
 			children = (
+				A325E94D1C45872300C9F16B /* LocalNotificationsPluginTests */,
+				A325E9401C45871900C9F16B /* LocalNotificationsPlugin */,
 				2B1764D31B4567E500936DC0 /* UIKit.framework */,
-				2B6E19191B454838006A7B46 /* LocalNotificationsPlugin */,
-				2B6E19261B454838006A7B46 /* LocalNotificationsPluginTests */,
 				2B6E19181B454838006A7B46 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -94,44 +96,26 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2B6E19191B454838006A7B46 /* LocalNotificationsPlugin */ = {
+		A325E9401C45871900C9F16B /* LocalNotificationsPlugin */ = {
 			isa = PBXGroup;
 			children = (
-				2B6E191C1B454838006A7B46 /* LocalNotificationsPlugin.h */,
-				2B6E19331B45486A006A7B46 /* Notification.h */,
-				2B6E19341B45486A006A7B46 /* Notification.m */,
-				2B6E191A1B454838006A7B46 /* Supporting Files */,
-				2B1764DB1B46BD0C00936DC0 /* NotificationManager.h */,
-				2B1764DC1B46BD0C00936DC0 /* NotificationManager.m */,
+				A325E9411C45871900C9F16B /* Info.plist */,
+				A325E9421C45871900C9F16B /* LocalNotificationsPlugin.h */,
+				A325E9431C45871900C9F16B /* Notification.h */,
+				A325E9441C45871900C9F16B /* Notification.m */,
+				A325E9451C45871900C9F16B /* NotificationManager.h */,
+				A325E9461C45871900C9F16B /* NotificationManager.m */,
 			);
-			name = LocalNotificationsPlugin;
-			path = PushPlugin;
+			path = LocalNotificationsPlugin;
 			sourceTree = "<group>";
 		};
-		2B6E191A1B454838006A7B46 /* Supporting Files */ = {
+		A325E94D1C45872300C9F16B /* LocalNotificationsPluginTests */ = {
 			isa = PBXGroup;
 			children = (
-				2B6E191B1B454838006A7B46 /* Info.plist */,
+				A325E94E1C45872300C9F16B /* Info.plist */,
+				A325E94F1C45872300C9F16B /* LocalNotificationsPluginTests.m */,
 			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		2B6E19261B454838006A7B46 /* LocalNotificationsPluginTests */ = {
-			isa = PBXGroup;
-			children = (
-				2B6E19291B454838006A7B46 /* LocalNotificationsPluginTests.m */,
-				2B6E19271B454838006A7B46 /* Supporting Files */,
-			);
-			name = LocalNotificationsPluginTests;
-			path = PushPluginTests;
-			sourceTree = "<group>";
-		};
-		2B6E19271B454838006A7B46 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				2B6E19281B454838006A7B46 /* Info.plist */,
-			);
-			name = "Supporting Files";
+			path = LocalNotificationsPluginTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,9 +125,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6E19351B45486B006A7B46 /* Notification.h in Headers */,
-				2B6E191D1B454838006A7B46 /* LocalNotificationsPlugin.h in Headers */,
-				2B1764DD1B46BD0C00936DC0 /* NotificationManager.h in Headers */,
+				A325E94B1C45871900C9F16B /* NotificationManager.h in Headers */,
+				A325E9481C45871900C9F16B /* LocalNotificationsPlugin.h in Headers */,
+				A325E9491C45871900C9F16B /* Notification.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,8 +176,8 @@
 		2B6E190E1B454838006A7B46 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
-				ORGANIZATIONNAME = BackendServTestUser;
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = Telerik;
 				TargetAttributes = {
 					2B6E19161B454838006A7B46 = {
 						CreatedOnToolsVersion = 6.2;
@@ -230,6 +214,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A325E9471C45871900C9F16B /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +222,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A325E9501C45872300C9F16B /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,8 +249,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6E19361B45486B006A7B46 /* Notification.m in Sources */,
-				2B1764DE1B46BD0C00936DC0 /* NotificationManager.m in Sources */,
+				A325E94C1C45871900C9F16B /* NotificationManager.m in Sources */,
+				A325E94A1C45871900C9F16B /* Notification.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,7 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6E192A1B454838006A7B46 /* LocalNotificationsPluginTests.m in Sources */,
+				A325E9511C45872300C9F16B /* LocalNotificationsPluginTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +294,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -378,11 +365,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = PushPlugin/Info.plist;
+				INFOPLIST_FILE = LocalNotificationsPlugin/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.telerik.localnotifications.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = LocalNotificationsPlugin;
 				SKIP_INSTALL = YES;
 			};
@@ -395,11 +383,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = PushPlugin/Info.plist;
+				INFOPLIST_FILE = LocalNotificationsPlugin/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.telerik.localnotifications.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = LocalNotificationsPlugin;
 				SKIP_INSTALL = YES;
 			};
@@ -416,8 +405,9 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = PushPluginTests/Info.plist;
+				INFOPLIST_FILE = LocalNotificationsPlugin/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.telerik.localnotifications.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = LocalNotificationsPlugin;
 			};
 			name = Debug;
@@ -429,8 +419,9 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = PushPluginTests/Info.plist;
+				INFOPLIST_FILE = LocalNotificationsPlugin/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.telerik.localnotifications.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = LocalNotificationsPlugin;
 			};
 			name = Release;
