@@ -1,4 +1,4 @@
-#import "Push.h"
+#import "Notification.h"
 #import <UIKit/UIKit.h>
 #import <UIKit/UIUserNotificationSettings.h>
 #import <objc/runtime.h>
@@ -6,11 +6,9 @@
 const NSString * badgeKey = @"badge";
 const NSString * soundKey = @"sound";
 const NSString * alertKey = @"alert";
-const NSString * areNotificationsEnabledEventName = @"areNotificationsEnabled";
-const NSString * didUnregisterEventName = @"didUnregister";
-const NSString * didRegisterEventName = @"didRegisterForRemoteNotificationsWithDeviceToken";
+//const NSString * didRegisterEventName = @"didRegisterForRemoteNotificationsWithDeviceToken";
 const NSString * didRegisterUserNotificationsEventName = @"didRegisterUserNotificationSettings2";
-const NSString * didFailToRegisterEventName = @"didFailToRegisterForRemoteNotificationsWithError";
+//const NSString * didFailToRegisterEventName = @"didFailToRegisterForRemoteNotificationsWithError";
 const NSString * notificationReceivedEventName = @"notificationReceived";
 const NSString * setBadgeNumberEventName = @"setApplicationIconBadgeNumber";
 // HUH!? Kan deze plugin ook al local notifications? Test in een project met de {N} push plugin!!
@@ -20,43 +18,19 @@ const NSString * failToRegisterUserNotificationSettingsEventName = @"failToRegis
 
 static char launchNotificationKey;
 
-@implementation Push
+@implementation Notification
 
 @synthesize notificationMessage;
 @synthesize isInline;
 
 + (instancetype)sharedInstance
 {
-    static Push *sharedInstance = nil;
+    static Notification *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [[Push alloc] init];
+        sharedInstance = [[Notification alloc] init];
     });
     return sharedInstance;
-}
-
-- (void)areNotificationsEnabled
-{
-    BOOL registered;
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-        registered = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
-    } else {
-        UIRemoteNotificationType types = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-        registered = types != UIRemoteNotificationTypeNone;
-    }
-#else
-    UIRemoteNotificationType types = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-    registered = types != UIRemoteNotificationTypeNone;
-#endif
-    NSString * booleanString = (registered) ? @"true" : @"false";
-    [self success:areNotificationsEnabledEventName WithMessage:booleanString];
-}
-
-- (void)unregister
-{
-    [[UIApplication sharedApplication] unregisterForRemoteNotifications];
-    [self success:didUnregisterEventName WithMessage:@"Success"];
 }
 
 -(void)register:(NSMutableDictionary *)options
@@ -79,7 +53,7 @@ static char launchNotificationKey;
 #endif
     
     if (notificationTypes == UIRemoteNotificationTypeNone)
-        NSLog(@"PushPlugin.register: Push notification type is set to none");
+        NSLog(@"LocalNotificationsPlugin.register: Notification type is set to none");
     
     isInline = NO;
     
@@ -160,7 +134,7 @@ static char launchNotificationKey;
 }
 
 
-
+/*
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     NSMutableDictionary *results = [NSMutableDictionary dictionary];
@@ -214,14 +188,13 @@ static char launchNotificationKey;
 {
     [self fail:didFailToRegisterEventName WithMessage:@"" withError:error];
 }
+ */
 
 // NOTE: to update the framework in the demo app, copy the built fwk to the /lib/iOS folder, then simply run the project
 - (void)notificationReceived
 {
-    NSLog(@"----- notificationReceived, has notificationMessage?");
     if (self.notificationMessage)
     {
-       NSLog(@"----- notificationReceived, has notificationMessage!");
        NSMutableString *jsonStr = [NSMutableString stringWithString:@"{"];
         
         if (self.notificationMessage.userInfo != nil) {
@@ -236,9 +209,13 @@ static char launchNotificationKey;
         }
         
         [jsonStr appendString:@"}"];
-        
+        NSLog(@"----- notificationReceived, has notificationMessage 3: %@", jsonStr);
         [self success:notificationReceivedEventName WithMessage:jsonStr];
         self.notificationMessage = nil;
+    }
+    if (self.launchNotification)
+    {
+        NSLog(@"----- notificationReceived, has launchNotification!");
     }
 }
 
@@ -367,9 +344,10 @@ static char launchNotificationKey;
 #endif
     [self success:didRegisterUserNotificationSettingsEventName WithMessage:[NSString stringWithFormat:@"%@", @"user notifications registered!"]];
 
-    [self checkPendingNotification];
+//    [self checkPendingNotification];
 }
 
+/*
 -(void)checkPendingNotification {
     if (notificationMessage) {
         NSLog(@"--- in checkPendingNotification, notificationMessage");
@@ -382,6 +360,7 @@ static char launchNotificationKey;
         NSLog(@"--- in checkPendingNotification, nothing");
     }
 }
+*/
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
 - (BOOL)createNotificationAction:(NSDictionary *)category

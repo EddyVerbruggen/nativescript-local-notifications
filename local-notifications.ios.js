@@ -1,21 +1,43 @@
 var LocalNotifications = require("./local-notifications-common");
 var application = require("application"); // TODO unused
 
+LocalNotifications._addObserver = function (eventName, callback) {
+  return NSNotificationCenter.defaultCenter().addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue(), callback);
+};
+
 var pushHandler,
     pushManager;
 
+var pendingReceivedNotifications = [];
+var receivedNotificationCallback = null;
+
 (function () {
-  if (!pushHandler) {
-    pushHandler = Push.alloc().init();
-    pushManager = PushManager.alloc().init();
-  }
+  // grab 'em here, store em in JS, and give them to the callback when addOnMessageReceivedCallback is wired
+  LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function (result) {
+    var notificationDetails = result.userInfo.objectForKey('message');
+    console.log("------- notificationReceivedObserver: " + notificationDetails);
+    if (receivedNotificationCallback != null) {
+      receivedNotificationCallback(notificationDetails);
+    } else {
+      pendingReceivedNotifications.push(notificationDetails);
+    }
+  });
+
+  pushHandler = Notification.alloc().init();
+  pushManager = NotificationManager.alloc().init();
 })();
 
-// TODO pass the onNotificationReceived callback to this method as well
-LocalNotifications.register = function (arg) {
+LocalNotifications.addOnMessageReceivedCallback = function (callback) {
   return new Promise(function (resolve, reject) {
     try {
+      receivedNotificationCallback = callback;
+      for (var p in pendingReceivedNotifications) {
+        callback(pendingReceivedNotifications[p]);
+      }
+      pendingReceivedNotifications = [];
 
+
+      // TODO do we need this for permission stuff?
       LocalNotifications.didRegisterUserNotificationSettingsObserver = LocalNotifications._addObserver("didRegisterUserNotificationSettings", function (result) {
         //NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.notificationReceivedObserver);
         //LocalNotifications.notificationReceivedObserver = undefined;
@@ -23,23 +45,17 @@ LocalNotifications.register = function (arg) {
         console.log("------- received didRegisterUserNotificationSettings in JS: " + result);
         // invoke the callback here
         //success(token);
+        callback(result);
       });
 
-      LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function (result) {
-        //NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.notificationReceivedObserver);
-        //LocalNotifications.notificationReceivedObserver = undefined;
-        var notificationDetails = result.userInfo.objectForKey('message');
-        console.log("------- received notificationDetails in JS: " + notificationDetails);
-        // invoke the callback here
-        //success(token);
-      });
+      //setTimeout(function() {
+      //  console.log("---- checking pending notification");
+      //  pushHandler.checkPendingNotification();
+      //}, 500);
 
-      pushHandler.registerUserNotificationSettings({foo: 'bar'});
-
-      // call registerUserNotificationSettings
-      //resolve(LocalNotifications._hasPermission());
+      resolve(true);
     } catch (ex) {
-      console.log("Error in LocalNotifications.hasPermission: " + ex);
+      console.log("Error in LocalNotifications.addOnMessageReceivedCallback: " + ex);
       reject(ex);
     }
   });
@@ -80,22 +96,14 @@ LocalNotifications._requestPermission = function () {
   UIApplication.sharedApplication().registerUserNotificationSettings(settings);
 };
 
-LocalNotifications._addObserver = function (eventName, callback) {
-  return NSNotificationCenter.defaultCenter().addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue(), callback);
-};
-
 LocalNotifications._schedulePendingNotifications = function () {
 
   var pending = LocalNotifications.pendingNotifications;
   for (var n in pending) {
-    // TODO this merge is untested, so check the log:
-    console.log("---- options before merge: " + JSON.stringify(pending[n]));
     var options = LocalNotifications.merge(pending[n], LocalNotifications.defaults);
-    console.log("---- options after merge: " + JSON.stringify(options));
 
     var notification = UILocalNotification.alloc().init();
-
-    notification.fireDate = options.at ? options.at.getTime() : new Date().getTime();
+    notification.fireDate = options.at ? options.at : new Date();
     notification.alertTitle = options.title;
     notification.alertBody = options.body;
     notification.timeZone = NSTimeZone.defaultTimeZone();

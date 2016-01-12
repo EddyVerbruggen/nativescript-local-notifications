@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIApplication.h>
 
-@interface Push : NSObject <UIApplicationDelegate>
+@interface Notification : NSObject <UIApplicationDelegate>
 {
     UILocalNotification *notificationMessage;
     BOOL    isInline;
@@ -14,14 +14,11 @@
 + (instancetype)sharedInstance;
 
 -(void)register:(NSMutableDictionary *)options;
--(void)checkPendingNotification;
--(void)unregister;
--(void)areNotificationsEnabled;
 -(void)registerUserNotificationSettings:(NSDictionary*)options;
 -(void)setApplicationIconBadgeNumber:(NSMutableDictionary *)options;
 -(void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
--(void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
--(void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
+//-(void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
+//-(void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 -(void)notificationReceived;
 -(void)success:(NSString *)eventName WithMessage:(NSString *)message;
 -(void)success:(NSString *)eventName WithDictionary:(NSMutableDictionary *)userInfo;

@@ -5,7 +5,7 @@ LocalNotifications.defaults = {
   title: '',
   body: '',
   ongoing: false,
-  autoclear: true,
+  autoclear: true, // TODO on iOS this doesn't yet clear the badge.. needs to be set to '0' somewhere.. I'm afraid it needs to be in native code
   badge: 0
 };
 

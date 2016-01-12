@@ -7,28 +7,28 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		2B6E19381B454A67006A7B46 /* PushPluginLibrary */ = {
+		2B6E19381B454A67006A7B46 /* LocalNotificationsPluginLibrary */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 2B6E19391B454A68006A7B46 /* Build configuration list for PBXAggregateTarget "PushPluginLibrary" */;
+			buildConfigurationList = 2B6E19391B454A68006A7B46 /* Build configuration list for PBXAggregateTarget "LocalNotificationsPluginLibrary" */;
 			buildPhases = (
 				2B1764CF1B454AF200936DC0 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = PushPluginLibrary;
+			name = LocalNotificationsPluginLibrary;
 			productName = PushPluginLibrary;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
 		2B1764D41B4567E500936DC0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1764D31B4567E500936DC0 /* UIKit.framework */; };
-		2B1764DD1B46BD0C00936DC0 /* PushManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B1764DB1B46BD0C00936DC0 /* PushManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B1764DE1B46BD0C00936DC0 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1764DC1B46BD0C00936DC0 /* PushManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		2B6E191D1B454838006A7B46 /* PushPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E191C1B454838006A7B46 /* PushPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B6E19231B454838006A7B46 /* PushPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6E19171B454838006A7B46 /* PushPlugin.framework */; };
-		2B6E192A1B454838006A7B46 /* PushPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19291B454838006A7B46 /* PushPluginTests.m */; };
-		2B6E19351B45486B006A7B46 /* Push.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E19331B45486A006A7B46 /* Push.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B6E19361B45486B006A7B46 /* Push.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19341B45486A006A7B46 /* Push.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		2B1764DD1B46BD0C00936DC0 /* NotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B1764DB1B46BD0C00936DC0 /* NotificationManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B1764DE1B46BD0C00936DC0 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1764DC1B46BD0C00936DC0 /* NotificationManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		2B6E191D1B454838006A7B46 /* LocalNotificationsPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E191C1B454838006A7B46 /* LocalNotificationsPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6E19231B454838006A7B46 /* LocalNotificationsPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6E19171B454838006A7B46 /* LocalNotificationsPlugin.framework */; };
+		2B6E192A1B454838006A7B46 /* LocalNotificationsPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19291B454838006A7B46 /* LocalNotificationsPluginTests.m */; };
+		2B6E19351B45486B006A7B46 /* Notification.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6E19331B45486A006A7B46 /* Notification.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6E19361B45486B006A7B46 /* Notification.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E19341B45486A006A7B46 /* Notification.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,16 +43,16 @@
 
 /* Begin PBXFileReference section */
 		2B1764D31B4567E500936DC0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		2B1764DB1B46BD0C00936DC0 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
-		2B1764DC1B46BD0C00936DC0 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
-		2B6E19171B454838006A7B46 /* PushPlugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PushPlugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B1764DB1B46BD0C00936DC0 /* NotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
+		2B1764DC1B46BD0C00936DC0 /* NotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
+		2B6E19171B454838006A7B46 /* LocalNotificationsPlugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalNotificationsPlugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B6E191B1B454838006A7B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2B6E191C1B454838006A7B46 /* PushPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PushPlugin.h; sourceTree = "<group>"; };
-		2B6E19221B454838006A7B46 /* PushPluginTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PushPluginTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6E191C1B454838006A7B46 /* LocalNotificationsPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocalNotificationsPlugin.h; sourceTree = "<group>"; };
+		2B6E19221B454838006A7B46 /* LocalNotificationsPlugin.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalNotificationsPlugin.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B6E19281B454838006A7B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2B6E19291B454838006A7B46 /* PushPluginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PushPluginTests.m; sourceTree = "<group>"; };
-		2B6E19331B45486A006A7B46 /* Push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Push.h; sourceTree = "<group>"; };
-		2B6E19341B45486A006A7B46 /* Push.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Push.m; sourceTree = "<group>"; };
+		2B6E19291B454838006A7B46 /* LocalNotificationsPluginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocalNotificationsPluginTests.m; sourceTree = "<group>"; };
+		2B6E19331B45486A006A7B46 /* Notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notification.h; sourceTree = "<group>"; };
+		2B6E19341B45486A006A7B46 /* Notification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notification.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6E19231B454838006A7B46 /* PushPlugin.framework in Frameworks */,
+				2B6E19231B454838006A7B46 /* LocalNotificationsPlugin.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,8 +79,8 @@
 			isa = PBXGroup;
 			children = (
 				2B1764D31B4567E500936DC0 /* UIKit.framework */,
-				2B6E19191B454838006A7B46 /* PushPlugin */,
-				2B6E19261B454838006A7B46 /* PushPluginTests */,
+				2B6E19191B454838006A7B46 /* LocalNotificationsPlugin */,
+				2B6E19261B454838006A7B46 /* LocalNotificationsPluginTests */,
 				2B6E19181B454838006A7B46 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,22 +88,23 @@
 		2B6E19181B454838006A7B46 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2B6E19171B454838006A7B46 /* PushPlugin.framework */,
-				2B6E19221B454838006A7B46 /* PushPluginTests.xctest */,
+				2B6E19171B454838006A7B46 /* LocalNotificationsPlugin.framework */,
+				2B6E19221B454838006A7B46 /* LocalNotificationsPlugin.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2B6E19191B454838006A7B46 /* PushPlugin */ = {
+		2B6E19191B454838006A7B46 /* LocalNotificationsPlugin */ = {
 			isa = PBXGroup;
 			children = (
-				2B6E191C1B454838006A7B46 /* PushPlugin.h */,
-				2B6E19331B45486A006A7B46 /* Push.h */,
-				2B6E19341B45486A006A7B46 /* Push.m */,
+				2B6E191C1B454838006A7B46 /* LocalNotificationsPlugin.h */,
+				2B6E19331B45486A006A7B46 /* Notification.h */,
+				2B6E19341B45486A006A7B46 /* Notification.m */,
 				2B6E191A1B454838006A7B46 /* Supporting Files */,
-				2B1764DB1B46BD0C00936DC0 /* PushManager.h */,
-				2B1764DC1B46BD0C00936DC0 /* PushManager.m */,
+				2B1764DB1B46BD0C00936DC0 /* NotificationManager.h */,
+				2B1764DC1B46BD0C00936DC0 /* NotificationManager.m */,
 			);
+			name = LocalNotificationsPlugin;
 			path = PushPlugin;
 			sourceTree = "<group>";
 		};
@@ -115,12 +116,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		2B6E19261B454838006A7B46 /* PushPluginTests */ = {
+		2B6E19261B454838006A7B46 /* LocalNotificationsPluginTests */ = {
 			isa = PBXGroup;
 			children = (
-				2B6E19291B454838006A7B46 /* PushPluginTests.m */,
+				2B6E19291B454838006A7B46 /* LocalNotificationsPluginTests.m */,
 				2B6E19271B454838006A7B46 /* Supporting Files */,
 			);
+			name = LocalNotificationsPluginTests;
 			path = PushPluginTests;
 			sourceTree = "<group>";
 		};
@@ -139,18 +141,18 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6E19351B45486B006A7B46 /* Push.h in Headers */,
-				2B6E191D1B454838006A7B46 /* PushPlugin.h in Headers */,
-				2B1764DD1B46BD0C00936DC0 /* PushManager.h in Headers */,
+				2B6E19351B45486B006A7B46 /* Notification.h in Headers */,
+				2B6E191D1B454838006A7B46 /* LocalNotificationsPlugin.h in Headers */,
+				2B1764DD1B46BD0C00936DC0 /* NotificationManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		2B6E19161B454838006A7B46 /* PushPlugin */ = {
+		2B6E19161B454838006A7B46 /* LocalNotificationsPlugin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B6E192D1B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPlugin" */;
+			buildConfigurationList = 2B6E192D1B454838006A7B46 /* Build configuration list for PBXNativeTarget "LocalNotificationsPlugin" */;
 			buildPhases = (
 				2B6E19121B454838006A7B46 /* Sources */,
 				2B6E19131B454838006A7B46 /* Frameworks */,
@@ -161,14 +163,14 @@
 			);
 			dependencies = (
 			);
-			name = PushPlugin;
+			name = LocalNotificationsPlugin;
 			productName = PushPlugin;
-			productReference = 2B6E19171B454838006A7B46 /* PushPlugin.framework */;
+			productReference = 2B6E19171B454838006A7B46 /* LocalNotificationsPlugin.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		2B6E19211B454838006A7B46 /* PushPluginTests */ = {
+		2B6E19211B454838006A7B46 /* LocalNotificationsPluginTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B6E19301B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPluginTests" */;
+			buildConfigurationList = 2B6E19301B454838006A7B46 /* Build configuration list for PBXNativeTarget "LocalNotificationsPluginTests" */;
 			buildPhases = (
 				2B6E191E1B454838006A7B46 /* Sources */,
 				2B6E191F1B454838006A7B46 /* Frameworks */,
@@ -179,9 +181,9 @@
 			dependencies = (
 				2B6E19251B454838006A7B46 /* PBXTargetDependency */,
 			);
-			name = PushPluginTests;
+			name = LocalNotificationsPluginTests;
 			productName = PushPluginTests;
-			productReference = 2B6E19221B454838006A7B46 /* PushPluginTests.xctest */;
+			productReference = 2B6E19221B454838006A7B46 /* LocalNotificationsPlugin.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -204,7 +206,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2B6E19111B454838006A7B46 /* Build configuration list for PBXProject "PushPlugin" */;
+			buildConfigurationList = 2B6E19111B454838006A7B46 /* Build configuration list for PBXProject "LocalNotificationsPlugin" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -216,9 +218,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2B6E19161B454838006A7B46 /* PushPlugin */,
-				2B6E19211B454838006A7B46 /* PushPluginTests */,
-				2B6E19381B454A67006A7B46 /* PushPluginLibrary */,
+				2B6E19161B454838006A7B46 /* LocalNotificationsPlugin */,
+				2B6E19211B454838006A7B46 /* LocalNotificationsPluginTests */,
+				2B6E19381B454A67006A7B46 /* LocalNotificationsPluginLibrary */,
 			);
 		};
 /* End PBXProject section */
@@ -261,8 +263,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6E19361B45486B006A7B46 /* Push.m in Sources */,
-				2B1764DE1B46BD0C00936DC0 /* PushManager.m in Sources */,
+				2B6E19361B45486B006A7B46 /* Notification.m in Sources */,
+				2B1764DE1B46BD0C00936DC0 /* NotificationManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,7 +272,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6E192A1B454838006A7B46 /* PushPluginTests.m in Sources */,
+				2B6E192A1B454838006A7B46 /* LocalNotificationsPluginTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +281,7 @@
 /* Begin PBXTargetDependency section */
 		2B6E19251B454838006A7B46 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2B6E19161B454838006A7B46 /* PushPlugin */;
+			target = 2B6E19161B454838006A7B46 /* LocalNotificationsPlugin */;
 			targetProxy = 2B6E19241B454838006A7B46 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -320,7 +322,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -359,7 +361,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -381,7 +383,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = LocalNotificationsPlugin;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -398,7 +400,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = LocalNotificationsPlugin;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -416,7 +418,7 @@
 				);
 				INFOPLIST_FILE = PushPluginTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = LocalNotificationsPlugin;
 			};
 			name = Debug;
 		};
@@ -429,28 +431,28 @@
 				);
 				INFOPLIST_FILE = PushPluginTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = LocalNotificationsPlugin;
 			};
 			name = Release;
 		};
 		2B6E193A1B454A68006A7B46 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = LocalNotificationsPlugin;
 			};
 			name = Debug;
 		};
 		2B6E193B1B454A68006A7B46 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = LocalNotificationsPlugin;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2B6E19111B454838006A7B46 /* Build configuration list for PBXProject "PushPlugin" */ = {
+		2B6E19111B454838006A7B46 /* Build configuration list for PBXProject "LocalNotificationsPlugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B6E192B1B454838006A7B46 /* Debug */,
@@ -459,7 +461,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B6E192D1B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPlugin" */ = {
+		2B6E192D1B454838006A7B46 /* Build configuration list for PBXNativeTarget "LocalNotificationsPlugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B6E192E1B454838006A7B46 /* Debug */,
@@ -468,7 +470,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B6E19301B454838006A7B46 /* Build configuration list for PBXNativeTarget "PushPluginTests" */ = {
+		2B6E19301B454838006A7B46 /* Build configuration list for PBXNativeTarget "LocalNotificationsPluginTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B6E19311B454838006A7B46 /* Debug */,
@@ -477,7 +479,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B6E19391B454A68006A7B46 /* Build configuration list for PBXAggregateTarget "PushPluginLibrary" */ = {
+		2B6E19391B454A68006A7B46 /* Build configuration list for PBXAggregateTarget "LocalNotificationsPluginLibrary" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B6E193A1B454A68006A7B46 /* Debug */,

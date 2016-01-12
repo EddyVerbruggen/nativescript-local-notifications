@@ -4,44 +4,44 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Headers/Push.h</key>
+		<key>Headers/LocalNotificationsPlugin.h</key>
 		<data>
-		0D0kT6nNwRkXE2M0/rUh+vV42/o=
+		sUfApKjf6+eg0wI7vHALlhdBa/Q=
 		</data>
-		<key>Headers/PushManager.h</key>
+		<key>Headers/Notification.h</key>
 		<data>
-		d95Fh/vTDm2MkfSPt5nD0zMZWn0=
+		e3dwpxfjYEztp1uVcdqAFaMw654=
 		</data>
-		<key>Headers/PushPlugin.h</key>
+		<key>Headers/NotificationManager.h</key>
 		<data>
-		LySoYEsAzpK2asnf2zLlenP8k0U=
+		4ZQ+jzRUX//WpcQiajbX0VyZASI=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		5frGE0eS8uBwHMVKc9WSp5IFSH0=
+		58NfLV/9dYV1iAnegRu9LldtPeg=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
-		q4trkXWUceyVi1oTw69Ea7/hOw8=
+		MfaYZBPv79Y3Nt46R4oZTb2NwcM=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Headers/Push.h</key>
+		<key>Headers/LocalNotificationsPlugin.h</key>
 		<data>
-		0D0kT6nNwRkXE2M0/rUh+vV42/o=
+		sUfApKjf6+eg0wI7vHALlhdBa/Q=
 		</data>
-		<key>Headers/PushManager.h</key>
+		<key>Headers/Notification.h</key>
 		<data>
-		d95Fh/vTDm2MkfSPt5nD0zMZWn0=
+		e3dwpxfjYEztp1uVcdqAFaMw654=
 		</data>
-		<key>Headers/PushPlugin.h</key>
+		<key>Headers/NotificationManager.h</key>
 		<data>
-		LySoYEsAzpK2asnf2zLlenP8k0U=
+		4ZQ+jzRUX//WpcQiajbX0VyZASI=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
-		q4trkXWUceyVi1oTw69Ea7/hOw8=
+		MfaYZBPv79Y3Nt46R4oZTb2NwcM=
 		</data>
 	</dict>
 	<key>rules</key>

@@ -1,19 +1,11 @@
-//
-//  PushPluginTests.m
-//  PushPluginTests
-//
-//  Created by BackendServTestUser on 7/2/15.
-//  Copyright (c) 2015 BackendServTestUser. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-@interface PushPluginTests : XCTestCase
+@interface LocalNotificationsPluginTests : XCTestCase
 
 @end
 
-@implementation PushPluginTests
+@implementation LocalNotificationsPluginTests
 
 - (void)setUp {
     [super setUp];

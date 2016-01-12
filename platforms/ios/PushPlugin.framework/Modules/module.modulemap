@@ -1,6 +1,0 @@
-framework module PushPlugin {
-  umbrella header "PushPlugin.h"
-
-  export *
-  module * { export * }
-}

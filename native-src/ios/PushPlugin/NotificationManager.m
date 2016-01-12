@@ -1,15 +1,15 @@
-#import "PushManager.h"
+#import "NotificationManager.h"
 #import <UIKit/UIApplication.h>
+#import <UIKit/UILocalNotification.h>
 #import <objc/runtime.h>
-#import "Push.h"
 
-@implementation PushManager
+@implementation NotificationManager
 /*__attribute__((constructor))
-void myFunction() {
-    @autoreleasepool {
-        NSLog(@"stuff happened early");
-    }
-}*/
+ void myFunction() {
+ @autoreleasepool {
+ NSLog(@"stuff happened early");
+ }
+ }*/
 
 static IMP didRegisterOriginalMethod = NULL;
 static IMP didRegisterUserOriginalMethod = NULL;
@@ -22,28 +22,46 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
 
 + (void)load {
     NSLog(@"----- load");
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
 
-        NSLog(@"---- UIApplicationDidFinishLaunchingNotification start");
-
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        
+        NSLog(@"---- UIApplicationDidBecomeActiveNotification start");
+        
         UIApplication *app = [UIApplication sharedApplication];
         id<UIApplicationDelegate> appDelegate = app.delegate;
         
+        [NotificationManager myApplicationDidBecomeActive:app];
+        NSLog(@"---- UIApplicationDidBecomeActiveNotification end");
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        
+        NSLog(@"---- UIApplicationDidFinishLaunchingNotification start");
+        
+        UIApplication *app = [UIApplication sharedApplication];
+        id<UIApplicationDelegate> appDelegate = app.delegate;
+        
+//        [NotificationManager myApplicationDidBecomeActive:app];
+        
         // didBecomeActive swizzle
-        Method didBecomeActiveMethod = class_getInstanceMethod([PushManager class], @selector(my_applicationDidBecomeActive:));
+        /*
+        Method didBecomeActiveMethod = class_getInstanceMethod([NotificationManager class], @selector(myApplicationDidBecomeActive:));
         IMP didBecomeActiveImp = method_getImplementation(didBecomeActiveMethod);
         const char* didBecomeActiveTypes = method_getTypeEncoding(didBecomeActiveMethod);
         
-        Method didBecomeActiveOriginal = class_getInstanceMethod(appDelegate.class, @selector(applicationDidBecomeActive:));
+        Method didBecomeActiveOriginal = class_getInstanceMethod([UIApplication class], @selector(applicationDidBecomeActive:));
         if (didBecomeActiveOriginal) {
+            NSLog(@"---- didBecomeActiveOriginal found");
             didBecomeActiveOriginalMethod = method_getImplementation(didBecomeActiveOriginal);
             method_exchangeImplementations(didBecomeActiveOriginal, didBecomeActiveMethod);
         } else {
+            NSLog(@"---- didBecomeActiveOriginal NOT found");
             class_addMethod(appDelegate.class, @selector(applicationDidBecomeActive:), didBecomeActiveImp, didBecomeActiveTypes);
         }
+         */
         
         // didRegisterUserNotificationSettings swizzle
-        Method didRegisterUserMethod = class_getInstanceMethod([PushManager class], @selector(my_application:didRegisterUserNotificationSettings:));
+        Method didRegisterUserMethod = class_getInstanceMethod([NotificationManager class], @selector(my_application:didRegisterUserNotificationSettings:));
         IMP didRegisterUserMethodImp = method_getImplementation(didRegisterUserMethod);
         const char* didRegisterUserTypes = method_getTypeEncoding(didRegisterUserMethod);
         
@@ -55,6 +73,7 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
             class_addMethod(appDelegate.class, @selector(application:didRegisterUserNotificationSettings:), didRegisterUserMethodImp, didRegisterUserTypes);
         }
         
+        /*
         // didRegisterForRemoteNotificationsWithDeviceToken swizzle
         Method didRegisterMethod = class_getInstanceMethod([PushManager class], @selector(my_application:didRegisterForRemoteNotificationsWithDeviceToken:));
         IMP didRegisterMethodImp = method_getImplementation(didRegisterMethod);
@@ -93,9 +112,10 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
         } else {
             class_addMethod(appDelegate.class, @selector(application:didReceiveRemoteNotification:), didReceiveMethodImp, didReceiveTypes);
         }
+        */
         
         // didReceiveLocalNotification swizzle
-        Method didReceiveLocalMethod = class_getInstanceMethod([PushManager class], @selector(my_application:didReceiveLocalNotification:));
+        Method didReceiveLocalMethod = class_getInstanceMethod([NotificationManager class], @selector(my_application:didReceiveLocalNotification:));
         IMP didReceiveLocalMethodImp = method_getImplementation(didReceiveLocalMethod);
         const char* didReceiveLocalTypes = method_getTypeEncoding(didReceiveLocalMethod);
         
@@ -106,8 +126,9 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
         } else {
             class_addMethod(appDelegate.class, @selector(application:didReceiveLocalNotification:), didReceiveLocalMethodImp, didReceiveLocalTypes);
         }
-
-    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+        
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+        /*
         // handleActionWithIdentifier remote swizzle
         Method handleActionWithIdentifierRemoteMethod = class_getInstanceMethod([PushManager class], @selector(my_application:handleActionWithIdentifier:forRemoteNotification:completionHandler:));
         IMP handleActionWithIdentifierMethodRemoteImp = method_getImplementation(handleActionWithIdentifierRemoteMethod);
@@ -120,9 +141,10 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
         } else {
             class_addMethod(appDelegate.class, @selector(application:handleActionWithIdentifier:forRemoteNotification:completionHandler:), handleActionWithIdentifierMethodRemoteImp, handleActionWithIdentifierTypesRemote);
         }
-
+         */
+        
         // handleActionWithIdentifier local swizzle
-        Method handleActionWithIdentifierLocalMethod = class_getInstanceMethod([PushManager class], @selector(my_application:handleActionWithIdentifier:forLocalNotification:completionHandler:));
+        Method handleActionWithIdentifierLocalMethod = class_getInstanceMethod([NotificationManager class], @selector(my_application:handleActionWithIdentifier:forLocalNotification:completionHandler:));
         IMP handleActionWithIdentifierMethodLocalImp = method_getImplementation(handleActionWithIdentifierLocalMethod);
         const char* handleActionWithIdentifierTypesLocal = method_getTypeEncoding(handleActionWithIdentifierLocalMethod);
         
@@ -133,8 +155,8 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
         } else {
             class_addMethod(appDelegate.class, @selector(application:handleActionWithIdentifier:forLocalNotification:completionHandler:), handleActionWithIdentifierMethodLocalImp, handleActionWithIdentifierTypesLocal);
         }
-    #endif
-
+#endif
+        
         NSLog(@"---- UIApplicationDidFinishLaunchingNotification end");
     }];
     
@@ -142,8 +164,9 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
 
 -(id)init
 {
-    NSLog(@"---- pushmanager init");
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createNotificationChecker:)
+    NSLog(@"---- localnotificationmanager init");
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(createNotificationChecker:)
                                                  name:@"UIApplicationDidFinishLaunchingNotification" object:nil];
     return self;
 }
@@ -152,30 +175,37 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
 {
     NSLog(@"---- checking for notification");
     NSLog(notification);
-   if (notification)
+    if (notification)
     {
         NSDictionary *launchOptions = [notification userInfo];
         if (launchOptions)
-            [Push sharedInstance].launchNotification = [launchOptions objectForKey: @"UIApplicationLaunchOptionsRemoteNotificationKey"];
+            [Notification sharedInstance].launchNotification = [launchOptions objectForKey: @"UIApplicationLaunchOptionsRemoteNotificationKey"];
     }
 }
 
-- (void)my_applicationDidBecomeActive:(UIApplication *)application
++ (void)myApplicationDidBecomeActive:(UIApplication *)application
 {
-    NSLog(@"---- my_applicationDidBecomeActive");
-    /*
-    if (didBecomeActiveOriginalMethod) {
-        NSLog(@"---- my_applicationDidBecomeActive, didBecomeActiveOriginalMethod");
-        void (*originalImp)(id, SEL, UIApplication *) = didBecomeActiveOriginalMethod;
-        originalImp(self, @selector(applicationDidBecomeActive:), application);
-    }
+    NSLog(@"---- myApplicationDidBecomeActive");
     application.applicationIconBadgeNumber = 0;
-    if ([Push sharedInstance].launchNotification) {
-        NSLog(@"---- my_applicationDidBecomeActive, launchNotification");
-        [Push sharedInstance].notificationMessage  = [Push sharedInstance].launchNotification;
-        [Push sharedInstance].launchNotification = nil;
-        [[Push sharedInstance] performSelectorOnMainThread:@selector(notificationReceived) withObject:[Push sharedInstance]  waitUntilDone:NO];
+    if ([Notification sharedInstance].launchNotification) {
+        NSLog(@"---- myApplicationDidBecomeActive, launchNotification");
+        [Notification sharedInstance].launchNotification = nil;
+        [[Notification sharedInstance] performSelectorOnMainThread:@selector(notificationReceived) withObject:[Notification sharedInstance] waitUntilDone:NO];
     }
+
+    /*
+     if (didBecomeActiveOriginalMethod) {
+     NSLog(@"---- myApplicationDidBecomeActive, didBecomeActiveOriginalMethod");
+     void (*originalImp)(id, SEL, UIApplication *) = didBecomeActiveOriginalMethod;
+     originalImp(self, @selector(applicationDidBecomeActive:), application);
+     }
+     application.applicationIconBadgeNumber = 0;
+     if ([Push sharedInstance].launchNotification) {
+     NSLog(@"---- myApplicationDidBecomeActive, launchNotification");
+     [Push sharedInstance].notificationMessage  = [Push sharedInstance].launchNotification;
+     [Push sharedInstance].launchNotification = nil;
+     [[Push sharedInstance] performSelectorOnMainThread:@selector(notificationReceived) withObject:[Push sharedInstance]  waitUntilDone:NO];
+     }
      */
 }
 
@@ -185,16 +215,17 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
         originalImp(self, @selector(application:didRegisterUserNotificationSettings:), application, notificationSettings);
     }
     NSLog(@"%@", notificationSettings);
-    [[Push sharedInstance] didRegisterUserNotificationSettings:notificationSettings];
+    [[Notification sharedInstance] didRegisterUserNotificationSettings:notificationSettings];
 }
 
+/*
 - (void)my_application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-   if (didRegisterOriginalMethod) {
+    if (didRegisterOriginalMethod) {
         void (*originalImp)(id, SEL, UIApplication *, NSData *) = didRegisterOriginalMethod;
         originalImp(self, @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:), application, deviceToken);
     }
     NSLog(@"%@", deviceToken);
-    [[Push sharedInstance] didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+    [[Notification sharedInstance] didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 - (void)my_application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -210,11 +241,11 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
     }
     
     if (appState == UIApplicationStateActive) {
-        [Push sharedInstance].notificationMessage = userInfo;
-        [Push sharedInstance].isInline = YES;
-        [[Push sharedInstance] notificationReceived];        
+        [Notification sharedInstance].notificationMessage = userInfo;
+        [Notification sharedInstance].isInline = YES;
+        [[Notification sharedInstance] notificationReceived];
     } else {
-        [Push sharedInstance].launchNotification = userInfo;
+        [Notification sharedInstance].launchNotification = userInfo;
     }
 }
 
@@ -224,7 +255,7 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
         originalImp(self, @selector(application:didFailToRegisterForRemoteNotificationsWithError:), application, error);
     }
     NSLog(@"--- Error (didFailToRegisterForRemoteNotificationsWithError)");
-    [[Push sharedInstance] didFailToRegisterForRemoteNotificationsWithError:error];
+    [[Notification sharedInstance] didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
 - (void)my_application:(UIApplication *) application handleActionWithIdentifier: (NSString *) identifier forRemoteNotification: (NSDictionary *) notification completionHandler: (void (^)()) completionHandler {
@@ -235,12 +266,12 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
     
     [mutableNotification setObject:identifier forKey:@"identifier"];
     if (application.applicationState == UIApplicationStateActive) {
-        [Push sharedInstance].notificationMessage = mutableNotification;
-        [Push sharedInstance].isInline = YES;
-        [[Push sharedInstance] notificationReceived];
+        [Notification sharedInstance].notificationMessage = mutableNotification;
+        [Notification sharedInstance].isInline = YES;
+        [[Notification sharedInstance] notificationReceived];
     } else {
-        [Push sharedInstance].notificationMessage = mutableNotification;
-        [[Push sharedInstance] performSelectorOnMainThread:@selector(notificationReceived) withObject:[Push sharedInstance] waitUntilDone:NO];
+        [Notification sharedInstance].notificationMessage = mutableNotification;
+        [[Notification sharedInstance] performSelectorOnMainThread:@selector(notificationReceived) withObject:[Notification sharedInstance] waitUntilDone:NO];
     }
     
     if (handleActionWithIdentifierRemoteOriginalMethod) {
@@ -250,6 +281,7 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
         completionHandler();
     }
 }
+ */
 
 - (void)my_application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     NSLog(@"---- didReceiveLocalNotification");
@@ -267,15 +299,16 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
     
     if (appState == UIApplicationStateActive) {
         NSLog(@"---- didReceiveLocalNotification, UIApplicationStateActive");
-        [Push sharedInstance].notificationMessage = notification;
-        [Push sharedInstance].isInline = YES;
-        [[Push sharedInstance] notificationReceived];
+        [Notification sharedInstance].notificationMessage = notification;
+        [Notification sharedInstance].isInline = YES;
+        [[Notification sharedInstance] notificationReceived];
     } else {
-        NSLog(@"---- didReceiveLocalNotification, NOT UIApplicationStateActive, notification:");
-        NSLog(notification.userInfo);
-//        NSLog([notification.userInfo objectForKey:@"message"]);
-        [Push sharedInstance].launchNotification = notification;
-        [Push sharedInstance].notificationMessage = notification;
+        NSLog(@"---- didReceiveLocalNotification, NOT UIApplicationStateActive");
+        NSLog(@"---- didReceiveLocalNotification, NOT UIApplicationStateActive, body: %@", [notification.userInfo objectForKey:@"body"]);
+        NSLog(@"---- didReceiveLocalNotification, NOT UIApplicationStateActive, message: %@", [notification.userInfo objectForKey:@"message"]);
+        [Notification sharedInstance].launchNotification = notification;
+        [Notification sharedInstance].notificationMessage = notification;
+        [Notification sharedInstance].isInline = NO;
     }
 }
 
@@ -283,16 +316,16 @@ static IMP handleActionWithIdentifierLocalOriginalMethod = NULL;
     
     NSLog(@"---- handle action with identifier (forLocalNotification)");
     
-//    NSMutableDictionary *mutableNotification = [notification mutableCopy];
+    //    NSMutableDictionary *mutableNotification = [notification mutableCopy];
     
-//    [mutableNotification setObject:identifier forKey:@"identifier"];
+    //    [mutableNotification setObject:identifier forKey:@"identifier"];
     if (application.applicationState == UIApplicationStateActive) {
-        [Push sharedInstance].notificationMessage = notification;
-        [Push sharedInstance].isInline = YES;
-        [[Push sharedInstance] notificationReceived];
+        [Notification sharedInstance].notificationMessage = notification;
+        [Notification sharedInstance].isInline = YES;
+        [[Notification sharedInstance] notificationReceived];
     } else {
-        [Push sharedInstance].notificationMessage = notification;
-        [[Push sharedInstance] performSelectorOnMainThread:@selector(notificationReceived) withObject:[Push sharedInstance] waitUntilDone:NO];
+        [Notification sharedInstance].notificationMessage = notification;
+        [[Notification sharedInstance] performSelectorOnMainThread:@selector(notificationReceived) withObject:[Notification sharedInstance] waitUntilDone:NO];
     }
     
     if (handleActionWithIdentifierLocalOriginalMethod) {
