@@ -22,7 +22,7 @@ You can pass several options to this function, everything is optional:
 
 |option|description|
 |------|-----------|
-|`id`     |A number so you can easilty distinguish your notifications. Default 0.|
+|`id`     |A number so you can easily distinguish your notifications. Default 0.|
 |`title`  |The title which is shown in the statusbar. Default empty.|
 |`body`   |The text below the title. Default empty.|
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|

@@ -9,7 +9,7 @@ LocalNotifications.addOnMessageReceivedCallback = function (callback) {
       com.telerik.localnotifications.LocalNotificationsPlugin.setOnMessageReceivedCallback(
           new com.telerik.localnotifications.LocalNotificationsPluginListener({
             success: function(notification) {
-              callback(JSON.parse(notification))
+              callback(JSON.parse(notification));
             }
           })
       );
@@ -43,7 +43,7 @@ LocalNotifications.schedule = function (arg) {
             .setContentText(options.body)
             .setSmallIcon(options.icon)
             .setAutoCancel(true) // removes the notification from the statusbar once tapped
-            .setSound(options.sound == null ? null : android.net.Uri.parse(options.sound))
+            .setSound(options.sound === null ? null : android.net.Uri.parse(options.sound))
             .setNumber(options.badge)
             .setTicker(options.ticker || options.body);
 
@@ -133,7 +133,7 @@ LocalNotifications.cancel = function (id) {
   return new Promise(function (resolve, reject) {
     try {
       LocalNotifications._cancelById(id);
-      resolve(true);
+      resolve(true); // TODO can we do this like iOS?
     } catch (ex) {
       console.log("Error in LocalNotifications.cancel: " + ex);
       reject(ex);

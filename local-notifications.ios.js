@@ -14,7 +14,7 @@ var pendingReceivedNotifications = [],
   LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function (result) {
     var notificationDetails = JSON.parse(result.userInfo.objectForKey('message'));
     console.log("------- notificationReceivedObserver: " + notificationDetails);
-    if (receivedNotificationCallback != null) {
+    if (receivedNotificationCallback !== null) {
       receivedNotificationCallback(notificationDetails);
     } else {
       pendingReceivedNotifications.push(notificationDetails);
@@ -64,7 +64,7 @@ LocalNotifications.requestPermission = function (arg) {
     try {
       LocalNotifications._requestPermission(function(granted) {
         resolve(granted);
-      })
+      });
     } catch (ex) {
       console.log("Error in LocalNotifications.requestPermission: " + ex);
       reject(ex);
@@ -142,7 +142,7 @@ LocalNotifications.cancelAll = function () {
     try {
       UIApplication.sharedApplication().cancelAllLocalNotifications();
       UIApplication.sharedApplication().applicationIconBadgeNumber = 0;
-      resolve(true);
+      resolve();
     } catch (ex) {
       console.log("Error in LocalNotifications.cancelAll: " + ex);
       reject(ex);
@@ -176,7 +176,7 @@ LocalNotifications.schedule = function (arg) {
       if (!LocalNotifications._hasPermission()) {
         LocalNotifications._requestPermission(function() {
           LocalNotifications._schedulePendingNotifications();
-        })
+        });
       } else {
         LocalNotifications._schedulePendingNotifications();
       }
