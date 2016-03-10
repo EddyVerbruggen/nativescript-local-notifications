@@ -139,5 +139,5 @@ Let us know what you need by opening a Github issue.
 
 We're thinking about adding support for things like:
 - Scheduling repeating notifications (daily, weekly, etc)
-- [#3](Custom Notification sounds)
+- [Custom Notification sounds](#3)
 - Interactive Notifications on iOS
