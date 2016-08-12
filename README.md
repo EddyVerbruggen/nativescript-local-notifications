@@ -18,7 +18,9 @@ tns install typescript
 
 Then open `references.d.ts` in the root of your project and add this line to get autocompletion and type-checking for this plugin:
 
+```
 /// <reference path="./node_modules/nativescript-local-notifications/local-notifications.d.ts" />
+```
 
 Now you can import the plugin as an object into your `.ts` file as follows:
 
