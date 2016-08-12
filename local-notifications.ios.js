@@ -56,7 +56,7 @@ LocalNotifications.hasPermission = function (arg) {
 LocalNotifications._hasPermission = function () {
   var settings = UIApplication.sharedApplication().currentUserNotificationSettings();
   var types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
-  return settings.types & types;
+  return (settings.types & types) > 0;
 };
 
 LocalNotifications.requestPermission = function (arg) {

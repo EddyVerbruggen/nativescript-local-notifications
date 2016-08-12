@@ -9,6 +9,27 @@ From the command prompt go to your app's root folder and execute:
 tns plugin add nativescript-local-notifications
 ```
 
+#### TypeScript support
+And do yourself a favor by adding TypeScript support to your nativeScript app:
+
+````
+tns install typescript
+```
+
+Then open `references.d.ts` in the root of your project and add this line to get autocompletion and type-checking for this plugin:
+
+/// <reference path="./node_modules/nativescript-local-notifications/local-notifications.d.ts" />
+
+Now you can import the plugin as an object into your `.ts` file as follows:
+
+```js
+// import the TS definitions
+import * as LocalNotifications from "nativescript-local-notifications";
+
+// .. and use it as:
+LocalNotifications.hasPermission()..
+```
+
 ## Usage
 
 If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen/nativescript-local-notifications-demo).
