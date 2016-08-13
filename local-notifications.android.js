@@ -31,12 +31,11 @@ LocalNotifications.schedule = function (arg) {
         options.icon = application.android.nativeApp.getApplicationInfo().icon;
         options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 
-        // note that setting options.sound to explicitly to null will not add the default sound
-        if (options.sound === undefined) {
+        if (options.sound === undefined || options.sound === "default") {
           options.sound = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION).toString();
         }
 
-        // TODO best move this to native lib so we can reuse it in the restorereceiver (dupl for now)
+        // TODO best move this to native lib so we can reuse it in the restorereceiver (dupe for now)
         var builder = new android.support.v4.app.NotificationCompat.Builder(context)
             .setDefaults(0)
             .setContentTitle(options.title)

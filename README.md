@@ -60,7 +60,7 @@ You can pass several options to this function, everything is optional:
     body: 'The body',
     ticker: 'The ticker',
     badge: 1,
-    sound: null, // suppress sound on Android
+    sound: null, // suppress the default sound
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
   }]).then(
       function() {

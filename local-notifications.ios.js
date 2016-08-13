@@ -107,9 +107,13 @@ LocalNotifications._schedulePendingNotifications = function () {
     userInfoDict.setObjectForKey(options.body, "body");
     notification.userInfo = userInfoDict;
 
+    if (options.sound === undefined || options.sound === "default") {
+      notification.soundName = UILocalNotificationDefaultSoundName;
+    }
+
     // TODO add these after v1
     // notification.repeatInterval = 1;
-    // notification.soundName = null;
+    // notification.soundName = custom..;
     // notification.resumeApplicationInBackground = true;
 
     console.log("--- scheduling " + notification);
