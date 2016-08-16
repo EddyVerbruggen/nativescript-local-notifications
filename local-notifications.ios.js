@@ -101,18 +101,20 @@ LocalNotifications._schedulePendingNotifications = function () {
     notification.applicationIconBadgeNumber = options.badge;
 
     // these are sent back to the plugin when a notification is received
-    var userInfoDict = NSMutableDictionary.alloc().initWithCapacity(3);
+    var userInfoDict = NSMutableDictionary.alloc().initWithCapacity(4);
     userInfoDict.setObjectForKey(options.id, "id");
     userInfoDict.setObjectForKey(options.title, "title");
     userInfoDict.setObjectForKey(options.body, "body");
+    userInfoDict.setObjectForKey(options.interval, "interval");
     notification.userInfo = userInfoDict;
 
     if (options.sound === undefined || options.sound === "default") {
       notification.soundName = UILocalNotificationDefaultSoundName;
     }
 
+    notification.repeatInterval = LocalNotifications._getInterval(options.interval);
+
     // TODO add these after v1
-    // notification.repeatInterval = 1;
     // notification.soundName = custom..;
     // notification.resumeApplicationInBackground = true;
 
@@ -191,6 +193,30 @@ LocalNotifications.schedule = function (arg) {
       reject(ex);
     }
   });
+};
+
+LocalNotifications._getInterval = function(interval) {
+  if (interval === null || interval === "") {
+    return NSCalendarUnitEra;
+  } else if (interval === "second") {
+    return NSCalendarUnitSecond;
+  } else if (interval === "minute") {
+    return NSCalendarUnitMinute;
+  } else if (interval === "hour") {
+    return NSCalendarUnitHour;
+  } else if (interval === "day") {
+    return NSCalendarUnitDay;
+  } else if (interval === "week") {
+    return NSCalendarUnitWeekOfYear;
+  } else if (interval === "month") {
+    return NSCalendarUnitMonth;
+  } else if (interval === "quarter") {
+    return NSCalendarUnitQuarter;
+  } else if (interval === "year") {
+    return NSCalendarUnitYear;
+  } else {
+    return NSCalendarUnitEra;
+  }
 };
 
 module.exports = LocalNotifications;

@@ -28,9 +28,11 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
   static final String TAG = "NotificationRestoreReceiver";
 
+  public static final String SHARED_PREFERENCES_KEY = "LocalNotificationsPlugin";
+
   @Override
   public void onReceive(Context context, Intent intent) {
-    final SharedPreferences sharedPreferences = context.getSharedPreferences("LocalNotificationsPlugin", Context.MODE_PRIVATE);
+    final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
     final Set notificationOptions = sharedPreferences.getAll().entrySet();
 
     Iterator<Map.Entry> iterator = notificationOptions.iterator();
@@ -71,21 +73,26 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
         // configure when we'll show the event
         long triggerTime = options.getLong("atTime");
+        long interval = options.optLong("repeatInterval", 0); // in ms
+        final boolean isRepeating = interval > 0;
         final Date triggerDate = new Date(triggerTime);
         final boolean wasInThePast = new Date().after(triggerDate);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (wasInThePast) {
-          Log.d(TAG, "------------------------ cancel notification: " + options);
+        if (wasInThePast && !isRepeating) {
           alarmManager.cancel(pendingIntent);
           ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(options.getInt("id"));
           // TODO 'unpersist' would be nice
         } else {
           // schedule
-          Log.d(TAG, "------------------------ schedule notification: " + options);
-          alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+          if (isRepeating) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, interval, pendingIntent);
+          } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+          }
         }
-      } catch (JSONException e) {
-        e.printStackTrace();
+      } catch (Throwable t) {
+        Log.e(TAG, "Notification scheduling error: " + t.getMessage());
+        t.printStackTrace();
       }
     }
   }

@@ -80,7 +80,15 @@ LocalNotifications.schedule = function (arg) {
 
         // configure when we'll show the event
         var alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
-        alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
+
+        var repeatInterval = LocalNotifications._getInterval(options.interval);
+        options.repeatInterval = repeatInterval; // used when restoring the notification after a reboot
+
+        if (repeatInterval > 0) {
+          alarmManager.setRepeating(android.app.AlarmManager.RTC_WAKEUP, options.atTime, repeatInterval, pendingIntent);
+        } else {
+          alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
+        }
 
         LocalNotifications._persist(options);
       }
@@ -93,11 +101,36 @@ LocalNotifications.schedule = function (arg) {
   });
 };
 
+LocalNotifications._getInterval = function(interval) {
+  if (interval === null || interval === "") {
+    return 0;
+  } else if (interval === "second") {
+    return 1000; // it's in ms
+  } else if (interval === "minute") {
+    return android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15;
+  } else if (interval === "hour") {
+    return android.app.AlarmManager.INTERVAL_HOUR;
+  } else if (interval === "day") {
+    return android.app.AlarmManager.INTERVAL_DAY;
+  } else if (interval === "week") {
+    return android.app.AlarmManager.INTERVAL_DAY * 7;
+  } else if (interval === "month") {
+    return android.app.AlarmManager.INTERVAL_DAY * 31; // well that's almost accurate
+  } else if (interval === "quarter") {
+    return android.app.AlarmManager.INTERVAL_HOUR * 2190;
+  } else if (interval === "year") {
+    return android.app.AlarmManager.INTERVAL_DAY * 365; // same here
+  } else {
+    return 0;
+  }
+};
+
 /**
  * Persist notification info to the Android Shared Preferences.
  * This way we can later retrieve it to cancel it, or restore upon reboot.
  */
 LocalNotifications._persist = function (options) {
+  console.log("------------------- persisting: " + JSON.stringify(options));
   var sharedPreferences = LocalNotifications._getSharedPreferences();
   var sharedPreferencesEditor = sharedPreferences.edit();
   sharedPreferencesEditor.putString("" + options.id, JSON.stringify(options));
@@ -208,7 +241,7 @@ LocalNotifications.requestPermission = function (arg) {
 
 LocalNotifications._getSharedPreferences = function () {
   var context = application.android.foregroundActivity;
-  var PREF_KEY = "LocalNotificationsPlugin"; // TODO get constant from native, as the restorereceiver needs it as well
+  var PREF_KEY = com.telerik.localnotifications.NotificationRestoreReceiver.SHARED_PREFERENCES_KEY;
   return context.getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
 };
 

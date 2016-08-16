@@ -52,14 +52,16 @@ You can pass several options to this function, everything is optional:
 |`at`     |A JavaScript Date object indicating when the notification should be shown. Default 'now'.|
 |`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|
 |`sound`  |Currently this is only used on Android where you can set this to `null` to suppress the sound. Default 'the default notification sound'.|
+|`interval` |Set to one of second|minute|hour|day|week|month|quarter|year if you want a recurring notification.|
 
 ```js
   LocalNotifications.schedule([{
     id: 1,
     title: 'The title',
-    body: 'The body',
+    body: 'Recurs every minute until cancelled',
     ticker: 'The ticker',
     badge: 1,
+    interval: 'minute',
     sound: null, // suppress the default sound
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
   }]).then(
@@ -161,6 +163,5 @@ If the `requestPermission` or `schedule` functions previously ran you may want t
 Let us know what you need by opening a Github issue.
 
 We're thinking about adding support for things like:
-- Scheduling repeating notifications (daily, weekly, etc)
 - [Custom Notification sounds](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/3)
 - Interactive Notifications on iOS

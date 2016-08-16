@@ -45,6 +45,11 @@ declare module "nativescript-local-notifications" {
        * Default 'the default notification sound'.
        */
       sound?: string;
+
+      /**
+       * One of second|minute|hour|day|week|month|quarter|year
+       */
+      interval?: string; // TODO add better TS support
     }
 
     export interface ReceivedNotification {

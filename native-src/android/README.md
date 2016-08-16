@@ -14,11 +14,11 @@ Assuming the plugin is locally cloned next to your app's folder:
 
 #### Install
 
-`tns plugin add ../nativescript-local-notifications`
+`tns plugin add ../../nativescript-local-notifications`
 
 #### Reinstall:
 
-`tns plugin remove nativescript-local-notifications && tns plugin add ../nativescript-local-notifications && tns platform remove android && tns platform add android`
+`tns plugin remove nativescript-local-notifications && tns plugin add ../../nativescript-local-notifications && tns platform remove android && tns platform add android`
 
 
 ### run
