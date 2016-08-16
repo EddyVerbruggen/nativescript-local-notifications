@@ -130,7 +130,6 @@ LocalNotifications._getInterval = function(interval) {
  * This way we can later retrieve it to cancel it, or restore upon reboot.
  */
 LocalNotifications._persist = function (options) {
-  console.log("------------------- persisting: " + JSON.stringify(options));
   var sharedPreferences = LocalNotifications._getSharedPreferences();
   var sharedPreferencesEditor = sharedPreferences.edit();
   sharedPreferencesEditor.putString("" + options.id, JSON.stringify(options));
