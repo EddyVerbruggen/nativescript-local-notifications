@@ -25,10 +25,41 @@ LocalNotifications.schedule = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
       var context = application.android.foregroundActivity;
+      var resources = application.android.context.getResources();
 
       for (var n in arg) {
         var options = LocalNotifications.merge(arg[n], LocalNotifications.defaults);
-        options.icon = application.android.nativeApp.getApplicationInfo().icon;
+
+        // small icon
+        if (options.smallIcon) {
+          if (options.smallIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
+            options.smallIcon = resources.getIdentifier(options.smallIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', application.android.packageName);
+          }
+        }
+        if (!options.smallIcon) {
+          // look for an icon named ic_stat_notify.png
+          options.smallIcon = resources.getIdentifier("ic_stat_notify", "drawable", application.android.packageName);
+        }
+        if (!options.smallIcon) {
+          // resort to the regular launcher icon
+          options.smallIcon = application.android.nativeApp.getApplicationInfo().icon;
+        }
+
+        // large icon
+        if (options.largeIcon) {
+          if (options.largeIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
+            options.largeIcon = resources.getIdentifier(options.largeIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', application.android.packageName);
+          }
+        }
+        if (!options.largeIcon) {
+          // look for an icon named ic_notify.png
+          options.largeIcon = resources.getIdentifier("ic_notify", "drawable", application.android.packageName);
+        }
+        if (!options.largeIcon) {
+          // resort to the regular launcher icon
+          options.largeIcon = application.android.nativeApp.getApplicationInfo().icon;
+        }
+
         options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 
         if (options.sound === undefined || options.sound === "default") {
@@ -40,7 +71,7 @@ LocalNotifications.schedule = function (arg) {
             .setDefaults(0)
             .setContentTitle(options.title)
             .setContentText(options.body)
-            .setSmallIcon(options.icon)
+            .setSmallIcon(options.smallIcon)
             .setAutoCancel(true) // removes the notification from the statusbar once tapped
             .setSound(options.sound === null ? null : android.net.Uri.parse(options.sound))
             .setNumber(options.badge)
@@ -69,6 +100,9 @@ LocalNotifications.schedule = function (arg) {
          */
 
         var not = builder.build();
+
+        // large icon
+        not.contentView.setImageViewResource(android.R.id.icon, options.largeIcon);
 
         // add the intent which schedules the notification
         var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
