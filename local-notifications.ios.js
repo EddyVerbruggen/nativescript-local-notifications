@@ -112,7 +112,9 @@ LocalNotifications._schedulePendingNotifications = function () {
       notification.soundName = UILocalNotificationDefaultSoundName;
     }
 
-    notification.repeatInterval = LocalNotifications._getInterval(options.interval);
+    if (options.interval !== 0) {
+      notification.repeatInterval = LocalNotifications._getInterval(options.interval);
+    }
 
     // TODO add these after v1
     // notification.soundName = custom..;
