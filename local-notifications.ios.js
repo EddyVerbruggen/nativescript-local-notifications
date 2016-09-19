@@ -1,7 +1,10 @@
 var LocalNotifications = require("./local-notifications-common");
+var utils = require("utils/utils");
 
 LocalNotifications._addObserver = function (eventName, callback) {
-  return NSNotificationCenter.defaultCenter().addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue(), callback);
+  var notiCenter = utils.ios.getter(NSNotificationCenter, NSNotificationCenter.defaultCenter);
+  var queue = utils.ios.getter(NSOperationQueue, NSOperationQueue.mainQueue);
+  return notiCenter.addObserverForNameObjectQueueUsingBlock(eventName, null, queue, callback);
 };
 
 var pendingReceivedNotifications = [],
@@ -13,7 +16,6 @@ var pendingReceivedNotifications = [],
   // grab 'em here, store em in JS, and give them to the callback when addOnMessageReceivedCallback is wired
   LocalNotifications.notificationReceivedObserver = LocalNotifications._addObserver("notificationReceived", function (result) {
     var notificationDetails = JSON.parse(result.userInfo.objectForKey('message'));
-    console.log("------- notificationReceivedObserver: " + notificationDetails);
     if (receivedNotificationCallback !== null) {
       receivedNotificationCallback(notificationDetails);
     } else {
@@ -21,8 +23,8 @@ var pendingReceivedNotifications = [],
     }
   });
 
-  notificationHandler = Notification.alloc().init();
-  notificationManager = NotificationManager.alloc().init();
+  notificationHandler = Notification.new();
+  notificationManager = NotificationManager.new();
 })();
 
 LocalNotifications.addOnMessageReceivedCallback = function (callback) {
@@ -75,7 +77,8 @@ LocalNotifications.requestPermission = function (arg) {
 LocalNotifications._requestPermission = function (callback) {
 
   LocalNotifications.didRegisterUserNotificationSettingsObserver = LocalNotifications._addObserver("didRegisterUserNotificationSettings", function (result) {
-    NSNotificationCenter.defaultCenter().removeObserver(LocalNotifications.didRegisterUserNotificationSettingsObserver);
+    var notiCenter = utils.ios.getter(NSNotificationCenter, NSNotificationCenter.defaultCenter);
+    notiCenter.removeObserver(LocalNotifications.didRegisterUserNotificationSettingsObserver);
     LocalNotifications.didRegisterUserNotificationSettingsObserver = undefined;
     var granted = result.userInfo.objectForKey('message');
     callback(granted != "false");
@@ -93,7 +96,7 @@ LocalNotifications._schedulePendingNotifications = function () {
   for (var n in pending) {
     var options = LocalNotifications.merge(pending[n], LocalNotifications.defaults);
 
-    var notification = UILocalNotification.alloc().init();
+    var notification = UILocalNotification.new();
     notification.fireDate = options.at ? options.at : new Date();
     notification.alertTitle = options.title;
     notification.alertBody = options.body;
@@ -120,7 +123,6 @@ LocalNotifications._schedulePendingNotifications = function () {
     // notification.soundName = custom..;
     // notification.resumeApplicationInBackground = true;
 
-    console.log("--- scheduling " + notification);
     UIApplication.sharedApplication().scheduleLocalNotification(notification);
   }
 };
@@ -178,7 +180,6 @@ LocalNotifications.getScheduledIds = function () {
 LocalNotifications.schedule = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      console.log("arg: " + JSON.stringify(arg));
       LocalNotifications.pendingNotifications = arg;
 
       if (!LocalNotifications._hasPermission()) {
