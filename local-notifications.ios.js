@@ -23,8 +23,8 @@ var pendingReceivedNotifications = [],
     }
   });
 
-  notificationHandler = Notification.new();
-  notificationManager = NotificationManager.new();
+  notificationHandler = Notification.alloc().init();
+  notificationManager = NotificationManager.alloc().init();
 })();
 
 LocalNotifications.addOnMessageReceivedCallback = function (callback) {
@@ -98,7 +98,7 @@ LocalNotifications._schedulePendingNotifications = function () {
   for (var n in pending) {
     var options = LocalNotifications.merge(pending[n], LocalNotifications.defaults);
 
-    var notification = UILocalNotification.new();
+    var notification = UILocalNotification.alloc().init();
     notification.fireDate = options.at ? options.at : new Date();
     notification.alertTitle = options.title;
     notification.alertBody = options.body;
