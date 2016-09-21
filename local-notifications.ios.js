@@ -23,8 +23,8 @@ var pendingReceivedNotifications = [],
     }
   });
 
-  notificationHandler = Notification.alloc().init();
-  notificationManager = NotificationManager.alloc().init();
+  notificationHandler = Notification.new();
+  notificationManager = NotificationManager.new();
 })();
 
 LocalNotifications.addOnMessageReceivedCallback = function (callback) {
@@ -56,7 +56,7 @@ LocalNotifications.hasPermission = function (arg) {
 };
 
 LocalNotifications._hasPermission = function () {
-  var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+  var app = utils.ios.getter(UIApplication, UIApplication.alloc);
   var settings = utils.ios.getter(app, app.currentUserNotificationSettings);
   var types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   return (settings.types & types) > 0;
@@ -85,7 +85,8 @@ LocalNotifications._requestPermission = function (callback) {
     callback(granted != "false");
   });
 
-  var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+  var app = utils.ios.getter(UIApplication, UIApplication.alloc);
+
   var settings = utils.ios.getter(app, app.currentUserNotificationSettings);
   var types = settings.types | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   settings = UIUserNotificationSettings.settingsForTypesCategories(types, null);
@@ -102,7 +103,8 @@ LocalNotifications._schedulePendingNotifications = function () {
     notification.fireDate = options.at ? options.at : new Date();
     notification.alertTitle = options.title;
     notification.alertBody = options.body;
-    notification.timeZone = NSTimeZone.defaultTimeZone();
+
+    notification.timeZone = utils.ios.getter(NSTimeZone, NSTimeZone.defaultTimeZone);
     notification.applicationIconBadgeNumber = options.badge;
 
     // these are sent back to the plugin when a notification is received
@@ -125,15 +127,16 @@ LocalNotifications._schedulePendingNotifications = function () {
     // notification.soundName = custom..;
     // notification.resumeApplicationInBackground = true;
 
-    var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+    var app = utils.ios.getter(UIApplication, UIApplication.alloc);
     app.scheduleLocalNotification(notification);
+    
   }
 };
 
 LocalNotifications.cancel = function (id) {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
       var scheduled = app.scheduledLocalNotifications;
       for (var i = 0, l = scheduled.count; i < l; i++) {
         var noti = scheduled.objectAtIndex(i);
@@ -154,7 +157,7 @@ LocalNotifications.cancel = function (id) {
 LocalNotifications.cancelAll = function () {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
       app.cancelAllLocalNotifications();
       app.applicationIconBadgeNumber = 0;
       resolve();
@@ -168,7 +171,7 @@ LocalNotifications.cancelAll = function () {
 LocalNotifications.getScheduledIds = function () {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
       var scheduledIds = [];
       var scheduled = app.scheduledLocalNotifications;
       for (var i = 0, l = scheduled.count; i < l; i++) {
