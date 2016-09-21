@@ -56,7 +56,7 @@ LocalNotifications.hasPermission = function (arg) {
 };
 
 LocalNotifications._hasPermission = function () {
-  var app = utils.ios.getter(UIApplication, UIApplication.alloc);
+  var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
   var settings = utils.ios.getter(app, app.currentUserNotificationSettings);
   var types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   return (settings.types & types) > 0;
@@ -85,8 +85,7 @@ LocalNotifications._requestPermission = function (callback) {
     callback(granted != "false");
   });
 
-  var app = utils.ios.getter(UIApplication, UIApplication.alloc);
-
+  var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
   var settings = utils.ios.getter(app, app.currentUserNotificationSettings);
   var types = settings.types | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   settings = UIUserNotificationSettings.settingsForTypesCategories(types, null);
@@ -127,7 +126,7 @@ LocalNotifications._schedulePendingNotifications = function () {
     // notification.soundName = custom..;
     // notification.resumeApplicationInBackground = true;
 
-    var app = utils.ios.getter(UIApplication, UIApplication.alloc);
+    var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
     app.scheduleLocalNotification(notification);
     
   }
@@ -136,7 +135,7 @@ LocalNotifications._schedulePendingNotifications = function () {
 LocalNotifications.cancel = function (id) {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
+      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
       var scheduled = app.scheduledLocalNotifications;
       for (var i = 0, l = scheduled.count; i < l; i++) {
         var noti = scheduled.objectAtIndex(i);
@@ -157,7 +156,7 @@ LocalNotifications.cancel = function (id) {
 LocalNotifications.cancelAll = function () {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
+      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
       app.cancelAllLocalNotifications();
       app.applicationIconBadgeNumber = 0;
       resolve();
@@ -171,7 +170,7 @@ LocalNotifications.cancelAll = function () {
 LocalNotifications.getScheduledIds = function () {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
+      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
       var scheduledIds = [];
       var scheduled = app.scheduledLocalNotifications;
       for (var i = 0, l = scheduled.count; i < l; i++) {
