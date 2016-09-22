@@ -117,7 +117,7 @@ LocalNotifications._schedulePendingNotifications = function () {
 
 	// Notification Trigger
 	var trigger_at = options.at ? options.at : new Date();
-	console.dump(trigger_at);
+
 	var repeat = ( options.repeat === 0 ) ? false : true;
 	
 	if( options.trigger === "timeinterval" ){
