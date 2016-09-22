@@ -56,7 +56,7 @@ LocalNotifications.hasPermission = function (arg) {
 };
 
 LocalNotifications._hasPermission = function () {
-  var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+  var app = utils.ios.getter(UIApplication, UIApplication.alloc);
   var settings = utils.ios.getter(app, app.currentUserNotificationSettings);
   var types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   return (settings.types & types) > 0;
@@ -84,58 +84,64 @@ LocalNotifications._requestPermission = function (callback) {
     var granted = result.userInfo.objectForKey('message');
     callback(granted != "false");
   });
-
-  var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
-  var settings = utils.ios.getter(app, app.currentUserNotificationSettings);
-  var types = settings.types | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
-  settings = UIUserNotificationSettings.settingsForTypesCategories(types, null);
-  app.registerUserNotificationSettings(settings);
+  
+  var center = utils.ios.getter(UNUserNotificationCenter, UNUserNotificationCenter.currentNotificationCenter);
+  center.requestAuthorizationWithOptionsCompletionHandler([1,2,4], function(d){});
+  
 };
 
 LocalNotifications._schedulePendingNotifications = function () {
-
   var pending = LocalNotifications.pendingNotifications;
   for (var n in pending) {
     var options = LocalNotifications.merge(pending[n], LocalNotifications.defaults);
+	
+	// Notification Content
+	var content = utils.ios.getter(UNMutableNotificationContent, UNMutableNotificationContent.alloc);
+	content.init();
+	
+	content.title = options.title;
+	content.body = options.body;
 
-    var notification = UILocalNotification.alloc().init();
-    notification.fireDate = options.at ? options.at : new Date();
-    notification.alertTitle = options.title;
-    notification.alertBody = options.body;
-
-    notification.timeZone = utils.ios.getter(NSTimeZone, NSTimeZone.defaultTimeZone);
-    notification.applicationIconBadgeNumber = options.badge;
-
-    // these are sent back to the plugin when a notification is received
     var userInfoDict = NSMutableDictionary.alloc().initWithCapacity(4);
     userInfoDict.setObjectForKey(options.id, "id");
     userInfoDict.setObjectForKey(options.title, "title");
     userInfoDict.setObjectForKey(options.body, "body");
-    userInfoDict.setObjectForKey(options.interval, "interval");
-    notification.userInfo = userInfoDict;
 
-    if (options.sound === undefined || options.sound === "default") {
-      notification.soundName = UILocalNotificationDefaultSoundName;
-    }
+    content.userInfo = userInfoDict;
 
-    if (options.interval !== 0) {
-      notification.repeatInterval = LocalNotifications._getInterval(options.interval);
-    }
+	if( options.sound === undefined || options.sound === "default" ){
+		content.sound = UILocalNotificationDefaultSoundName;
+	}
+	
+	content.badge = options.badge;
 
-    // TODO add these after v1
-    // notification.soundName = custom..;
-    // notification.resumeApplicationInBackground = true;
+	// Notification Trigger
+	var trigger_at = options.at ? options.at : new Date();
+	var repeat = ( options.repeat === 0 ) ? false : true;
+	
+	if( options.trigger === "timeinterval" ){
+		var trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(trigger_at, repeat);
+	} else {
+		var trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(trigger_at, repeat);
+	}
 
-    var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
-    app.scheduleLocalNotification(notification);
-    
+	// Notification Request 
+	var request = UNNotificationRequest.requestWithIdentifierContentTrigger("FiveSecond", content, trigger);
+
+	// Notification Center
+	var center = utils.ios.getter(UNUserNotificationCenter, UNUserNotificationCenter.currentNotificationCenter);
+
+	var result = center.addNotificationRequestWithCompletionHandler(request, function(d){
+		return d;
+	});
+
   }
 };
 
 LocalNotifications.cancel = function (id) {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
       var scheduled = app.scheduledLocalNotifications;
       for (var i = 0, l = scheduled.count; i < l; i++) {
         var noti = scheduled.objectAtIndex(i);
@@ -156,7 +162,7 @@ LocalNotifications.cancel = function (id) {
 LocalNotifications.cancelAll = function () {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
       app.cancelAllLocalNotifications();
       app.applicationIconBadgeNumber = 0;
       resolve();
@@ -170,7 +176,7 @@ LocalNotifications.cancelAll = function () {
 LocalNotifications.getScheduledIds = function () {
   return new Promise(function (resolve, reject) {
     try {
-      var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
+      var app = utils.ios.getter(UIApplication, UIApplication.alloc);
       var scheduledIds = [];
       var scheduled = app.scheduledLocalNotifications;
       for (var i = 0, l = scheduled.count; i < l; i++) {
@@ -206,28 +212,5 @@ LocalNotifications.schedule = function (arg) {
   });
 };
 
-LocalNotifications._getInterval = function(interval) {
-  if (interval === null || interval === "") {
-    return NSCalendarUnitEra;
-  } else if (interval === "second") {
-    return NSCalendarUnitSecond;
-  } else if (interval === "minute") {
-    return NSCalendarUnitMinute;
-  } else if (interval === "hour") {
-    return NSCalendarUnitHour;
-  } else if (interval === "day") {
-    return NSCalendarUnitDay;
-  } else if (interval === "week") {
-    return NSCalendarUnitWeekOfYear;
-  } else if (interval === "month") {
-    return NSCalendarUnitMonth;
-  } else if (interval === "quarter") {
-    return NSCalendarUnitQuarter;
-  } else if (interval === "year") {
-    return NSCalendarUnitYear;
-  } else {
-    return NSCalendarUnitEra;
-  }
-};
 
 module.exports = LocalNotifications;
