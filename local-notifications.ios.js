@@ -117,6 +117,7 @@ LocalNotifications._schedulePendingNotifications = function () {
 
 	// Notification Trigger
 	var trigger_at = options.at ? options.at : new Date();
+	console.dump(trigger_at);
 	var repeat = ( options.repeat === 0 ) ? false : true;
 	
 	if( options.trigger === "timeinterval" ){
@@ -124,14 +125,16 @@ LocalNotifications._schedulePendingNotifications = function () {
 	} else {
 		var trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(trigger_at, repeat);
 	}
+		
+    notification.timeZone = utils.ios.getter(NSTimeZone, NSTimeZone.defaultTimeZone);
 
 	// Notification Request 
-	var request = UNNotificationRequest.requestWithIdentifierContentTrigger("FiveSecond", content, trigger);
+	var request = UNNotificationRequest.requestWithIdentifierContentTrigger(options.id, content, trigger);
 
 	// Notification Center
 	var center = utils.ios.getter(UNUserNotificationCenter, UNUserNotificationCenter.currentNotificationCenter);
 
-	var result = center.addNotificationRequestWithCompletionHandler(request, function(d){
+	center.addNotificationRequestWithCompletionHandler(request, function(d){
 		return d;
 	});
 
