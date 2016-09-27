@@ -5,7 +5,8 @@ LocalNotifications.defaults = {
   title: '',
   body: '',
   badge: 0,
-  interval: 0
+  repeat: 0,
+  trigger: '' // Defaults to UNCalendarNotificationTrigger unless if its set to 'timeinterval'
 };
 
 LocalNotifications.merge = function merge(obj1, obj2) { // Our merge function
