@@ -102,7 +102,12 @@ LocalNotifications.schedule = function (arg) {
         var not = builder.build();
 
         // large icon
-        not.contentView.setImageViewResource(android.R.id.icon, options.largeIcon);
+        if (not.contentView) {
+          not.contentView.setImageViewResource(android.R.id.icon, options.largeIcon);
+        } else {
+          // heard this happened on an Android 7 device.. need to verify and debug
+          console.log("Not able to set a large icon since contentView is not found..");
+        }
 
         // add the intent which schedules the notification
         var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
