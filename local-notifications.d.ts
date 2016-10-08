@@ -50,6 +50,20 @@ declare namespace localNotifications {
          * One of second|minute|hour|day|week|month|quarter|year
          */
         interval?: string; // TODO add better TS support
+
+        /**
+         * On Android you can set a custom icon in the system tray.
+         * Pass in 'res://filename.png' which lives in App_Resouces/Android/drawable folders.
+         * If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders.
+         * Default: the app icon.
+         */
+        smallIcon?: string;
+
+        /**
+         * Same as 'smallIcon', but this one is shown when you expand the notification center.
+         * The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.
+         */
+        largeIcon?: string;
     }
 
     export interface ReceivedNotification {
