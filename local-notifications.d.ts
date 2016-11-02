@@ -64,6 +64,16 @@ declare namespace localNotifications {
          * The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.
          */
         largeIcon?: string;
+
+        /**
+         * Set whether this is an "ongoing" notification.
+         * Ongoing notifications cannot be dismissed by the user,
+         * so your application or must take care of canceling them.
+         *
+         * Android only.
+         * Default false.
+         */
+        ongoing?: boolean;
     }
 
     export interface ReceivedNotification {
