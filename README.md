@@ -62,7 +62,7 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
     body: 'Recurs every minute until cancelled',
     ticker: 'The ticker',
     badge: 1,
-    onGoing: true //makes the notification ongoing (Android only)
+    onGoing: true, //makes the notification ongoing (Android only)
     smallIcon: 'res://heart.png',
     interval: 'minute',
     sound: null, // suppress the default sound
