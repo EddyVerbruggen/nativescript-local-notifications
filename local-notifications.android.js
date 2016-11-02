@@ -75,6 +75,7 @@ LocalNotifications.schedule = function (arg) {
             .setAutoCancel(true) // removes the notification from the statusbar once tapped
             .setSound(options.sound === null ? null : android.net.Uri.parse(options.sound))
             .setNumber(options.badge)
+            .setOngoing(options.onGoing)//sets the notification to ongoing if its true.
             .setTicker(options.ticker || options.body);
 
         // add the intent that handles the event when the notification is clicked (which should launch the app)
