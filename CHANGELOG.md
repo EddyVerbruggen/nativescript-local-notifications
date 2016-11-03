@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.9](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.1.9) (2016-11-03)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.1.8...1.1.9)
+
+**Implemented enhancements:**
+
+- Added onGoing notification \(cannot be dismissed by user\) [\#28](https://github.com/EddyVerbruggen/nativescript-local-notifications/pull/28) ([Robophil](https://github.com/Robophil))
+
 ## [1.1.8](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.1.8) (2016-10-08)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.1.6...1.1.8)
 
