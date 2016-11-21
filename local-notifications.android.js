@@ -1,7 +1,7 @@
 var application = require("application");
 var utils = require("utils/utils");
 var LocalNotifications = require("./local-notifications-common");
-
+var context = utils.ad.getApplicationContext();
 LocalNotifications.addOnMessageReceivedCallback = function (callback) {
   return new Promise(function (resolve, reject) {
     try {
@@ -24,8 +24,7 @@ LocalNotifications.addOnMessageReceivedCallback = function (callback) {
 LocalNotifications.schedule = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      var context = application.android.foregroundActivity;
-      var resources = application.android.context.getResources();
+      var resources = context.getResources();
 
       for (var n in arg) {
         var options = LocalNotifications.merge(arg[n], LocalNotifications.defaults);
@@ -33,31 +32,31 @@ LocalNotifications.schedule = function (arg) {
         // small icon
         if (options.smallIcon) {
           if (options.smallIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
-            options.smallIcon = resources.getIdentifier(options.smallIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', application.android.packageName);
+            options.smallIcon = resources.getIdentifier(options.smallIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', context.getApplicationInfo().packageName);
           }
         }
         if (!options.smallIcon) {
           // look for an icon named ic_stat_notify.png
-          options.smallIcon = resources.getIdentifier("ic_stat_notify", "drawable", application.android.packageName);
+          options.smallIcon = resources.getIdentifier("ic_stat_notify", "drawable", context.getApplicationInfo().packageName);
         }
         if (!options.smallIcon) {
           // resort to the regular launcher icon
-          options.smallIcon = application.android.nativeApp.getApplicationInfo().icon;
+          options.smallIcon = context.getApplicationInfo().icon;
         }
 
         // large icon
         if (options.largeIcon) {
           if (options.largeIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
-            options.largeIcon = resources.getIdentifier(options.largeIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', application.android.packageName);
+            options.largeIcon = resources.getIdentifier(options.largeIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', context.getApplicationInfo().packageName);
           }
         }
         if (!options.largeIcon) {
           // look for an icon named ic_notify.png
-          options.largeIcon = resources.getIdentifier("ic_notify", "drawable", application.android.packageName);
+          options.largeIcon = resources.getIdentifier("ic_notify", "drawable", context.getApplicationInfo().packageName);
         }
         if (!options.largeIcon) {
           // resort to the regular launcher icon
-          options.largeIcon = application.android.nativeApp.getApplicationInfo().icon;
+          options.largeIcon = context.getApplicationInfo().icon;
         }
 
         options.atTime = options.at ? options.at.getTime() : new Date().getTime();
@@ -184,17 +183,16 @@ LocalNotifications._unpersist = function (id) {
 };
 
 LocalNotifications._cancelById = function (id) {
-  var context = application.android.foregroundActivity;
-
+ 
   var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
       .setAction("" + id);
 
   var pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
 
-  var alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
+  var alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE);
   alarmManager.cancel(pendingIntent);
 
-  var notificationManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+  var notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
   notificationManager.cancel(id);
 
   LocalNotifications._unpersist(id);
@@ -279,7 +277,6 @@ LocalNotifications.requestPermission = function (arg) {
 };
 
 LocalNotifications._getSharedPreferences = function () {
-  var context = application.android.foregroundActivity;
   var PREF_KEY = com.telerik.localnotifications.NotificationRestoreReceiver.SHARED_PREFERENCES_KEY;
   return context.getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
 };
