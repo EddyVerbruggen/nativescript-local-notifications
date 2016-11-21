@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.2.0](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.0) (2016-11-21)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.1.9...1.2.0)
+
+**Fixed bugs:**
+
+- largeIcon on Android 7 doesn't work [\#32](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/32)
+- Notifications fails to schedule with Workers \[Android\] [\#30](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/30)
+
+**Merged pull requests:**
+
+- Context update to allow usage with Workers [\#31](https://github.com/EddyVerbruggen/nativescript-local-notifications/pull/31) ([triniwiz](https://github.com/triniwiz))
+
 ## [1.1.9](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.1.9) (2016-11-03)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.1.8...1.1.9)
 
