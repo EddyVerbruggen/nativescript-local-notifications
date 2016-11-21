@@ -58,6 +58,10 @@ LocalNotifications.schedule = function (arg) {
           // resort to the regular launcher icon
           options.largeIcon = context.getApplicationInfo().icon;
         }
+        if (options.largeIcon) {
+          // options.largeIconDrawable = android.support.v4.content.ContextCompat.getDrawable(context, options.largeIcon).getBitmap();
+          options.largeIconDrawable = android.graphics.BitmapFactory.decodeResource(context.getResources(), options.largeIcon);
+        }
 
         options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 
@@ -71,6 +75,7 @@ LocalNotifications.schedule = function (arg) {
             .setContentTitle(options.title)
             .setContentText(options.body)
             .setSmallIcon(options.smallIcon)
+            .setLargeIcon(options.largeIconDrawable)
             .setAutoCancel(true) // removes the notification from the statusbar once tapped
             .setSound(options.sound === null ? null : android.net.Uri.parse(options.sound))
             .setNumber(options.badge)
@@ -99,21 +104,11 @@ LocalNotifications.schedule = function (arg) {
          builder.setStyle(inboxStyle);
          */
 
-        var not = builder.build();
-
-        // large icon
-        if (not.contentView) {
-          not.contentView.setImageViewResource(android.R.id.icon, options.largeIcon);
-        } else {
-          // heard this happened on an Android 7 device.. need to verify and debug
-          console.log("Not able to set a large icon since contentView is not found..");
-        }
-
         // add the intent which schedules the notification
         var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
             .setAction("" + options.id)
             .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id)
-            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, not);
+            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, builder.build());
 
         var pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -215,10 +210,8 @@ LocalNotifications.cancelAll = function () {
     try {
       var sharedPreferences = LocalNotifications._getSharedPreferences();
       var keys = sharedPreferences.getAll().keySet();
-
-      console.log("-----will cancel " + keys.size() + " notification(s): " + keys);
-
       var iterator = keys.iterator();
+
       while (iterator.hasNext()) {
         LocalNotifications._cancelById(iterator.next());
       }
