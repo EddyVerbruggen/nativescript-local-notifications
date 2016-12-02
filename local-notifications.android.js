@@ -82,6 +82,20 @@ LocalNotifications.schedule = function (arg) {
             .setOngoing(options.ongoing)//sets the notification to ongoing if it's true.
             .setTicker(options.ticker || options.body);
 
+        if(options.group){
+            var inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
+            var events = Array.isArray(options.body) ? options.body: [options.body];
+            // Sets a title for the Inbox in expanded layout
+            inboxStyle.setBigContentTitle(options.title);
+            for (var i=0; i < events.length; i++) {
+                inboxStyle.addLine(events[i]);
+            }
+            options.groupSummary !== null ? inboxStyle.setSummaryText(options.groupSummary):0;
+            builder.setGroup(options.group)
+                .setStyle(inboxStyle)
+                .setGroupSummary(options.groupSummary !== null);
+        }
+
         // add the intent that handles the event when the notification is clicked (which should launch the app)
         var reqCode = new java.util.Random().nextInt();
         var clickIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationClickedActivity.class)
@@ -90,19 +104,6 @@ LocalNotifications.schedule = function (arg) {
 
         var pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingContentIntent);
-
-
-        // NOTE this expanded mode works and is pretty awesome.. add properties one day
-        /*
-         var inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
-         var events = ["a", "b", "c"];
-         // Sets a title for the Inbox in expanded layout
-         inboxStyle.setBigContentTitle("Event tracker details:");
-         for (var i=0; i < events.length; i++) {
-         inboxStyle.addLine(events[i]);
-         }
-         builder.setStyle(inboxStyle);
-         */
 
         // add the intent which schedules the notification
         var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
@@ -178,7 +179,7 @@ LocalNotifications._unpersist = function (id) {
 };
 
 LocalNotifications._cancelById = function (id) {
- 
+
   var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
       .setAction("" + id);
 
