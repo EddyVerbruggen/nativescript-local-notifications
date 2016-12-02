@@ -6,7 +6,8 @@ LocalNotifications.defaults = {
   body: '',
   badge: 0,
   interval: 0,
-  ongoing: false
+  ongoing: false,
+  groupSummary:null
 };
 
 LocalNotifications.merge = function merge(obj1, obj2) { // Our merge function
