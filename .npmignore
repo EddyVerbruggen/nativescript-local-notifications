@@ -1,3 +1,4 @@
-# Exclude the native source code. The native libraries are included in the plugin as compiled resources (i.e. jar & framework)
+.idea
+.vscode
 native-src/
 platforms/android/README.md
