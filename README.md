@@ -44,7 +44,7 @@ You can pass several options to this function, everything is optional:
 |`id`     |A number so you can easily distinguish your notifications. Default 0.|
 |`title`  |The title which is shown in the statusbar. Default empty.|
 |`body`   |The text below the title. Default empty.|
-|`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Default not set |
+|`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Note: The array would be trimed from the top if the messages exceed five. Default not set |
 |`groupSummary`| An [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html) notification summary. Default empty|
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
 |`at`     |A JavaScript Date object indicating when the notification should be shown. Default 'now'.|
@@ -64,6 +64,8 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
     body: 'Recurs every minute until cancelled',
     ticker: 'The ticker',
     badge: 1,
+    groupedMessages:["The first", "Second", "Keep going", "one more..", "OK Stop"] //android only
+    groupSummary:"Summary of the grouped messages above" //android only
     ongoing: true, // makes the notification ongoing (Android only)
     smallIcon: 'res://heart.png',
     interval: 'minute',
