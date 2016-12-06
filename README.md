@@ -44,6 +44,8 @@ You can pass several options to this function, everything is optional:
 |`id`     |A number so you can easily distinguish your notifications. Default 0.|
 |`title`  |The title which is shown in the statusbar. Default empty.|
 |`body`   |The text below the title. Default empty.|
+|`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Default not set |
+|`groupSummary`| An [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html) notification summary. Default empty|
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
 |`at`     |A JavaScript Date object indicating when the notification should be shown. Default 'now'.|
 |`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|

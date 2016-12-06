@@ -82,9 +82,11 @@ LocalNotifications.schedule = function (arg) {
             .setOngoing(options.ongoing)//sets the notification to ongoing if it's true.
             .setTicker(options.ticker || options.body);
 
-        if(options.group){
+        if(options.groupedMessages != null && Array.isArray(options.groupedMessages)){
             var inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
-            var events = Array.isArray(options.body) ? options.body: [options.body];
+            var events = options.groupedMessages;
+            (events.length > 5) ? events.splice(0, events.length - 5) : 0;
+
             // Sets a title for the Inbox in expanded layout
             inboxStyle.setBigContentTitle(options.title);
             for (var i=0; i < events.length; i++) {
@@ -93,7 +95,6 @@ LocalNotifications.schedule = function (arg) {
             options.groupSummary !== null ? inboxStyle.setSummaryText(options.groupSummary):0;
             builder.setGroup(options.group)
                 .setStyle(inboxStyle)
-                .setGroupSummary(options.groupSummary !== null);
         }
 
         // add the intent that handles the event when the notification is clicked (which should launch the app)
