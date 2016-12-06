@@ -82,7 +82,7 @@ declare namespace localNotifications {
          *
          * Android only.
          */
-        groupedMessage?:Array<string>
+        groupedMessages?:Array<string>
 
 
         /***
