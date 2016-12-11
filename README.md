@@ -21,10 +21,9 @@ tns install typescript
 Now you can import the plugin as an object into your `.ts` file as follows:
 
 ```js
-// import the TS definitions
 import * as LocalNotifications from "nativescript-local-notifications";
 
-// .. and use it as:
+// .. then use it as:
 LocalNotifications.hasPermission()..
 ```
 
