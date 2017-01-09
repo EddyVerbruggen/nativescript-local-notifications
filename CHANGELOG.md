@@ -1,5 +1,18 @@
 # Change Log
 
+## [1.2.1](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.1) (2017-01-09)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.2.0...1.2.1)
+
+**Implemented enhancements:**
+
+- Fix package.json to supporting AoT compilation [\#36](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/36)
+- Enable inboxStyle mode on android [\#33](https://github.com/EddyVerbruggen/nativescript-local-notifications/pull/33) ([samuelagm](https://github.com/samuelagm))
+
+**Closed issues:**
+
+- ios simulator throws local-notifications.js:26:37: JS ERROR ReferenceError: Can't find variable: Notification [\#34](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/34)
+- In Android 4.4 localnotifications undefined [\#4](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/4)
+
 ## [1.2.0](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.0) (2016-11-21)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.1.9...1.2.0)
 
@@ -83,10 +96,6 @@
 
 ## [1.0.2](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.0.2) (2016-04-27)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.0.1...1.0.2)
-
-**Closed issues:**
-
-- In Android 4.4 localnotifications undefined [\#4](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/4)
 
 ## [1.0.1](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.0.1) (2016-02-27)
 **Closed issues:**
