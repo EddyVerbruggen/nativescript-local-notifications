@@ -74,6 +74,23 @@ declare namespace localNotifications {
          * Default false.
          */
         ongoing?: boolean;
+
+        /***
+         * An array of messages to be displayed as a single notification using the inbox style
+         * Note: the length of the array cannot be greater than five, in a situation where it
+         * is, the array would be trimmed from the top
+         *
+         * Android only.
+         */
+        groupedMessages?:Array<string>
+
+
+        /***
+         * The summary of the grouped message (see #groupedMessage) when using the inbox style
+         *
+         * Android only.
+         */
+        groupSummary?:string;
     }
 
     export interface ReceivedNotification {
