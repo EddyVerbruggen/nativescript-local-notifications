@@ -7,14 +7,14 @@ Just like remote push notifications, but a few orders of magnitude easier to set
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
-```
+```bash
 tns plugin add nativescript-local-notifications
 ```
 
 #### TypeScript support
 And do yourself a favor by adding TypeScript support to your nativeScript app:
 
-````
+```bash
 tns install typescript
 ```
 
@@ -23,8 +23,8 @@ Now you can import the plugin as an object into your `.ts` file as follows:
 ```js
 import * as LocalNotifications from "nativescript-local-notifications";
 
-// .. then use it as:
-LocalNotifications.hasPermission()..
+// then use it as:
+LocalNotifications.hasPermission()
 ```
 
 ## Usage
@@ -55,6 +55,7 @@ You can pass several options to this function, everything is optional:
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them.(**Android Only**) |
 
 Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fall back to the default (app icon). This is a known issue and can be fixed in a future version.
+
 
 ```js
   LocalNotifications.schedule([{
