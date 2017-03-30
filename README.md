@@ -50,7 +50,7 @@ You can pass several options to this function, everything is optional:
 |`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|
 |`sound`  |Set this to `null` to suppress the default sound.|
 |`interval` |Set to one of `second minute hour day week month quarter year` if you want a recurring notification.|
-|`smallIcon` |On Android you can set a custom icon in the system tray. Pass in 'res://filename.png' which lives in App_Resouces/Android/drawable folders. If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders. Default: the app icon.|
+|`smallIcon` |On Android you can set a custom icon in the system tray. Pass in 'res://filename' (without the extension) which lives in App_Resouces/Android/drawable folders. If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders. Default: the app icon.|
 |`largeIcon` |Same as `smallIcon`, but this one is shown when you expand the notification center. The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.|
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them.(**Android Only**) |
 
@@ -67,7 +67,7 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
     groupedMessages:["The first", "Second", "Keep going", "one more..", "OK Stop"] //android only
     groupSummary:"Summary of the grouped messages above" //android only
     ongoing: true, // makes the notification ongoing (Android only)
-    smallIcon: 'res://heart.png',
+    smallIcon: 'res://heart',
     interval: 'minute',
     sound: null, // suppress the default sound
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
