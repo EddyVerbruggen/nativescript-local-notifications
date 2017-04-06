@@ -64,8 +64,8 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
     body: 'Recurs every minute until cancelled',
     ticker: 'The ticker',
     badge: 1,
-    groupedMessages:["The first", "Second", "Keep going", "one more..", "OK Stop"] //android only
-    groupSummary:"Summary of the grouped messages above" //android only
+    groupedMessages:["The first", "Second", "Keep going", "one more..", "OK Stop"], //android only
+    groupSummary:"Summary of the grouped messages above", //android only
     ongoing: true, // makes the notification ongoing (Android only)
     smallIcon: 'res://heart',
     interval: 'minute',
