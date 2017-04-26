@@ -81,6 +81,31 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
   )
 ```
 
+### Notification icons
+
+> __Background information:__ Local notifications may fail silently if you don't provide the notification icons in the correct dimensions. They may do work perfectly fine on one device but fail on the other. That's because android might fallback to your xxxhdpi launcher icon which is too big. This type of error is noticeable in logcat: `!!! FAILED BINDER TRANSACTION !!! (parcel size = 1435376)`
+
+#### Spec for ic_stat_notify.png (smallIcon)
+
+[Android API Guides → Status Bar Icons](https://developer.android.com/guide/practices/ui_guidelines/icon_design_status_bar.html)
+
+#### Spec for ic_notify.png (largeIcon)
+
+Unfortunately it seems like there's no official guide for these. Anyways there's a [dimen](https://github.com/android/platform_frameworks_base/blob/2d5dbba/core/res/res/values/dimens.xml#L181) that's telling us the dp size which we can translate to the following spec:
+
+| Density qualifier | px | dpi
+| -- | -- | --
+| ldpi | 48 x 48 | 120
+| mdpi | 64 x 64 | 160
+| hdpi | 96 x 96 | 240
+| xhdpi | 128 x 128 | 320
+| xxhdpi | 192 x 192 | 480
+
+__Don't include xxxhdpi__
+
+> __xxxhdpi__: Extra-extra-extra-high-density uses (__launcher icon only__, see the note in Supporting Multiple Screens); approximately 640dpi. Added in API Level 18  
+> Source: [Density Qualifier Docs](https://developer.android.com/guide/topics/resources/providing-resources.html#DensityQualifier)
+
 ### addOnMessageReceivedCallback
 Tapping a notification in the notification center will launch your app.
 But what if you scheduled two notifications and you want to know which one the user tapped?
