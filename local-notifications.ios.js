@@ -114,8 +114,17 @@ LocalNotifications._schedulePendingNotifications = function () {
     userInfoDict.setObjectForKey(options.interval, "interval");
     notification.userInfo = userInfoDict;
 
-    if (options.sound === undefined || options.sound === "default") {
-      notification.soundName = UILocalNotificationDefaultSoundName;
+    switch (options.sound) {
+      case null:
+      case false:
+        break;
+      case undefined:
+      case "default":
+        notification.soundName = UILocalNotificationDefaultSoundName;
+        break;
+      default:
+        notification.soundName = options.sound;
+        break;
     }
 
     if (options.interval !== 0) {

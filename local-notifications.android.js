@@ -65,8 +65,14 @@ LocalNotifications.schedule = function (arg) {
 
         options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 
-        if (options.sound === undefined || options.sound === "default") {
-          options.sound = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION).toString();
+        switch (options.sound) {
+          case false:
+            options.sound = null;
+            break;
+          case undefined:
+          case "default":
+            options.sound = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION).toString();
+            break;
         }
 
         // TODO best move this to native lib so we can reuse it in the restorereceiver (dupe for now)
@@ -272,7 +278,7 @@ LocalNotifications.requestPermission = function (arg) {
 };
 
 LocalNotifications._getSharedPreferences = function () {
-  var PREF_KEY = com.telerik.localnotifications.NotificationRestoreReceiver.SHARED_PREFERENCES_KEY;
+  var PREF_KEY = "LocalNotificationsPlugin"; // TODO: For some reason this is `null` and causes Java error...
   return context.getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
 };
 

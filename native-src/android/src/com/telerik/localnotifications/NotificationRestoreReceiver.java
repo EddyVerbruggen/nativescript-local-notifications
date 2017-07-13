@@ -49,7 +49,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
             .setContentText(options.optString("body"))
             .setSmallIcon(options.optInt("icon"))
             .setAutoCancel(true)
-            .setSound(options.has("sound") ? Uri.parse(options.getString("sound")) : null)
+            .setSound(options.has("sound") ? Uri.parse((String)("android.resource://" + context.getPackageName() + "/raw/" + options.optString("sound"))) : Uri.parse((String)("android.resource://" + context.getPackageName() + "/raw/notify")) )
             .setNumber(options.optInt("badge"))
             .setTicker(options.optString("ticker"));
 
@@ -67,6 +67,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
         final Intent notificationIntent = new Intent(context, NotificationPublisher.class)
             .setAction(options.getString("id"))
             .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.optInt("id"))
+            .putExtra(NotificationPublisher.SOUND, options.optString("sound"))
             .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
 
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, options.optInt("id")+200, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
