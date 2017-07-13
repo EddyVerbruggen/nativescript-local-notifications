@@ -48,7 +48,7 @@ You can pass several options to this function, everything is optional:
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
 |`at`     |A JavaScript Date object indicating when the notification should be shown. Default 'now'.|
 |`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|
-|`sound`  |Set this to `null` to suppress the default sound.|
+|`sound`  |Notification sound. For custom notification sound, copy sound file in ```App_Resources/iOS``` (iOS) and ```App_Resources/Android/raw``` (Android). Set this to "default" (or do not set at all) in order to use default OS sound. Set this to `null` to suppress sound.|
 |`interval` |Set to one of `second minute hour day week month quarter year` if you want a recurring notification.|
 |`smallIcon` |On Android you can set a custom icon in the system tray. Pass in 'res://filename' (without the extension) which lives in App_Resouces/Android/drawable folders. If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders. Default: the app icon.|
 |`largeIcon` |Same as `smallIcon`, but this one is shown when you expand the notification center. The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.|
@@ -69,7 +69,7 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
     ongoing: true, // makes the notification ongoing (Android only)
     smallIcon: 'res://heart',
     interval: 'minute',
-    sound: null, // suppress the default sound
+    sound: require("application").ios ? "customsound-ios.wav" : "customsound-android", // can be also `null`, "default"
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
   }]).then(
       function() {
@@ -195,5 +195,4 @@ If the `requestPermission` or `schedule` functions previously ran you may want t
 Let us know what you need by opening a Github issue.
 
 We're thinking about adding support for things like:
-- [Custom Notification sounds](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/3)
 - Interactive Notifications on iOS
