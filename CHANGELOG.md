@@ -3,9 +3,18 @@
 ## [1.2.2](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.2) (2017-08-13)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.2.1...1.2.2)
 
+**Implemented enhancements:**
+
+- Ability to set custom notification sound [\#58](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/58)
+
 **Fixed bugs:**
 
 - Submitted app returned for errors – Unexpected CFBundleExecutable Key [\#59](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/59)
+- Unable to get notification icon [\#23](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/23)
+- Fix broken syntax highlighting [\#44](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/44)
+- Update README.md [\#45](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/45)
+- Large Notification Icon Spec (Improve Docs) [\#48](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/48)
+- Fix: #48 (Improve Docs) [\#49](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/49)
 
 ## [1.2.1](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.1) (2017-01-09)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.2.0...1.2.1)
