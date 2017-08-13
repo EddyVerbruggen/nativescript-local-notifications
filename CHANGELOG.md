@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.2.2](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.2) (2017-08-13)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.2.1...1.2.2)
+
+**Fixed bugs:**
+
+- Submitted app returned for errors – Unexpected CFBundleExecutable Key [\#59](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/59)
+
 ## [1.2.1](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.1) (2017-01-09)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.2.0...1.2.1)
 

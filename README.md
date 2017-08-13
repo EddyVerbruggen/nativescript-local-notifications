@@ -1,6 +1,14 @@
 # NativeScript Local Notifications Plugin
 
-> Requires NativeScript 2.3.0+ (because of iOS 10 compatibility), so upgrade if you're rocking a lower spec: `npm install -g nativescript`.
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
+[![Twitter Follow][twitter-image]][twitter-url]
+
+[npm-image]:http://img.shields.io/npm/v/nativescript-local-notifications.svg
+[npm-url]:https://npmjs.org/package/nativescript-local-notifications
+[downloads-image]:http://img.shields.io/npm/dm/nativescript-local-notifications.svg
+[twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
+[twitter-url]:https://twitter.com/eddyverbruggen
 
 The Local Notifications plugin allows your app to show notifications when the app is not running.
 Just like remote push notifications, but a few orders of magnitude easier to set up.
@@ -20,7 +28,7 @@ tns install typescript
 
 Now you can import the plugin as an object into your `.ts` file as follows:
 
-```js
+```typescript
 import * as LocalNotifications from "nativescript-local-notifications";
 
 // then use it as:
