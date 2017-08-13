@@ -3,10 +3,9 @@
 This is the native iOS for the Telerik NativeScript Local Notifications plugin.
 Not really useful for usage outside this plugin.
 
-## Build
-
-The project has a manual build step that is building both for simulator and real device and then produces a universal .framework from the two versions.
-
-The output folder is the same as the default build folder for the project (right click the .framework file -> Show in finder) and is called iphoneos-universal.
-
-Tip: To update the framework in your demo app, copy the built fwk to the /lib/iOS folder, then simply run the project.
+## Building the framework
+- Run the target for simulator and device, make sure to not only build for the active architecture
+- Right-click the file in the Products folder and open in Finder
+- In a Terminal `cd` to that folder, move up to the `Products` folder
+- Run `lipo -create -output "LocalNotificationsPlugin" "Debug-iphonesimulator/LocalNotificationsPlugin.framework/LocalNotificationsPlugin" "Debug-iphoneos/LocalNotificationsPlugin.framework/LocalNotificationsPlugin"`
+- Use the resulting `LocalNotificationsPlugin` file instead of the one generated inside any of the target

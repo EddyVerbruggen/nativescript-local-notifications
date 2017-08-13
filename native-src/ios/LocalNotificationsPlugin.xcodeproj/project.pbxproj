@@ -23,14 +23,11 @@
 /* Begin PBXBuildFile section */
 		2B1764D41B4567E500936DC0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1764D31B4567E500936DC0 /* UIKit.framework */; };
 		2B6E19231B454838006A7B46 /* LocalNotificationsPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6E19171B454838006A7B46 /* LocalNotificationsPlugin.framework */; };
-		A325E9471C45871900C9F16B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A325E9411C45871900C9F16B /* Info.plist */; };
-		A325E9481C45871900C9F16B /* LocalNotificationsPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9421C45871900C9F16B /* LocalNotificationsPlugin.h */; };
-		A325E9491C45871900C9F16B /* Notification.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9431C45871900C9F16B /* Notification.h */; };
+		A325E9481C45871900C9F16B /* LocalNotificationsPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9421C45871900C9F16B /* LocalNotificationsPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A325E9491C45871900C9F16B /* Notification.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9431C45871900C9F16B /* Notification.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A325E94A1C45871900C9F16B /* Notification.m in Sources */ = {isa = PBXBuildFile; fileRef = A325E9441C45871900C9F16B /* Notification.m */; };
-		A325E94B1C45871900C9F16B /* NotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9451C45871900C9F16B /* NotificationManager.h */; };
+		A325E94B1C45871900C9F16B /* NotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A325E9451C45871900C9F16B /* NotificationManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A325E94C1C45871900C9F16B /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A325E9461C45871900C9F16B /* NotificationManager.m */; };
-		A325E9501C45872300C9F16B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A325E94E1C45872300C9F16B /* Info.plist */; };
-		A325E9511C45872300C9F16B /* LocalNotificationsPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A325E94F1C45872300C9F16B /* LocalNotificationsPluginTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,8 +50,6 @@
 		A325E9441C45871900C9F16B /* Notification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notification.m; sourceTree = "<group>"; };
 		A325E9451C45871900C9F16B /* NotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
 		A325E9461C45871900C9F16B /* NotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
-		A325E94E1C45872300C9F16B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A325E94F1C45872300C9F16B /* LocalNotificationsPluginTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalNotificationsPluginTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,7 +75,6 @@
 		2B6E190D1B454838006A7B46 = {
 			isa = PBXGroup;
 			children = (
-				A325E94D1C45872300C9F16B /* LocalNotificationsPluginTests */,
 				A325E9401C45871900C9F16B /* LocalNotificationsPlugin */,
 				2B1764D31B4567E500936DC0 /* UIKit.framework */,
 				2B6E19181B454838006A7B46 /* Products */,
@@ -107,15 +101,6 @@
 				A325E9461C45871900C9F16B /* NotificationManager.m */,
 			);
 			path = LocalNotificationsPlugin;
-			sourceTree = "<group>";
-		};
-		A325E94D1C45872300C9F16B /* LocalNotificationsPluginTests */ = {
-			isa = PBXGroup;
-			children = (
-				A325E94E1C45872300C9F16B /* Info.plist */,
-				A325E94F1C45872300C9F16B /* LocalNotificationsPluginTests.m */,
-			);
-			path = LocalNotificationsPluginTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -214,7 +199,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A325E9471C45871900C9F16B /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,7 +206,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A325E9501C45872300C9F16B /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,7 +241,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A325E9511C45872300C9F16B /* LocalNotificationsPluginTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
