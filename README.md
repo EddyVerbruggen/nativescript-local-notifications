@@ -35,9 +35,12 @@ import * as LocalNotifications from "nativescript-local-notifications";
 LocalNotifications.hasPermission()
 ```
 
-## Usage
-
+## Demo app (XML)
 If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen/nativescript-local-notifications-demo).
+
+
+## Demo app (Angular)
+This plugin is part of the [plugin showcase app](https://github.com/EddyVerbruggen/nativescript-pluginshowcase/tree/master/app/feedback) I built using Angular.
 
 ### schedule
 On iOS you need to ask permission to schedule a notification.
