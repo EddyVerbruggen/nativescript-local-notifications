@@ -112,6 +112,14 @@ LocalNotifications.schedule = function (arg) {
         var pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingContentIntent);
 
+        // set big text style
+        if(options.bigTextStyle){ 
+          var bigTextStyle = new android.support.v4.app.NotificationCompat.BigTextStyle();
+          bigTextStyle.setBigContentTitle(options.title);
+          bigTextStyle.bigText(options.body);
+          builder.setStyle(bigTextStyle);
+        }
+
         // add the intent which schedules the notification
         var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
             .setAction("" + options.id)

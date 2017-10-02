@@ -91,6 +91,14 @@ declare namespace localNotifications {
          * Android only.
          */
         groupSummary?:string;
+
+        /**
+         * Using the big text style
+         * 
+         * Android only.
+         * Default false.
+         */
+        bigTextStyle?: boolean;
     }
 
     export interface ReceivedNotification {
