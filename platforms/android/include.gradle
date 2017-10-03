@@ -1,0 +1,19 @@
+android {
+    productFlavors {
+        "nativescript-locnot" {
+            dimension "nativescript-locnot"
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    maven {
+        url "https://maven.google.com"
+    }
+}
+
+dependencies {
+    // Android 8 requires us to set a channel, which is supported since support-v4 version 26
+    compile "com.android.support:support-v4:26+"
+}

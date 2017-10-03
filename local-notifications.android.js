@@ -1,14 +1,14 @@
-var application = require("application");
 var utils = require("utils/utils");
 var LocalNotifications = require("./local-notifications-common");
 var context = utils.ad.getApplicationContext();
+
 LocalNotifications.addOnMessageReceivedCallback = function (callback) {
   return new Promise(function (resolve, reject) {
     try {
       // note that this is ONLY triggered when the user clicked the notification in the statusbar
       com.telerik.localnotifications.LocalNotificationsPlugin.setOnMessageReceivedCallback(
           new com.telerik.localnotifications.LocalNotificationsPluginListener({
-            success: function(notification) {
+            success: function (notification) {
               callback(JSON.parse(notification));
             }
           })
@@ -65,7 +65,12 @@ LocalNotifications.schedule = function (arg) {
 
         options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 
+        // custom sounds do not currently work, so using the default in all cases except when set to null
+        var useDefaultSound = options.sound !== null;
+
+        /*
         switch (options.sound) {
+          case null:
           case false:
             options.sound = null;
             break;
@@ -73,34 +78,53 @@ LocalNotifications.schedule = function (arg) {
           case "default":
             options.sound = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION).toString();
             break;
+          default:
+            options.sound = null;
+          //   const res = context.getResources();
+          //   const identifier = res.getIdentifier(options.sound, "raw", context.getApplicationInfo().packageName);
+          //   options.sound = android.net.Uri.parse("android.resource://" + context.getApplicationInfo().packageName + identifier);
         }
+        */
 
         // TODO best move this to native lib so we can reuse it in the restorereceiver (dupe for now)
         var builder = new android.support.v4.app.NotificationCompat.Builder(context)
-            .setDefaults(0)
+            .setDefaults(0) // IIRC this is deprecated, can prolly remove it without trouble
             .setContentTitle(options.title)
             .setContentText(options.body)
             .setSmallIcon(options.smallIcon)
             .setLargeIcon(options.largeIconDrawable)
             .setAutoCancel(true) // removes the notification from the statusbar once tapped
-            .setSound(options.sound === null ? null : android.net.Uri.parse(options.sound))
+            // .setSound(options.sound)
             .setNumber(options.badge)
-            .setOngoing(options.ongoing)//sets the notification to ongoing if it's true.
+            .setOngoing(options.ongoing)
             .setTicker(options.ticker || options.body);
 
-        if(options.groupedMessages != null && Array.isArray(options.groupedMessages)){
-            var inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
-            var events = options.groupedMessages;
-            (events.length > 5) ? events.splice(0, events.length - 5) : 0;
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+          var channelId = "myChannelId"; // package scoped, so no need to add it ourselves
+          var notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+          var notificationChannel = notificationManager.getNotificationChannel(channelId);
+          if (notificationChannel === null) {
+            // for 'importance' (expose one day as plugin property), see https://developer.android.com/reference/android/app/NotificationManager.html
+            notificationChannel = new android.app.NotificationChannel(channelId, "myChannelName", android.app.NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(notificationChannel);
+          }
+          builder.setChannelId(channelId);
+        }
 
-            // Sets a title for the Inbox in expanded layout
-            inboxStyle.setBigContentTitle(options.title);
-            for (var i=0; i < events.length; i++) {
-                inboxStyle.addLine(events[i]);
-            }
-            options.groupSummary !== null ? inboxStyle.setSummaryText(options.groupSummary):0;
-            builder.setGroup(options.group)
-                .setStyle(inboxStyle)
+        if (options.groupedMessages !== null && Array.isArray(options.groupedMessages)) {
+          var inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
+          var events = options.groupedMessages;
+          (events.length > 5) ? events.splice(0, events.length - 5) : 0;
+
+          // Sets a title for the Inbox in expanded layout
+          inboxStyle.setBigContentTitle(options.title);
+          for (var i = 0; i < events.length; i++) {
+            inboxStyle.addLine(events[i]);
+          }
+          options.groupSummary !== null ? inboxStyle.setSummaryText(options.groupSummary) : 0;
+          builder
+              .setGroup(options.group)
+              .setStyle(inboxStyle)
         }
 
         // add the intent that handles the event when the notification is clicked (which should launch the app)
@@ -112,19 +136,25 @@ LocalNotifications.schedule = function (arg) {
         var pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingContentIntent);
 
-        // set big text style
-        if(options.bigTextStyle){ 
+        // set big text style (adds an 'expansion arrow' to the notification)
+        if (options.bigTextStyle) {
           var bigTextStyle = new android.support.v4.app.NotificationCompat.BigTextStyle();
           bigTextStyle.setBigContentTitle(options.title);
           bigTextStyle.bigText(options.body);
           builder.setStyle(bigTextStyle);
         }
 
+        var notification = builder.build();
+
+        if (useDefaultSound) {
+          notification.defaults |= android.app.Notification.DEFAULT_SOUND;
+        }
+
         // add the intent which schedules the notification
         var notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
             .setAction("" + options.id)
             .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id)
-            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, builder.build());
+            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
 
         var pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -151,7 +181,7 @@ LocalNotifications.schedule = function (arg) {
   });
 };
 
-LocalNotifications._getInterval = function(interval) {
+LocalNotifications._getInterval = function (interval) {
   if (interval === null || interval === "") {
     return 0;
   } else if (interval === "second") {

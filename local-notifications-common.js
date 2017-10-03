@@ -7,7 +7,7 @@ LocalNotifications.defaults = {
   badge: 0,
   interval: 0,
   ongoing: false,
-  groupSummary:null,
+  groupSummary: null,
   bigTextStyle: false
 };
 

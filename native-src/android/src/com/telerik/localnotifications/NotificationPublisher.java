@@ -16,9 +16,11 @@ public class NotificationPublisher extends BroadcastReceiver {
 
   public void onReceive(Context context, Intent intent) {
     final Notification notification = intent.getParcelableExtra(NOTIFICATION);
-    Uri d_sound = Uri.parse((String)("android.resource://" + context.getPackageName() + "/raw/" + notification.sound));
-    notification.sound = d_sound;
-    final int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-    ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(id, notification);
+    if (notification != null) {
+      Uri d_sound = Uri.parse((String) ("android.resource://" + context.getPackageName() + "/raw/" + notification.sound));
+      notification.sound = d_sound;
+      final int id = intent.getIntExtra(NOTIFICATION_ID, 0);
+      ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(id, notification);
+    }
   }
 }
