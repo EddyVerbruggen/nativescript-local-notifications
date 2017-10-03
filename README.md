@@ -202,8 +202,11 @@ If the `requestPermission` or `schedule` functions previously ran you may want t
   )
 ```
 
-## Future work
-Let us know what you need by opening a Github issue.
+## Help, my Android app is restarted
+When your app is launched from a notification you may notice the app is not continuing from when you
+put it in the background. To fix that, open `app/App_Resources/AndroidManifest.xml` and change the
+`launchMode` of the NativeScript activity. For instance:
 
-We're thinking about adding support for things like:
-- Interactive Notifications on iOS
+```xml
+<activity android:launchMode="singleTop" />
+```
