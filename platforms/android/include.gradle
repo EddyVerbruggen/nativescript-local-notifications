@@ -15,5 +15,5 @@ repositories {
 
 dependencies {
     // Android 8 requires us to set a channel, which is supported since support-v4 version 26
-    compile "com.android.support:support-v4:26+"
+    compile "com.android.support:support-v4:26.1+"
 }
