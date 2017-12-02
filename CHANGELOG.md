@@ -1,5 +1,24 @@
 # Change Log
 
+## [2.0.1](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.1) (2017-12-02)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.0...2.0.1)
+
+**Fixed bugs:**
+
+- builder.channelId is defined in 26.1 [\#68](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/68)
+
+## [2.0.0](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.0) (2017-10-03)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.2.2...2.0.0)
+
+**Implemented enhancements:**
+
+- BigTextStyle for Android [\#63](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/63)
+
+**Fixed bugs:**
+
+- Android 8 compatibility
+- Custom sounds on Android 7
+
 ## [1.2.2](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/1.2.2) (2017-08-13)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/1.2.1...1.2.2)
 
