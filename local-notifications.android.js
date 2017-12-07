@@ -167,7 +167,13 @@ LocalNotifications.schedule = function (arg) {
         if (repeatInterval > 0) {
           alarmManager.setRepeating(android.app.AlarmManager.RTC_WAKEUP, options.atTime, repeatInterval, pendingIntent);
         } else {
-          alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
+          if (options.at) {
+          	alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
+          }
+          else {
+            var notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(options.id, notification);
+          }
         }
 
         LocalNotifications._persist(options);
