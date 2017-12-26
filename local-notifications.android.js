@@ -212,6 +212,7 @@ LocalNotifications._getInterval = function (interval) {
 LocalNotifications._persist = function (options) {
   var sharedPreferences = LocalNotifications._getSharedPreferences();
   var sharedPreferencesEditor = sharedPreferences.edit();
+  options.largeIconDrawable = null;
   sharedPreferencesEditor.putString("" + options.id, JSON.stringify(options));
   sharedPreferencesEditor.apply();
 };
