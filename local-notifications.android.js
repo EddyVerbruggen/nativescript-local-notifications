@@ -169,13 +169,11 @@ LocalNotifications.schedule = function (arg) {
         } else {
           if (options.at) {
           	alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
-          }
-          else {
-            var notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(options.id, notification);
+          } else {
+            var notiManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+            notiManager.notify(options.id, notification);
           }
         }
-
         LocalNotifications._persist(options);
       }
 

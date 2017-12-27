@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.0.2](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.2) (2017-12-27)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.1...2.0.2)
+
+**Implemented enhancements:**
+
+- Notification show with small delay [\#55](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/55)
+- Improve delivery speed for "now" notifications [\#70](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/70)
+
+**Fixed bugs:**
+
+- After Reboot my device, i got the issue as (no valid small icon) [\#51](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/51)
+- Plugin not working after tns-core-modules update [\#73](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/73)
+
 ## [2.0.1](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.1) (2017-12-02)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.0...2.0.1)
 
