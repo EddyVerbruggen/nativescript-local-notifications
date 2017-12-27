@@ -6,14 +6,8 @@ android {
     }
 }
 
-repositories {
-    jcenter()
-    maven {
-        url "https://maven.google.com"
-    }
-}
-
 dependencies {
-    // Android 8 requires us to set a channel, which is supported since support-v4 version 26
-    compile "com.android.support:support-v4:26.1+"
+//    def supportVer = project.hasProperty("supportVersion") ? supportVersion : "26.1+";
+    def supportVer = "26.1+";
+    compile "com.android.support:support-v4:$supportVer"
 }
