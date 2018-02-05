@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.3](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.2) (2018-02-05)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.2...2.0.3)
+
+**Fixed bugs:**
+
+- getScheduledIds() returns ids of notifications that have already been published [\#77](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/77)
+
 ## [2.0.2](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.2) (2017-12-27)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.1...2.0.2)
 
