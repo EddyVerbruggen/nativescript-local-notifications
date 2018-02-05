@@ -225,7 +225,7 @@ LocalNotifications._unpersist = function (id) {
   var sharedPreferences = LocalNotifications._getSharedPreferences();
   var sharedPreferencesEditor = sharedPreferences.edit();
   sharedPreferencesEditor.remove("" + id);
-  sharedPreferencesEditor.apply();
+  sharedPreferencesEditor.commit();
 };
 
 LocalNotifications._cancelById = function (id) {
@@ -321,7 +321,7 @@ LocalNotifications.requestPermission = function (arg) {
 };
 
 LocalNotifications._getSharedPreferences = function () {
-  var PREF_KEY = "LocalNotificationsPlugin"; // TODO: For some reason this is `null` and causes Java error...
+  var PREF_KEY = "LocalNotificationsPlugin";
   return context.getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
 };
 
