@@ -80,6 +80,7 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
     ongoing: true, // makes the notification ongoing (Android only)
     smallIcon: 'res://heart',
     interval: 'minute',
+    channel: 'My Channel', // default: 'Channel'
     sound: "customsound-ios.wav", // falls back to the default sound on Android
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
   }]).then(

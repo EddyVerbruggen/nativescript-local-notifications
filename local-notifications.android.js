@@ -105,7 +105,7 @@ LocalNotifications.schedule = function (arg) {
           var notificationChannel = notificationManager.getNotificationChannel(channelId);
           if (notificationChannel === null) {
             // for 'importance' (expose one day as plugin property), see https://developer.android.com/reference/android/app/NotificationManager.html
-            notificationChannel = new android.app.NotificationChannel(channelId, "myChannelName", android.app.NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel = new android.app.NotificationChannel(channelId, options.channel, android.app.NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(notificationChannel);
           }
           builder.setChannelId(channelId);

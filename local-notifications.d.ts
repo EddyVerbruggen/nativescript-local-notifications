@@ -94,11 +94,17 @@ declare namespace localNotifications {
 
         /**
          * Using the big text style
-         * 
+         *
          * Android only.
          * Default false.
          */
         bigTextStyle?: boolean;
+
+        /**
+         * When longpressing a notification on Android (API >= 26), this 'channel' name is revealed.
+         * Default 'Channel'.
+         */
+        channel?: string;
     }
 
     export interface ReceivedNotification {

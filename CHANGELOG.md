@@ -1,6 +1,14 @@
 # Change Log
 
-## [2.0.3](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.2) (2018-02-05)
+## [2.0.4](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.4) (2018-06-19)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.3...2.0.4)
+
+**Implemented enhancements:**
+
+- Feature request: Let the app developer customise the channel name [\#92](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/92)
+
+
+## [2.0.3](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.3) (2018-02-05)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.2...2.0.3)
 
 **Fixed bugs:**

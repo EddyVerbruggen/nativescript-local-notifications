@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -60,7 +59,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
             .setSmallIcon(options.optInt("smallIcon"))
             .setLargeIcon(largeIconDrawable)
             .setAutoCancel(true)
-            .setSound(options.has("sound") ? Uri.parse((String)("android.resource://" + context.getPackageName() + "/raw/" + options.optString("sound"))) : Uri.parse((String)("android.resource://" + context.getPackageName() + "/raw/notify")) )
+            .setSound(options.has("sound") ? Uri.parse((String) ("android.resource://" + context.getPackageName() + "/raw/" + options.optString("sound"))) : Uri.parse((String) ("android.resource://" + context.getPackageName() + "/raw/notify")))
             .setNumber(options.optInt("badge"))
             .setTicker(options.optString("ticker"));
 
@@ -71,7 +70,11 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
           if (notMgr != null) {
             NotificationChannel notificationChannel = notMgr.getNotificationChannel(channelId);
             if (notificationChannel == null) {
-              notificationChannel = new NotificationChannel(channelId, "myChannelName", NotificationManager.IMPORTANCE_HIGH);
+              notificationChannel = new NotificationChannel(
+                  channelId,
+                  options.has("channel") ? options.optString("channel") : "Channel",
+                  NotificationManager.IMPORTANCE_HIGH
+              );
               notMgr.createNotificationChannel(notificationChannel);
             }
 
@@ -88,7 +91,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
             .putExtra("pushBundle", notificationString)
             .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        final PendingIntent pendingContentIntent = PendingIntent.getActivity(context, options.optInt("id")+100, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final PendingIntent pendingContentIntent = PendingIntent.getActivity(context, options.optInt("id") + 100, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingContentIntent);
 
         final Notification notification = builder.build();
@@ -100,7 +103,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
             .putExtra(NotificationPublisher.SOUND, options.optString("sound"))
             .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
 
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, options.optInt("id")+200, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, options.optInt("id") + 200, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // configure when we'll show the event
         long triggerTime = options.getLong("atTime");
@@ -111,7 +114,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (wasInThePast && !isRepeating) {
           alarmManager.cancel(pendingIntent);
-          ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(options.getInt("id"));
+          ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(options.getInt("id"));
           // TODO 'unpersist' would be nice
         } else {
           // schedule
