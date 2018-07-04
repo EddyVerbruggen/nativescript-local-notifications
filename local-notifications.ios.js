@@ -1,5 +1,5 @@
 var LocalNotifications = require("./local-notifications-common");
-var utils = require("utils/utils");
+var utils = require("tns-core-modules/utils/utils");
 
 LocalNotifications._addObserver = function (eventName, callback) {
   var notiCenter = utils.ios.getter(NSNotificationCenter, NSNotificationCenter.defaultCenter);
@@ -137,7 +137,7 @@ LocalNotifications._schedulePendingNotifications = function () {
 
     var app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
     app.scheduleLocalNotification(notification);
-    
+
   }
 };
 

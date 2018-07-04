@@ -1,4 +1,4 @@
-var utils = require("utils/utils");
+var utils = require("tns-core-modules/utils/utils");
 var LocalNotifications = require("./local-notifications-common");
 var context = utils.ad.getApplicationContext();
 
