@@ -102,13 +102,15 @@ LocalNotifications.schedule = function (arg) {
         if (android.os.Build.VERSION.SDK_INT >= 26) {
           var channelId = "myChannelId"; // package scoped, so no need to add it ourselves
           var notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-          var notificationChannel = notificationManager.getNotificationChannel(channelId);
-          if (notificationChannel === null) {
-            // for 'importance' (expose one day as plugin property), see https://developer.android.com/reference/android/app/NotificationManager.html
-            notificationChannel = new android.app.NotificationChannel(channelId, options.channel, android.app.NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(notificationChannel);
+          if (notificationManager.getNotificationChannel) {
+            var notificationChannel = notificationManager.getNotificationChannel(channelId);
+            if (notificationChannel === null) {
+              // for 'importance' (expose one day as plugin property), see https://developer.android.com/reference/android/app/NotificationManager.html
+              notificationChannel = new android.app.NotificationChannel(channelId, options.channel, android.app.NotificationManager.IMPORTANCE_HIGH);
+              notificationManager.createNotificationChannel(notificationChannel);
+            }
+            builder.setChannelId(channelId);
           }
-          builder.setChannelId(channelId);
         }
 
         if (options.groupedMessages !== null && Array.isArray(options.groupedMessages)) {
