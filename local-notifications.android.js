@@ -102,7 +102,7 @@ LocalNotifications.schedule = function (arg) {
         if (android.os.Build.VERSION.SDK_INT >= 26 && builder.setChannelId) {
           var channelId = "myChannelId"; // package scoped, so no need to add it ourselves
           var notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-          if (notificationManager.getNotificationChannel) {
+          if (notificationManager && notificationManager.getNotificationChannel) {
             var notificationChannel = notificationManager.getNotificationChannel(channelId);
             if (notificationChannel === null) {
               // for 'importance' (expose one day as plugin property), see https://developer.android.com/reference/android/app/NotificationManager.html
