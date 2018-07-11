@@ -61,6 +61,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
             .setAutoCancel(true)
             .setSound(options.has("sound") ? Uri.parse((String) ("android.resource://" + context.getPackageName() + "/raw/" + options.optString("sound"))) : Uri.parse((String) ("android.resource://" + context.getPackageName() + "/raw/notify")))
             .setNumber(options.optInt("badge"))
+            .setPriority(options.optInt("priority", 0))
             .setTicker(options.optString("ticker"));
 
         // set channel for Android 8+

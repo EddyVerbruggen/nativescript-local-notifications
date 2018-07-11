@@ -1,0 +1,52 @@
+<Page xmlns="http://www.nativescript.org/tns.xsd" navigatingTo="navigatingTo">
+  <TabView>
+    <TabView.items>
+
+      <TabViewItem title="Demo">
+        <TabViewItem.view>
+          <ScrollView>
+            <GridLayout columns="*,*" rows="auto, auto, auto, auto, auto, auto, auto, auto, auto" horizontalAlignment="center" class="tab-content">
+
+              <iOS>
+                <Label row="0" colSpan="2" text="On iOS you need permission before being able to schedule local notifications. Either defer to when you schedule it, or do it when the app first loads." class="hint" textWrap="true" />
+                <Button row="1" col="0" text="has permission?" tap="{{ doCheckHasPermission }}" class="button button-neutral"/>
+                <Button row="1" col="1" text="request perm." tap="{{ doRequestPermission }}" class="button button-neutral"/>
+              </iOS>
+
+              <Label row="2" colSpan="2" text="After scheduling a notification close the app and wait 10 seconds" class="hint" textWrap="true" />
+
+              <Button row="3" col="0" text="schedule" tap="{{ doSchedule }}" class="button" />
+              <Button row="3" col="1"  text="schedule silent" tap="{{ doScheduleSilent }}" class="button" />
+
+              <Button row="4" col="0" text="schedule /w badge" tap="{{ doScheduleAndSetBadgeNumber }}" class="button"  />
+              <Button row="4" col="1" text="schedule id 5 /w icon" tap="{{ doScheduleId5WithCustomIcon }}" class="button"  />
+
+              <Button row="5" colSpan="2" text="repeat every minute (id 6)" tap="{{ doScheduleEveryMinute }}" class="button"  />
+
+              <Button row="6" col="0" colSpan="2" text="get scheduled id's" tap="{{ doGetScheduledIds }}" class="button button-neutral"/>
+
+              <Button row="7" col="0"  text="cancel all" tap="{{ doCancelAll }}" class="button button-danger"/>
+              <Button row="7" col="1"  text="cancel id 6" tap="{{ doCancelId6 }}" class="button button-danger"/>
+
+              <Label row="8" colSpan="2" text="To receive the notification payload in your app you need to configure a listener." class="hint" textWrap="true" />
+
+              <Button row="9" col="0" colSpan="2" text="add notification listener" tap="{{ doAddOnMessageReceivedCallback }}" class="button button-positive"/>
+            </GridLayout>
+          </ScrollView>
+        </TabViewItem.view>
+      </TabViewItem>
+
+      <TabViewItem title="About">
+        <TabViewItem.view>
+          <ScrollView>
+            <StackLayout class="tab-content">
+              <Label text="Local Notifications plugin demo" class="title"/>
+              <Label text="The Local Notifications plugin allows your app to show notifications when the app is not running. Just like remote push notifications, but a few orders of magnitude easier to set up." textWrap="true"/>
+            </StackLayout>
+          </ScrollView>
+        </TabViewItem.view>
+      </TabViewItem>
+
+    </TabView.items>
+  </TabView>
+</Page>

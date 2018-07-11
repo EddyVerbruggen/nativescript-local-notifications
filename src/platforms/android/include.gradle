@@ -1,0 +1,8 @@
+android {
+}
+
+dependencies {
+//    def supportVer = project.hasProperty("supportVersion") ? supportVersion : "26.1+";
+    def supportVer = "26.1+";
+    compile "com.android.support:support-v4:$supportVer"
+}

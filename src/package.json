@@ -1,0 +1,56 @@
+{
+  "name": "nativescript-local-notifications",
+  "version": "3.0.0",
+  "description": "The Local Notifications plugin allows your app to show notifications when the app is not running. Just like remote push notifications, but a few orders of magnitude easier to set up.",
+  "main": "local-notifications",
+  "typings": "index.d.ts",
+  "nativescript": {
+    "platforms": {
+      "android": "2.3.0",
+      "ios": "2.3.0"
+    }
+  },
+  "scripts": {
+    "build": "npm i && tsc --skipLibCheck",
+    "demo.ios": "npm run build && cd ../demo && tns run ios --syncAllFiles",
+    "demo.android": "npm run build && cd ../demo && tns run android --syncAllFiles",
+    "test": "npm run tslint && npm run tslint.demo && cd ../demo && tns build ios && tns build android",
+    "test.ios": "cd ../demo && tns test ios --emulator",
+    "test.ios.device": "cd ../demo && tns test ios",
+    "test.android": "cd ../demo && tns test android --justlaunch",
+    "plugin.link": "npm link && cd ../demo && npm link nativescript-mapbox && cd ../src",
+    "preparedemo": "npm run build && cd ../demo && tns plugin remove nativescript-mapbox && tns plugin add ../src && tns install",
+    "setup": "npm run build && cd ../demo && npm i",
+    "setupandinstall": "npm i && cd ../demo && npm i && cd ../src && npm run build && cd ../demo && tns plugin add ../src && cd ../src",
+    "tslint": "tslint --config '../tslint.json' '*.ts' --exclude '**/node_modules/**'",
+    "tslint.demo": "tslint --config '../tslint.json' '../demo/app/*.ts' --exclude '**/node_modules/**'",
+    "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'",
+    "prepublishOnly": "npm run build",
+    "development.setup": "npm run setup && npm link && cd ../demo && npm link nativescript-mapbox && cd ../src",
+    "generate.typings.ios": "cd ../demo && TNS_DEBUG_METADATA_PATH=\"$(pwd)/metadata\" tns build ios && TNS_TYPESCRIPT_DECLARATIONS_PATH=\"$(pwd)/typings\" tns build ios && echo 'Now look for your library typings in demo/typings!'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eddyverbruggen/nativescript-local-notifications.git"
+  },
+  "keywords": [
+    "ecosystem:NativeScript",
+    "NativeScript",
+    "Alarm",
+    "Notification",
+    "Local Notification"
+  ],
+  "author": "Telerik / Eddy Verbruggen <eddyverbruggen@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eddyverbruggen/nativescript-local-notifications/issues"
+  },
+  "homepage": "https://github.com/eddyverbruggen/nativescript-local-notifications",
+  "devDependencies": {
+    "nativescript-dev-typescript": "~0.7.2",
+    "tns-core-modules": "~4.1.0",
+    "tns-platform-declarations": "~4.1.0",
+    "tslint": "^5.10.0",
+    "typescript": "~2.8.0"
+  }
+}
