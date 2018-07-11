@@ -8,7 +8,8 @@ var LocalNotifications = {
     ongoing: false,
     groupSummary: null,
     bigTextStyle: false,
-    channel: 'Channel'
+    channel: 'Channel',
+    priority: 0, // PRIORITY_HIGH: 1 PRIORITY_LOW: -1 PRIORITY_MAX: 2 PRIORITY_MIN: -2 PRIORITY_DEFAULT: 0
   },
   merge: function (obj1, obj2) { // Our merge function
     var result = {}; // return result

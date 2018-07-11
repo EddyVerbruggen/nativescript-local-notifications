@@ -97,7 +97,8 @@ LocalNotifications.schedule = function (arg) {
             // .setSound(options.sound)
             .setNumber(options.badge)
             .setOngoing(options.ongoing)
-            .setTicker(options.ticker || options.body);
+            .setTicker(options.ticker || options.body)
+            .setPriority(options.priority); //this option(priority) is to able heads-up notifications in sdk < 26
 
         if (android.os.Build.VERSION.SDK_INT >= 26 && builder.setChannelId) {
           var channelId = "myChannelId"; // package scoped, so no need to add it ourselves
