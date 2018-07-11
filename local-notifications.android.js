@@ -132,9 +132,9 @@ LocalNotifications.schedule = function (arg) {
 
         // add the intent that handles the event when the notification is clicked (which should launch the app)
         var reqCode = new java.util.Random().nextInt();
-        var clickIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationClickedActivity.class)
-            .putExtra("pushBundle", JSON.stringify(options))
-            .setFlags(android.content.Intent.FLAG_ACTIVITY_NO_HISTORY);
+          var clickIntent = new android.content.Intent(context, options.intent.activityClass)
+              .putExtra(options.intent.extraName, JSON.stringify(options))
+              .setFlags(options.intent.flags);
 
         var pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingContentIntent);

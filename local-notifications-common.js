@@ -10,6 +10,11 @@ var LocalNotifications = {
     bigTextStyle: false,
     channel: 'Channel',
     priority: 0, // PRIORITY_HIGH: 1 PRIORITY_LOW: -1 PRIORITY_MAX: 2 PRIORITY_MIN: -2 PRIORITY_DEFAULT: 0
+    intent: {
+      activityClass: com.telerik.localnotifications.NotificationClickedActivity.class,
+      flags: android.content.Intent.FLAG_ACTIVITY_NO_HISTORY,
+      extraName: 'pushBundle'
+    }
   },
   merge: function (obj1, obj2) { // Our merge function
     var result = {}; // return result
