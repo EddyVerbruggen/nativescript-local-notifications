@@ -20,7 +20,8 @@ label {
   font-size: 16;
 }
 
-.hint {
+Label.notification,
+Label.hint {
   font-size: 14;
   margin: 8;
 }

@@ -4,25 +4,15 @@ import { LocalNotifications } from "nativescript-local-notifications";
 
 export class HelloWorldModel extends Observable {
 
-  public doAddOnMessageReceivedCallback(): void {
-    LocalNotifications.addOnMessageReceivedCallback(
-        notificationData => {
-          alert({
-            title: "Notification received",
-            message: "ID: " + notificationData.id +
-                "\nTitle: " + notificationData.title +
-                "\nBody: " + notificationData.body,
-            okButtonText: "Excellent!"
-          });
-        })
-        .then(() => {
-          alert({
-            title: "Listener added",
-            message: "We'll let you know when a notification is received.",
-            okButtonText: "Nice :)"
-          });
-        });
-  };
+  public notification: string;
+
+  constructor() {
+    super();
+    LocalNotifications.addOnMessageReceivedCallback(notificationData => {
+      console.log("Notification received: " + JSON.stringify(notificationData));
+      this.set("notification", "Notification received: " + JSON.stringify(notificationData));
+    });
+  }
 
   public doCheckHasPermission(): void {
     LocalNotifications.hasPermission()
@@ -50,14 +40,29 @@ export class HelloWorldModel extends Observable {
     LocalNotifications.schedule(
         [{
           id: 1,
-          title: 'The title',
+          title: 'THE TITLE',
+          subtitle: 'The subtitle',
           body: 'The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big body.',
           bigTextStyle: true, // Adds an 'expansion arrow' to the notification (Android only)
           sound: "customsound",
-          priority: "high",
+          forceShowWhenInForeground: true,
           channel: "My Awesome Channel",
           ticker: 'Special ticker text (Android only)',
-          at: new Date(new Date().getTime() + (10 * 1000))
+          at: new Date(new Date().getTime() + (10 * 1000)),
+          actions: [
+            {
+              id: "yes",
+              type: "button",
+              title: "Yes (and launch app)",
+              launch: true
+            },
+            {
+              id: "no",
+              type: "button",
+              title: "No",
+              launch: false
+            }
+          ]
         }])
         .then(() => {
           alert({
@@ -74,7 +79,7 @@ export class HelloWorldModel extends Observable {
         [{
           id: 2,
           title: 'Hi',
-          priority: "low",
+          forceShowWhenInForeground: false, // default
           body: 'I\'m soundless',
           sound: null,
           at: new Date(new Date().getTime() + 10 * 1000)
@@ -94,7 +99,6 @@ export class HelloWorldModel extends Observable {
         [{
           id: 3,
           title: 'Hi',
-          priority: "default",
           body: 'You should see a \'3\' somewhere',
           at: new Date(new Date().getTime() + 10 * 1000),
           badge: 3
@@ -113,11 +117,21 @@ export class HelloWorldModel extends Observable {
     LocalNotifications.schedule(
         [{
           id: 5,
-          title: 'Hey',
-          body: 'I\'m ID 5',
+          title: 'Richard wants your input',
+          body: '"Hey man, what do you think of the new design?" (swipe down to reply, or tap to open the app)',
           smallIcon: 'res://launcher_icon_arrow',
+          forceShowWhenInForeground: true,
           largeIcon: 'res://ic_notify', // although this is the default fallback as well ;)
-          at: new Date(new Date().getTime() + 10 * 1000)
+          at: new Date(new Date().getTime() + 10 * 1000),
+          actions: [
+            {
+              id: "input-richard",
+              type: "input",
+              placeholder: "Type to reply..",
+              submitLabel: "Reply",
+              launch: false
+            }
+          ]
         }])
         .then(() => {
           alert({
@@ -136,6 +150,7 @@ export class HelloWorldModel extends Observable {
           title: 'Every minute!',
           interval: 'minute', // some constant
           body: 'I\'m repeating until cancelled',
+          forceShowWhenInForeground: true,
           at: new Date(new Date().getTime() + 10 * 1000)
         }])
         .then(() => {

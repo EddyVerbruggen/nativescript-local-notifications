@@ -28,9 +28,8 @@
               <Button row="7" col="0"  text="cancel all" tap="{{ doCancelAll }}" class="button button-danger"/>
               <Button row="7" col="1"  text="cancel id 6" tap="{{ doCancelId6 }}" class="button button-danger"/>
 
-              <Label row="8" colSpan="2" text="To receive the notification payload in your app you need to configure a listener." class="hint" textWrap="true" />
+              <Label row="8" colSpan="2" text="{{ notification }}" class="notification" textWrap="true"/>
 
-              <Button row="9" col="0" colSpan="2" text="add notification listener" tap="{{ doAddOnMessageReceivedCallback }}" class="button button-positive"/>
             </GridLayout>
           </ScrollView>
         </TabViewItem.view>

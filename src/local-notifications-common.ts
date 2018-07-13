@@ -1,5 +1,13 @@
 export type ScheduleInterval = "second" | "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year";
-export type SchedulePriority = "min" | "low" | "default" | "high" | "max";
+
+export interface NotificationAction {
+  id: string;
+  type: "button" | "input";
+  title?: string;
+  launch?: boolean;
+  submitLabel?: string;
+  placeholder?: string;
+}
 
 /**
  * The options object passed into the schedule function.
@@ -18,6 +26,13 @@ export interface ScheduleOptions {
   title?: string;
 
   /**
+   * Shown below the title.
+   * Default empty.
+   * iOS >= 10 only.
+   */
+  subtitle?: string;
+
+  /**
    * The text below the title.
    * Default empty.
    */
@@ -34,6 +49,9 @@ export interface ScheduleOptions {
    * Default 'now'.
    */
   at?: Date;
+
+  // TODO
+  trigger?: "timeInterval";
 
   /**
    * On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center.
@@ -105,16 +123,23 @@ export interface ScheduleOptions {
   channel?: string;
 
   /**
-   * For Android only currently. Set to (at least) "high" if you want the notification to show when the app is in the foreground.
-   * Default "normal"
+   * Default false.
    */
-  priority?: SchedulePriority;
+  forceShowWhenInForeground?: boolean;
+
+  /**
+   * Buttons or text input.
+   */
+  actions?: Array<NotificationAction>;
 }
 
 export interface ReceivedNotification {
   id: number;
+  // foreground: boolean;
   title?: string;
   body?: string;
+  event?: string;
+  response?: string;
 }
 
 export interface LocalNotificationsApi {
@@ -182,12 +207,12 @@ export abstract class LocalNotificationsCommon {
     title: "",
     body: "",
     badge: 0,
-    interval: 0,
+    interval: undefined,
     ongoing: false,
     groupSummary: null,
     bigTextStyle: false,
     channel: "Channel",
-    priority: "default"
+    forceShowWhenInForeground: false
   };
 
   public static merge(obj1: {}, obj2: {}): any {

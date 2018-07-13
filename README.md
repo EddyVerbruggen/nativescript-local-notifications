@@ -53,6 +53,7 @@ You can pass several options to this function, everything is optional:
 |------|-----------|
 |`id`     |A number so you can easily distinguish your notifications. Default 0.|
 |`title`  |The title which is shown in the statusbar. Default empty.|
+|`subtitle`  |Shown below the title. Default empty. iOS >= 10 only. Available since plugin version 3.0.0.|
 |`body`   |The text below the title. Default empty.|
 |`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Note: The array would be trimed from the top if the messages exceed five. Default not set |
 |`groupSummary`| An [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html) notification summary. Default empty|
@@ -65,9 +66,22 @@ You can pass several options to this function, everything is optional:
 |`largeIcon` |Same as `smallIcon`, but this one is shown when you expand the notification center. The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.|
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them. (**Android Only**) |
 |`channel` |Default is (`Channel`). Set the channel name for Android API >= 26, which is shown when the user longpresses a  notification. (**Android Only**) |
-|`priority` |Default is (`default`). Set the priority to `high` if notifications don't show while the app is in the foreground. (**Android Only**) |
+|`forceShowWhenInForeground` |Default is `false`. Set to `true` to always show the notification. Note that on iOS < 10 this is ignored (the notification is not shown), and on newer Androids it's currently ignored as well (the notification always shows, per platform default). |
+|`actions` |Add an array of `NotificationAction` objects (see below) to add buttons or text input to a notification. |
 
-Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fall back to the default (app icon). This is a known issue and can be fixed in a future version.
+#### `NotificationAction`
+
+|option|description|
+|------|-----------|
+|`id`     |An id so you can easily distinguish your actions.|
+|`type`   |Either `button` or `input`.|
+|`title`  |The label for `type` = `button`.|
+|`launch` |Launch the app when the action completes.|
+|`submitLabel` |The submit button label for `type` = `input`.|
+|`placeholder` |The placeholder text for `type` = `input`.|
+
+Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fall back to the default (app icon).
+This is a known issue and can be fixed in a future version.
 
 
 ```js

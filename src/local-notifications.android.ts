@@ -4,7 +4,7 @@ import {
   LocalNotificationsApi,
   ReceivedNotification,
   ScheduleOptions,
-  ScheduleInterval, SchedulePriority
+  ScheduleInterval
 } from "./local-notifications-common";
 
 declare const android, com: any;
@@ -12,7 +12,7 @@ declare const android, com: any;
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
   private static getInterval(interval: ScheduleInterval): number {
-    if (!interval) {
+    if (interval === undefined) {
       return 0;
     } else if (interval === "second") {
       return 1000; // it's in ms
@@ -32,22 +32,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       return android.app.AlarmManager.INTERVAL_DAY * 365; // same here
     } else {
       return 0;
-    }
-  }
-
-  private static getPriority(priority: SchedulePriority): number {
-    if (!priority) {
-      return 0; // default
-    } else if (priority === "min") {
-      return -2;
-    } else if (priority === "low") {
-      return -1;
-    } else if (priority === "high") {
-      return 1;
-    } else if (priority === "max") {
-      return 2;
-    } else {
-      return 0; // default
     }
   }
 
@@ -261,7 +245,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
               .setNumber(options.badge)
               .setOngoing(options.ongoing)
               .setTicker(options.ticker || options.body)
-              .setPriority(LocalNotificationsImpl.getPriority(options.priority));
+              .setPriority(options.forceShowWhenInForeground ? 1 : 0); // 0 = default, 1 = high
 
           if (android.os.Build.VERSION.SDK_INT >= 26 && builder.setChannelId) {
             const channelId = "myChannelId"; // package scoped, so no need to add it ourselves
