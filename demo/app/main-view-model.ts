@@ -36,7 +36,7 @@ export class HelloWorldModel extends Observable {
         });
   }
 
-  public doSchedule(): void {
+  public doScheduleWithButtons(): void {
     LocalNotifications.schedule(
         [{
           id: 1,
@@ -74,7 +74,7 @@ export class HelloWorldModel extends Observable {
         .catch(error => console.log("doSchedule error: " + error))
   };
 
-  public doScheduleSilent(): void {
+  public doScheduleNoSound(): void {
     LocalNotifications.schedule(
         [{
           id: 2,
@@ -113,15 +113,34 @@ export class HelloWorldModel extends Observable {
         .catch(error => console.log("doScheduleAndSetBadgeNumber error: " + error));
   }
 
-  public doScheduleId5WithCustomIcon(): void {
+  public doScheduleId4WithCustomIcon(): void {
+    LocalNotifications.schedule(
+        [{
+          id: 4,
+          title: 'Custom icon',
+          body: 'Check it out!',
+          smallIcon: 'res://launcher_icon_arrow',
+          largeIcon: 'res://ic_notify', // although this is the default fallback as well ;)
+          at: new Date(new Date().getTime() + 10 * 1000),
+        }])
+        .then(() => {
+          alert({
+            title: "Notification scheduled",
+            message: 'ID: 4',
+            okButtonText: "OK, thanks"
+          });
+        })
+        .catch(error => console.log("doScheduleId4WithCustomIcon error: " + error));
+  }
+
+
+  public doScheduleId5WithInput(): void {
     LocalNotifications.schedule(
         [{
           id: 5,
           title: 'Richard wants your input',
           body: '"Hey man, what do you think of the new design?" (swipe down to reply, or tap to open the app)',
-          smallIcon: 'res://launcher_icon_arrow',
           forceShowWhenInForeground: true,
-          largeIcon: 'res://ic_notify', // although this is the default fallback as well ;)
           at: new Date(new Date().getTime() + 10 * 1000),
           actions: [
             {
@@ -140,7 +159,7 @@ export class HelloWorldModel extends Observable {
             okButtonText: "OK, thanks"
           });
         })
-        .catch(error => console.log("doScheduleId5 error: " + error));
+        .catch(error => console.log("doScheduleId5WithInput error: " + error));
   }
 
   public doScheduleEveryMinute(): void {
