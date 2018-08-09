@@ -1,15 +1,19 @@
+import { Color } from "tns-core-modules/color/color";
 import * as utils from "tns-core-modules/utils/utils";
+import * as imageSource from "tns-core-modules/image-source";
 import {
   LocalNotificationsCommon,
   LocalNotificationsApi,
   ReceivedNotification,
   ScheduleOptions,
-  ScheduleInterval
+  ScheduleInterval,
 } from "./local-notifications-common";
 
 declare const android, com: any;
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
+
+  private static IS_GTE_LOLLIPOP: boolean = android.os.Build.VERSION.SDK_INT >= 21;
 
   private static getInterval(interval: ScheduleInterval): number {
     if (interval === undefined) {
@@ -68,6 +72,23 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static getSharedPreferences(): any {
     const PREF_KEY = "LocalNotificationsPlugin";
     return utils.ad.getApplicationContext().getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
+  };
+
+  private static getIcon(context: any,
+    resources: any,
+    iconLocation: string,
+    defaultIcon: string,
+    asDrawable: boolean = false,
+  ): string {
+    const packageName: string = context.getApplicationInfo().packageName;
+
+    const icon = iconLocation
+      && iconLocation.indexOf(utils.RESOURCE_PREFIX) === 0
+      && resources.getIdentifier(iconLocation.substr(utils.RESOURCE_PREFIX.length), "drawable", packageName)
+      || resources.getIdentifier(defaultIcon, "drawable", packageName)
+      || context.getApplicationInfo().icon;
+
+    return asDrawable ? (icon ? android.graphics.BitmapFactory.decodeResource(resources, icon) : null) : icon;
   };
 
   hasPermission(): Promise<boolean> {
@@ -168,7 +189,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   }
 
   schedule(scheduleOptions: ScheduleOptions[]): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const context = utils.ad.getApplicationContext();
         const resources = context.getResources();
@@ -176,41 +197,16 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         for (var n in scheduleOptions) {
           const options = LocalNotificationsImpl.merge(scheduleOptions[n], LocalNotificationsImpl.defaults);
 
-          // small icon
-          if (options.smallIcon) {
-            if (options.smallIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
-              options.smallIcon = resources.getIdentifier(options.smallIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', context.getApplicationInfo().packageName);
-            }
-          }
-          if (!options.smallIcon) {
-            // look for an icon named ic_stat_notify.png
-            options.smallIcon = resources.getIdentifier("ic_stat_notify", "drawable", context.getApplicationInfo().packageName);
-          }
-          if (!options.smallIcon) {
-            // resort to the regular launcher icon
-            options.smallIcon = context.getApplicationInfo().icon;
-          }
-
-          // large icon
-          if (options.largeIcon) {
-            if (options.largeIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
-              options.largeIcon = resources.getIdentifier(options.largeIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', context.getApplicationInfo().packageName);
-            }
-          }
-          if (!options.largeIcon) {
-            // look for an icon named ic_notify.png
-            options.largeIcon = resources.getIdentifier("ic_notify", "drawable", context.getApplicationInfo().packageName);
-          }
-          if (!options.largeIcon) {
-            // resort to the regular launcher icon
-            options.largeIcon = context.getApplicationInfo().icon;
-          }
-          if (options.largeIcon) {
-            // options.largeIconDrawable = android.support.v4.content.ContextCompat.getDrawable(context, options.largeIcon).getBitmap();
-            options.largeIconDrawable = android.graphics.BitmapFactory.decodeResource(context.getResources(), options.largeIcon);
+          if (LocalNotificationsImpl.IS_GTE_LOLLIPOP) {
+            options.smallIcon = LocalNotificationsImpl.getIcon(context, resources, options.smallSilhouetteIcon, "ic_stat_notify_silhouette");
+            options.largeIconDrawable = LocalNotificationsImpl.getIcon(context, resources, options.largeSilhouetteIcon, "ic_notify_silhouette", true);
+          } else {
+            options.smallIcon = LocalNotificationsImpl.getIcon(context, resources, options.smallIcon, "ic_stat_notify");
+            options.largeIconDrawable = LocalNotificationsImpl.getIcon(context, resources, options.largeIcon, "ic_notify", true);
           }
 
           options.atTime = options.at ? options.at.getTime() : new Date().getTime();
+          options.color = options.color.android;
 
           // custom sounds do not currently work, so using the default in all cases except when set to null
           const useDefaultSound = options.sound !== null;
@@ -243,6 +239,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
               .setAutoCancel(true) // removes the notification from the statusbar once tapped
               // .setSound(options.sound)
               .setNumber(options.badge)
+              .setColor(options.color)
               .setOngoing(options.ongoing)
               .setTicker(options.ticker || options.body)
               .setPriority(options.forceShowWhenInForeground ? 1 : 0); // 0 = default, 1 = high
@@ -261,6 +258,14 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             }
           }
 
+          if ([
+            options.groupedMessages,
+            options.bigTextStyle,
+            options.image
+          ].filter(Boolean).length > 1) {
+            console.warn('Multiple notification styles found. Only one will be used.');
+          }
+
           if (options.groupedMessages !== null && Array.isArray(options.groupedMessages)) {
             const inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
             const events = options.groupedMessages;
@@ -275,9 +280,26 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             builder
                 .setGroup(options.group)
                 .setStyle(inboxStyle)
+          } else if (options.bigTextStyle) {
+            const bigTextStyle = new android.support.v4.app.NotificationCompat.BigTextStyle();
+
+            bigTextStyle.bigText(options.body);
+            bigTextStyle.setBigContentTitle(options.title);
+            builder.setStyle(bigTextStyle);
+          } else if (options.image) {
+            try {
+              const bigPictureStyle = new android.support.v4.app.NotificationCompat.BigPictureStyle();
+
+              bigPictureStyle.bigPicture((await imageSource.fromUrl(options.image)).android);
+              bigPictureStyle.setBigContentTitle(options.title);
+              builder.setStyle(bigPictureStyle);
+            } catch(err) {
+              // Just create a normal notification instead...
+            }
           }
 
-          // add the intent that handles the event when the notification is clicked (which should launch the app)
+          // Add the intent that handles the event when the notification is clicked (which should launch the app):
+
           const reqCode = new java.util.Random().nextInt();
           const clickIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationClickedActivity.class)
               .putExtra("pushBundle", JSON.stringify(options))
@@ -286,44 +308,54 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           const pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
           builder.setContentIntent(pendingContentIntent);
 
-          // set big text style (adds an 'expansion arrow' to the notification)
-          if (options.bigTextStyle) {
-            const bigTextStyle = new android.support.v4.app.NotificationCompat.BigTextStyle();
-            bigTextStyle.setBigContentTitle(options.title);
-            bigTextStyle.bigText(options.body);
-            builder.setStyle(bigTextStyle);
-          }
-
           const notification = builder.build();
 
           if (useDefaultSound) {
             notification.defaults |= android.app.Notification.DEFAULT_SOUND;
           }
 
-          // add the intent which schedules the notification
-          const notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
-              .setAction("" + options.id)
-              .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id)
-              .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
+          // options.repeatInterval is used when restoring the notification after a reboot:
+          const repeatInterval = options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
 
-          const pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_CANCEL_CURRENT);
+          if (repeatInterval > 0 || options.at) {
+            // Create the intent that schedules the notification:
 
-          // configure when we'll show the event
-          const alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
+            const notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
+                .setAction("" + options.id)
+                .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id)
+                .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
 
-          const repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
-          options.repeatInterval = repeatInterval; // used when restoring the notification after a reboot
+            /*
 
-          if (repeatInterval > 0) {
-            alarmManager.setRepeating(android.app.AlarmManager.RTC_WAKEUP, options.atTime, repeatInterval, pendingIntent);
-          } else {
-            if (options.at) {
-              alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
+            Hello there! If you are taking a look at this, chances are you tried to create a delayed/recurrent
+            notification with an image and got a TransactionTooLargeException.
+
+            Well, as you can see, in order to create those, we are creating a notification instance, adding that to an
+            Intent and resolving it using an Alarm when the time comes. The problem with that is that the Bitmap
+            of your image is also inside that notification object, which is inside the Intent... See where I'm going?
+
+            So, what's wrong? Well, you can't put a big Bitmap inside an Intent, so in order to fix that you should add
+            just the options object to the intent and create the notification on the native side, in
+            NotificationPublisher.java, which should end up looking similar to NotificationrestoreReceiver.java.
+
+            Yes... My condolences. Don't look at me like that...
+
+            */
+
+            const pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_CANCEL_CURRENT);
+
+            // Configure when we'll show the event:
+            const alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
+
+            if (repeatInterval > 0) {
+              alarmManager.setRepeating(android.app.AlarmManager.RTC_WAKEUP, options.atTime, repeatInterval, pendingIntent);
             } else {
-              const notiManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-              notiManager.notify(options.id, notification);
+              alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
             }
+          } else {
+            context.getSystemService(android.content.Context.NOTIFICATION_SERVICE).notify(options.id, notification);
           }
+
           LocalNotificationsImpl.persist(options);
         }
 

@@ -4,7 +4,7 @@ import {
   LocalNotificationsCommon,
   ReceivedNotification,
   ScheduleInterval,
-  ScheduleOptions
+  ScheduleOptions,
 } from "./local-notifications-common";
 
 declare const Notification, NotificationManager: any;
@@ -55,6 +55,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static hasPermission(): boolean {
     const settings = UIApplication.sharedApplication.currentUserNotificationSettings;
     const types = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
+
+    console.log(`PERMISSIONS = ${ settings.types }`);
+
     return (settings.types & types) > 0;
   }
 
@@ -111,6 +114,27 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       const userInfoDict = new NSMutableDictionary({capacity: 1}); // .alloc().initWithCapacity(1);
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       content.userInfo = userInfoDict;
+
+      if (options.image) {
+        console.log('THERE IS IMAGE');
+
+        const coder = new NSCoder();
+        coder.setValueForKey('identifier', 'attachment');
+        coder.setValueForKey('url', options.image);
+        coder.setValueForKey('options', null);
+
+        console.log('CODER DONE');
+
+        const attachement = new UNNotificationAttachment({ coder });
+        const attachments: NSArray<UNNotificationAttachment> = NSArray.alloc();
+        attachments.initWithObjects(attachement);
+
+        console.log('YEAH');
+
+        content.attachments = NSArray.arrayWithArray(attachments);
+
+        console.log('DONE');
+      }
 
       // content.setValueForKey(options.forceShowWhenInForeground, "shouldAlwaysAlertWhileAppIsForeground");
 
