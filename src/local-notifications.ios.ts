@@ -136,7 +136,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         console.log(`Image does ${ fileSystemModule.File.exists(pathDest) ? '' : 'not' } exist. `);
 
         if (saved || fileSystemModule.File.exists(pathDest)) {
-          console.log('Image saved!');
+          console.log('Attaching image...');
 
           try {
             const attachment = UNNotificationAttachment
