@@ -128,7 +128,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         const folderDest = fileSystemModule.knownFolders.temp();
         const pathDest = fileSystemModule.path.join(folderDest.path, imageName);
 
-        console.log(`Image will be saved to = ${ pathDest }.`);
+        console.log(`Image will be saved to = ${ pathDest }`);
 
         const saved = image.saveToFile(pathDest, imageExtension);
 
@@ -151,8 +151,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           console.log('Image attached!');
 
           // TODO: Delete image when dismissed?
-        } else {
-          console.log('Image not saved.');
         }
       }
 
