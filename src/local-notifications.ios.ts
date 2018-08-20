@@ -1,4 +1,7 @@
 import * as utils from "tns-core-modules/utils/utils";
+import * as imageSource from "tns-core-modules/image-source";
+import { ImageSource } from "tns-core-modules/image-source";
+import * as fileSystemModule from "tns-core-modules/file-system";
 import {
   LocalNotificationsApi,
   LocalNotificationsCommon,
@@ -7,16 +10,16 @@ import {
   ScheduleOptions,
 } from "./local-notifications-common";
 
-declare const Notification, NotificationManager: any;
+// declare const Notification, NotificationManager: any;
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
   private static didRegisterUserNotificationSettingsObserver: any;
-  private notificationReceivedObserver: any;
+  // private notificationReceivedObserver: any;
   private pendingReceivedNotifications: Array<ReceivedNotification> = [];
   private receivedNotificationCallback: (data: ReceivedNotification) => void;
-  private notificationHandler: any;
-  private notificationManager: any;
+  // private notificationHandler: any;
+  // private notificationManager: any;
   notificationOptions: Map<string, ScheduleOptions> = new Map();
 
   private delegate: UNUserNotificationCenterDelegateImpl;
@@ -33,13 +36,13 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
     } else {
       // grab 'em here, store 'em in JS, and give them to the callback when addOnMessageReceivedCallback is wired
-      this.notificationReceivedObserver = LocalNotificationsImpl.addObserver("notificationReceived", result => {
+      LocalNotificationsImpl.addObserver("notificationReceived", result => {
         const notificationDetails = JSON.parse(result.userInfo.objectForKey("message"));
         this.addOrProcessNotification(notificationDetails);
       });
 
-      this.notificationHandler = Notification.new();
-      this.notificationManager = NotificationManager.new();
+      // this.notificationHandler = Notification.new();
+      // this.notificationManager = NotificationManager.new();
     }
   }
 
@@ -97,18 +100,21 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     }
   }
 
-  private static schedulePendingNotificationsNew(pending: ScheduleOptions[]): void {
+  private static async schedulePendingNotificationsNew(pending: ScheduleOptions[]): Promise<void> {
     for (const n in pending) {
       const options: ScheduleOptions = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
 
-      // Notification content
+      // Notification content:
+
       const content = UNMutableNotificationContent.new();
       content.title = options.title;
       content.subtitle = options.subtitle;
       content.body = options.body;
+
       if (options.sound === undefined || options.sound === "default") {
         content.sound = UNNotificationSound.defaultSound();
       }
+
       content.badge = options.badge;
 
       const userInfoDict = new NSMutableDictionary({capacity: 1}); // .alloc().initWithCapacity(1);
@@ -116,40 +122,56 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       content.userInfo = userInfoDict;
 
       if (options.image) {
-        console.log('THERE IS IMAGE');
+        const image: ImageSource = await imageSource.fromUrl(options.image);
+        const imageName: string = options.image.split('/').slice(-1)[0];
+        const imageExtension: "png" | "jpeg" | "jpg" = <"png" | "jpeg" | "jpg">imageName.split('.')[1]
+        const folderDest = fileSystemModule.knownFolders.temp();
+        const pathDest = fileSystemModule.path.join(folderDest.path, imageName);
 
-        const coder = new NSCoder();
-        coder.setValueForKey('identifier', 'attachment');
-        coder.setValueForKey('url', options.image);
-        coder.setValueForKey('options', null);
+        console.log(`Image will be saved to = ${ pathDest }.`);
 
-        console.log('CODER DONE');
+        const saved = image.saveToFile(pathDest, imageExtension);
 
-        const attachement = new UNNotificationAttachment({ coder });
-        const attachments: NSArray<UNNotificationAttachment> = NSArray.alloc();
-        attachments.initWithObjects(attachement);
+        console.log(`Image ${ saved ? '' : 'not' } saved. `);
+        console.log(`Image does ${ fileSystemModule.File.exists(pathDest) ? '' : 'not' } exist. `);
 
-        console.log('YEAH');
+        if (saved || fileSystemModule.File.exists(pathDest)) {
+          console.log('Image saved!');
 
-        content.attachments = NSArray.arrayWithArray(attachments);
+          try {
+            const attachment = UNNotificationAttachment
+              .attachmentWithIdentifierURLOptionsError('attachment', NSURL.fileURLWithPath(pathDest), null);
+              // .attachmentWithIdentifierURLOptionsError('attachment', NSURL.fileURLWithPath('file://' + pathDest), null);
 
-        console.log('DONE');
+            content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(attachment);
+          } catch(err) {
+            console.log('Attachment error ; ', err);
+          }
+
+          console.log('Image attached!');
+
+          // TODO: Delete image when dismissed?
+        } else {
+          console.log('Image not saved.');
+        }
       }
 
       // content.setValueForKey(options.forceShowWhenInForeground, "shouldAlwaysAlertWhileAppIsForeground");
 
       // Notification trigger and repeat
-      const trigger_at = options.at ? options.at : new Date();
+      console.log(`Trigger ${ options.at ? 'later' : 'now' }.`);
 
       // TODO
       // const repeats = options.repeat !== 0;
       const repeats = options.interval !== undefined;
-      console.log(">> repeats: " + repeats);
 
-      let trigger;
-      if (options.trigger === "timeInterval") { // TODO see https://github.com/katzer/cordova-plugin-local-notifications/blob/6d1b27f1e9d8e2198fd1ea6e9032419295690c47/www/local-notification.js#L706
+      let trigger: UNNotificationTrigger;
+
+      if (options.trigger === "timeInterval") {
+        // TODO see https://github.com/katzer/cordova-plugin-local-notifications/blob/6d1b27f1e9d8e2198fd1ea6e9032419295690c47/www/local-notification.js#L706
         // trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(trigger_at, repeats);
-      } else {
+      } else if (options.at) {
+        const trigger_at = options.at;
         const FormattedDate = NSDateComponents.new();
         FormattedDate.day = trigger_at.getUTCDate();
         FormattedDate.month = trigger_at.getUTCMonth() + 1;
@@ -158,7 +180,12 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         FormattedDate.hour = trigger_at.getHours();
         FormattedDate.second = trigger_at.getSeconds();
         trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(FormattedDate, repeats);
+
         console.log(">> trigger: " + trigger);
+      } else {
+        console.log('Notification now!'),
+
+        trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(5, false);
       }
 
       // actions
@@ -192,8 +219,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           } else {
             console.log("Unsupported action type: " + action.type);
           }
-
         });
+
         const notificationCategory = UNNotificationCategory.categoryWithIdentifierActionsIntentIdentifiersOptions(
             categoryIdentifier,
             <any>actions,
@@ -246,10 +273,12 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         case null:
         case false:
           break;
+
         case undefined:
         case "default":
           notification.soundName = UILocalNotificationDefaultSoundName;
           break;
+
         default:
           notification.soundName = options.sound;
           break;
