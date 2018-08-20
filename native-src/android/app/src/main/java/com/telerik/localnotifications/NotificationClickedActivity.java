@@ -73,7 +73,7 @@ public class NotificationClickedActivity extends Activity {
         PackageManager pm = getPackageManager();
         Intent launchIntent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
         Log.d(TAG, "starting activity for package: " + getApplicationContext().getPackageName());
-        launchIntent.setPackage(null);
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(launchIntent);
     }
 
