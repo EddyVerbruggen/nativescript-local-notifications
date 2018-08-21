@@ -155,7 +155,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
         while (iterator.hasNext()) {
           const cancelMe = iterator.next();
-          console.log(">> canceling " + cancelMe);
           LocalNotificationsImpl.cancelById(cancelMe);
         }
 

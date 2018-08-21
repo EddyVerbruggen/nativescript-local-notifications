@@ -10,16 +10,13 @@ import {
   ScheduleOptions,
 } from "./local-notifications-common";
 
-// declare const Notification, NotificationManager: any;
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
   private static didRegisterUserNotificationSettingsObserver: any;
-  // private notificationReceivedObserver: any;
   private pendingReceivedNotifications: Array<ReceivedNotification> = [];
   private receivedNotificationCallback: (data: ReceivedNotification) => void;
-  // private notificationHandler: any;
-  // private notificationManager: any;
+
   notificationOptions: Map<string, ScheduleOptions> = new Map();
 
   private delegate: UNUserNotificationCenterDelegateImpl;
@@ -27,8 +24,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   constructor() {
     super();
     // TODO make sure that if we require this in both app/main.js and main-view-model.js, this only runs once
-    console.log("LocalNotifications constructor @ " + new Date().getTime());
-
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
       // TODO if the delegate is only for getting the msg details, consider moving it to the native lib (so no wiring is required in app.js)
       this.delegate = UNUserNotificationCenterDelegateImpl.initWithOwner(new WeakRef(this));
@@ -37,12 +32,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     } else {
       // grab 'em here, store 'em in JS, and give them to the callback when addOnMessageReceivedCallback is wired
       LocalNotificationsImpl.addObserver("notificationReceived", result => {
-        const notificationDetails = JSON.parse(result.userInfo.objectForKey("message"));
-        this.addOrProcessNotification(notificationDetails);
+        this.addOrProcessNotification(JSON.parse(result.userInfo.objectForKey("message")));
       });
-
-      // this.notificationHandler = Notification.new();
-      // this.notificationManager = NotificationManager.new();
     }
   }
 
@@ -58,8 +49,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static hasPermission(): boolean {
     const settings = UIApplication.sharedApplication.currentUserNotificationSettings;
     const types = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
-
-    console.log(`PERMISSIONS = ${ settings.types }`);
 
     return (settings.types & types) > 0;
   }
@@ -114,22 +103,25 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     }
   }
 
-  private static async schedulePendingNotificationsNew(pending: ScheduleOptions[]): Promise<void> {
-    for (const n in pending) {
-      const options: ScheduleOptions = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
+  private static async schedulePendingNotificationsNew(pendingNotificationsOptions: ScheduleOptions[]): Promise<void> {
+    for (const pendingNotificationOptions of pendingNotificationsOptions) {
+      const options: ScheduleOptions = LocalNotificationsImpl.merge(
+        pendingNotificationOptions,
+        LocalNotificationsImpl.defaults,
+      );
 
       // Notification content:
 
       const content = UNMutableNotificationContent.new();
+
       content.title = options.title;
       content.subtitle = options.subtitle;
       content.body = options.body;
+      content.badge = options.badge;
 
       if (options.sound === undefined || options.sound === "default") {
         content.sound = UNNotificationSound.defaultSound();
       }
-
-      content.badge = options.badge;
 
       const userInfoDict = new NSMutableDictionary({ capacity: 1 }); // .alloc().initWithCapacity(1);
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
@@ -147,29 +139,23 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
         const saved = image.saveToFile(path, "png");
 
-        console.log(`Image ${ saved ? '' : 'not ' }saved to ${ path }`);
-        console.log(`Image does ${ fileSystemModule.File.exists(path) ? '' : 'not ' }exist.`);
-
         if (saved || fileSystemModule.File.exists(path)) {
-          console.log('Attaching image...');
-
           try {
-            const attachment = UNNotificationAttachment
-              .attachmentWithIdentifierURLOptionsError(imageName, NSURL.fileURLWithPath(path), null);
-
-            content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(attachment);
+            content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(
+              UNNotificationAttachment.attachmentWithIdentifierURLOptionsError(
+                imageName,
+                NSURL.fileURLWithPath(path),
+                null
+            ));
           } catch(err) {
-            console.log('Attachment error ; ', err);
+            // Just fall back to a normal notification...
           }
-
-          console.log('Image attached!');
         }
       }
 
       // content.setValueForKey(options.forceShowWhenInForeground, "shouldAlwaysAlertWhileAppIsForeground");
 
-      // Notification trigger and repeat
-      console.log(`Trigger ${ options.at ? 'later' : 'now' }.`);
+      // Notification trigger and repeat:
 
       // TODO
       // const repeats = options.repeat !== 0;
@@ -183,22 +169,21 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       } else if (options.at) {
         const trigger_at = options.at;
         const FormattedDate = NSDateComponents.new();
+
         FormattedDate.day = trigger_at.getUTCDate();
         FormattedDate.month = trigger_at.getUTCMonth() + 1;
         FormattedDate.year = trigger_at.getUTCFullYear();
         FormattedDate.minute = trigger_at.getMinutes();
         FormattedDate.hour = trigger_at.getHours();
         FormattedDate.second = trigger_at.getSeconds();
+
         trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(FormattedDate, repeats);
-
-        console.log(">> trigger: " + trigger);
       } else {
-        console.log('Notification now!'),
-
         trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(5, false);
       }
 
-      // actions
+      // Actions:
+
       if (options.actions) {
         let categoryIdentifier = "CATEGORY";
         const actions: Array<UNNotificationAction> = [];
@@ -226,8 +211,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
                 action.title,
                 notificationActionOptions));
 
-          } else {
-            console.log("Unsupported action type: " + action.type);
           }
         });
 
@@ -240,7 +223,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         content.categoryIdentifier = categoryIdentifier;
 
         UNUserNotificationCenter.currentNotificationCenter().getNotificationCategoriesWithCompletionHandler((categories: NSSet<UNNotificationCategory>) => {
-          console.log({categories});
           UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(categories.setByAddingObject(notificationCategory));
           // UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(NSSet.setWithObject(notificationCategory));
         });
@@ -354,15 +336,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return new Promise((resolve, reject) => {
       try {
         this.receivedNotificationCallback = onReceived;
-        for (let p in this.pendingReceivedNotifications) {
-          console.log("notificationDetails p: " + JSON.parse(p));
-          onReceived(this.pendingReceivedNotifications[p]);
+
+        for (const pendingReceivedNotification of this.pendingReceivedNotifications) {
+          onReceived(pendingReceivedNotification);
         }
+
         this.pendingReceivedNotifications = [];
 
         resolve(true);
       } catch (ex) {
         console.log("Error in LocalNotifications.addOnMessageReceivedCallback: " + ex);
+
         reject(ex);
       }
     });
@@ -372,11 +356,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return new Promise((resolve, reject) => {
       try {
         if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
-          console.log(id);
-          console.log(typeof id);
           UNUserNotificationCenter.currentNotificationCenter().removePendingNotificationRequestsWithIdentifiers(<any>["" + id]);
           resolve(true);
-
         } else {
           const scheduled = UIApplication.sharedApplication.scheduledLocalNotifications;
           for (let i = 0, l = scheduled.count; i < l; i++) {
