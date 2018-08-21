@@ -262,7 +262,7 @@ These are your options until that happens:
 - Avoid using `option.interval` or `option.at` in conjunction with `options.image` but use `option.largeIcon` and/or `option.largeSilhouetteIcon`, as long as you don't provide a `xxxhdpi` icon and stick to the sizes specified in the tables above.
 
 
-### Notifications look different after a reboot on Android
+### Notifications look different after a reboot on Android
 
 Note that after a reboot the notification icons are not restored but fall back to the default (application icon). This is a known issue and can be fixed in a future version.
 
