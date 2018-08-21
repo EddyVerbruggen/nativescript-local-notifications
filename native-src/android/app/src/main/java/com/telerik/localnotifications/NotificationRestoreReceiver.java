@@ -12,6 +12,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat.BigPictureStyle;
+import android.support.v4.app.NotificationCompat.BigTextStyle;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 
@@ -37,12 +39,14 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
     final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
     final Set notificationOptions = sharedPreferences.getAll().entrySet();
-
     final Iterator<Map.Entry> iterator = notificationOptions.iterator();
+
     while (iterator.hasNext()) {
       final Map.Entry item = iterator.next();
       final String notificationString = (String) item.getValue();
+
       Log.e(TAG, "Will restore previously scheduled notification: " + notificationString);
+
       try {
         final JSONObject options = new JSONObject(notificationString);
 
@@ -61,6 +65,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
             .setAutoCancel(true)
             .setSound(options.has("sound") ? Uri.parse((String) ("android.resource://" + context.getPackageName() + "/raw/" + options.optString("sound"))) : Uri.parse((String) ("android.resource://" + context.getPackageName() + "/raw/notify")))
             .setNumber(options.optInt("badge"))
+            .setColor(options.optInt("color"))
             .setPriority(options.optInt("priority", 0))
             .setTicker(options.optString("ticker"));
 
@@ -68,8 +73,10 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
         if (android.os.Build.VERSION.SDK_INT >= 26) {
           final String channelId = "myChannelId"; // package scoped, so no need to add it ourselves
           final NotificationManager notMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
           if (notMgr != null) {
             NotificationChannel notificationChannel = notMgr.getNotificationChannel(channelId);
+
             if (notificationChannel == null) {
               notificationChannel = new NotificationChannel(
                   channelId,
@@ -87,6 +94,16 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
           }
         }
 
+        // TODO: Support for grouped messages and images missing...
+
+        if (options.optBoolean("bigTextStyle")) {
+          const bigTextStyle = new BigTextStyle();
+
+          bigTextStyle.bigText(options.optString("body"));
+          bigTextStyle.setBigContentTitle(options.optString("title"));
+          builder.setStyle(bigTextStyle);
+        }
+
         // add the intent that handles the event when the notification is clicked (which should launch the app)
         final Intent clickIntent = new Intent(context, NotificationClickedActivity.class)
             .putExtra("pushBundle", notificationString)
@@ -97,28 +114,30 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
         final Notification notification = builder.build();
 
-        // add the intent which schedules the notification
-        final Intent notificationIntent = new Intent(context, NotificationPublisher.class)
-            .setAction(options.getString("id"))
-            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.optInt("id"))
-            .putExtra(NotificationPublisher.SOUND, options.optString("sound"))
-            .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
-
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, options.optInt("id") + 200, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
         // configure when we'll show the event
         long triggerTime = options.getLong("atTime");
         long interval = options.optLong("repeatInterval", 0); // in ms
         final boolean isRepeating = interval > 0;
         final Date triggerDate = new Date(triggerTime);
         final boolean wasInThePast = new Date().after(triggerDate);
-        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
         if (wasInThePast && !isRepeating) {
-          alarmManager.cancel(pendingIntent);
           ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(options.getInt("id"));
           // TODO 'unpersist' would be nice
         } else {
-          // schedule
+          // Create the intent that schedules the notification:
+
+          final Intent notificationIntent = new Intent(context, NotificationPublisher.class)
+              .setAction(options.getString("id"))
+              .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.optInt("id"))
+              .putExtra(NotificationPublisher.SOUND, options.optString("sound"))
+              .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
+
+          final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, options.optInt("id") + 200, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+          // Configure when we'll show the event:
+          final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
           if (isRepeating) {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, interval, pendingIntent);
           } else {

@@ -1,3 +1,5 @@
+import { Color } from "tns-core-modules/color/color";
+
 export type ScheduleInterval = "second" | "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year";
 
 export interface NotificationAction {
@@ -68,18 +70,45 @@ export interface ScheduleOptions {
   interval?: ScheduleInterval;
 
   /**
-   * On Android you can set a custom icon in the system tray.
-   * Pass in 'res://filename.png' which lives in App_Resouces/Android/drawable folders.
-   * If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders.
-   * Default: the app icon.
+   * Custom icon to show in the system tray on Android, which lives in App_Resouces/Android/drawable folders.
+   * Example: 'res://filename.png'.
+   *
+   * Defaults to 'res://ic_stat_notify.png' or the app icon if not present.
+   *
+   * Android < Lollipop (21) only.
    */
   smallIcon?: string;
 
   /**
-   * Same as 'smallIcon', but this one is shown when you expand the notification center.
-   * The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.
+   * Same as 'smallIcon' but for Android >= Lollipop (21). Should be an alpha-only image.
+   *
+   * Defaults to 'res://ic_stat_notify_silhouette.png' or the app icon if not present.
+   */
+  smallSilhouetteIcon?: string;
+
+  /**
+   * Custom icon to show in the notification center on Android, which lives in App_Resouces/Android/drawable folders.
+   * Example: 'res://filename.png'.
+   *
+   * Defaults to 'res://ic_notify.png' or the app icon if not present.
+   *
+   * Android only < Lollipop (21).
    */
   largeIcon?: string;
+
+  /**
+   * Same as 'largeIcon' but for Android >= Lollipop (21).  Should be an alpha-only image.
+   *
+   * Defaults to 'res://ic_notify_silhouette.png' or the app icon if not present.
+   */
+  largeSilhouetteIcon?: string;
+
+  /**
+   * Custom color for the notification icon and title that will be applied when the notification center is expanded.
+   *
+   * Android >= Lollipop (21) only.
+   */
+  color?: Color;
 
   /**
    * Set whether this is an "ongoing" notification.
@@ -91,7 +120,7 @@ export interface ScheduleOptions {
    */
   ongoing?: boolean;
 
-  /***
+  /**
    * An array of messages to be displayed as a single notification using the inbox style
    * Note: the length of the array cannot be greater than five, in a situation where it
    * is, the array would be trimmed from the top
@@ -99,7 +128,6 @@ export interface ScheduleOptions {
    * Android only.
    */
   groupedMessages?: Array<string>
-
 
   /***
    * The summary of the grouped message (see #groupedMessage) when using the inbox style
@@ -109,7 +137,12 @@ export interface ScheduleOptions {
   groupSummary?: string;
 
   /**
-   * Using the big text style
+   * Expandable notification image.
+   */
+  image?: string;
+
+  /**
+   * Using the big text style. Deprecated in favour of the style option.
    *
    * Android only.
    * Default false.
@@ -131,6 +164,8 @@ export interface ScheduleOptions {
    * Buttons or text input.
    */
   actions?: Array<NotificationAction>;
+
+  // TODO: This interface should be extended with the additional properties we are persisting, like atTime.
 }
 
 export interface ReceivedNotification {

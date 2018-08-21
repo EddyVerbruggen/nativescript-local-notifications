@@ -1,22 +1,22 @@
 import * as utils from "tns-core-modules/utils/utils";
+import * as imageSource from "tns-core-modules/image-source";
+import { ImageSource } from "tns-core-modules/image-source";
+import * as fileSystemModule from "tns-core-modules/file-system";
 import {
   LocalNotificationsApi,
   LocalNotificationsCommon,
   ReceivedNotification,
   ScheduleInterval,
-  ScheduleOptions
+  ScheduleOptions,
 } from "./local-notifications-common";
 
-declare const Notification, NotificationManager: any;
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
   private static didRegisterUserNotificationSettingsObserver: any;
-  private notificationReceivedObserver: any;
   private pendingReceivedNotifications: Array<ReceivedNotification> = [];
   private receivedNotificationCallback: (data: ReceivedNotification) => void;
-  private notificationHandler: any;
-  private notificationManager: any;
+
   notificationOptions: Map<string, ScheduleOptions> = new Map();
 
   private delegate: UNUserNotificationCenterDelegateImpl;
@@ -24,8 +24,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   constructor() {
     super();
     // TODO make sure that if we require this in both app/main.js and main-view-model.js, this only runs once
-    console.log("LocalNotifications constructor @ " + new Date().getTime());
-
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
       // TODO if the delegate is only for getting the msg details, consider moving it to the native lib (so no wiring is required in app.js)
       this.delegate = UNUserNotificationCenterDelegateImpl.initWithOwner(new WeakRef(this));
@@ -33,13 +31,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
     } else {
       // grab 'em here, store 'em in JS, and give them to the callback when addOnMessageReceivedCallback is wired
-      this.notificationReceivedObserver = LocalNotificationsImpl.addObserver("notificationReceived", result => {
-        const notificationDetails = JSON.parse(result.userInfo.objectForKey("message"));
-        this.addOrProcessNotification(notificationDetails);
+      LocalNotificationsImpl.addObserver("notificationReceived", result => {
+        this.addOrProcessNotification(JSON.parse(result.userInfo.objectForKey("message")));
       });
-
-      this.notificationHandler = Notification.new();
-      this.notificationManager = NotificationManager.new();
     }
   }
 
@@ -55,12 +49,27 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static hasPermission(): boolean {
     const settings = UIApplication.sharedApplication.currentUserNotificationSettings;
     const types = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
+
     return (settings.types & types) > 0;
+  }
+
+  private static guid() {
+    // Not the best, but will it will do. See https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+
+    const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+
+    return `${ s4() }${ s4() }-${ s4() }-${ s4() }-${ s4() }-${ s4() }${ s4() }${ s4() }`;
+  }
+
+  private static getImageName(imageURL: string = "", extension: "png" | "jpeg" | "jpg" = "png"): [string, string] {
+    const name: string = imageURL.split(/[\/\.]/).slice(-2, -1)[0] || LocalNotificationsImpl.guid();
+
+    return [name, `${ name }.${ extension }`];
   }
 
   private static addObserver(eventName, callback): any {
     return NSNotificationCenter.defaultCenter.addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue, callback);
-  };
+  }
 
   private static getInterval(interval: ScheduleInterval): NSCalendarUnit {
     if (!interval) {
@@ -84,7 +93,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     } else {
       return NSCalendarUnit.CalendarUnitEra;
     }
-  };
+  }
 
   private static schedulePendingNotifications(pending: ScheduleOptions[]): void {
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
@@ -94,50 +103,87 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     }
   }
 
-  private static schedulePendingNotificationsNew(pending: ScheduleOptions[]): void {
-    for (const n in pending) {
-      const options: ScheduleOptions = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
+  private static async schedulePendingNotificationsNew(pendingNotificationsOptions: ScheduleOptions[]): Promise<void> {
+    for (const pendingNotificationOptions of pendingNotificationsOptions) {
+      const options: ScheduleOptions = LocalNotificationsImpl.merge(
+        pendingNotificationOptions,
+        LocalNotificationsImpl.defaults,
+      );
 
-      // Notification content
+      // Notification content:
+
       const content = UNMutableNotificationContent.new();
+
       content.title = options.title;
       content.subtitle = options.subtitle;
       content.body = options.body;
+      content.badge = options.badge;
+
       if (options.sound === undefined || options.sound === "default") {
         content.sound = UNNotificationSound.defaultSound();
       }
-      content.badge = options.badge;
 
-      const userInfoDict = new NSMutableDictionary({capacity: 1}); // .alloc().initWithCapacity(1);
+      const userInfoDict = new NSMutableDictionary({ capacity: 1 }); // .alloc().initWithCapacity(1);
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       content.userInfo = userInfoDict;
 
+      const imageURL: string = options.image;
+
+      if (imageURL) {
+        const image: ImageSource = await imageSource.fromUrl(imageURL);
+        const [imageName, imageNameWithExtension] = LocalNotificationsImpl.getImageName(imageURL, "png");
+        const path: string = fileSystemModule.path.join(
+          fileSystemModule.knownFolders.temp().path,
+          imageNameWithExtension,
+        );
+
+        const saved = image.saveToFile(path, "png");
+
+        if (saved || fileSystemModule.File.exists(path)) {
+          try {
+            content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(
+              UNNotificationAttachment.attachmentWithIdentifierURLOptionsError(
+                imageName,
+                NSURL.fileURLWithPath(path),
+                null
+            ));
+          } catch(err) {
+            // Just fall back to a normal notification...
+          }
+        }
+      }
+
       // content.setValueForKey(options.forceShowWhenInForeground, "shouldAlwaysAlertWhileAppIsForeground");
 
-      // Notification trigger and repeat
-      const trigger_at = options.at ? options.at : new Date();
+      // Notification trigger and repeat:
 
       // TODO
       // const repeats = options.repeat !== 0;
       const repeats = options.interval !== undefined;
-      console.log(">> repeats: " + repeats);
 
-      let trigger;
-      if (options.trigger === "timeInterval") { // TODO see https://github.com/katzer/cordova-plugin-local-notifications/blob/6d1b27f1e9d8e2198fd1ea6e9032419295690c47/www/local-notification.js#L706
+      let trigger: UNNotificationTrigger;
+
+      if (options.trigger === "timeInterval") {
+        // TODO see https://github.com/katzer/cordova-plugin-local-notifications/blob/6d1b27f1e9d8e2198fd1ea6e9032419295690c47/www/local-notification.js#L706
         // trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(trigger_at, repeats);
-      } else {
+      } else if (options.at) {
+        const trigger_at = options.at;
         const FormattedDate = NSDateComponents.new();
+
         FormattedDate.day = trigger_at.getUTCDate();
         FormattedDate.month = trigger_at.getUTCMonth() + 1;
         FormattedDate.year = trigger_at.getUTCFullYear();
         FormattedDate.minute = trigger_at.getMinutes();
         FormattedDate.hour = trigger_at.getHours();
         FormattedDate.second = trigger_at.getSeconds();
+
         trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(FormattedDate, repeats);
-        console.log(">> trigger: " + trigger);
+      } else {
+        trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(5, false);
       }
 
-      // actions
+      // Actions:
+
       if (options.actions) {
         let categoryIdentifier = "CATEGORY";
         const actions: Array<UNNotificationAction> = [];
@@ -165,11 +211,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
                 action.title,
                 notificationActionOptions));
 
-          } else {
-            console.log("Unsupported action type: " + action.type);
           }
-
         });
+
         const notificationCategory = UNNotificationCategory.categoryWithIdentifierActionsIntentIdentifiersOptions(
             categoryIdentifier,
             <any>actions,
@@ -179,7 +223,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         content.categoryIdentifier = categoryIdentifier;
 
         UNUserNotificationCenter.currentNotificationCenter().getNotificationCategoriesWithCompletionHandler((categories: NSSet<UNNotificationCategory>) => {
-          console.log({categories});
           UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(categories.setByAddingObject(notificationCategory));
           // UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(NSSet.setWithObject(notificationCategory));
         });
@@ -222,10 +265,12 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         case null:
         case false:
           break;
+
         case undefined:
         case "default":
           notification.soundName = UILocalNotificationDefaultSoundName;
           break;
+
         default:
           notification.soundName = options.sound;
           break;
@@ -291,15 +336,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return new Promise((resolve, reject) => {
       try {
         this.receivedNotificationCallback = onReceived;
-        for (let p in this.pendingReceivedNotifications) {
-          console.log("notificationDetails p: " + JSON.parse(p));
-          onReceived(this.pendingReceivedNotifications[p]);
+
+        for (const pendingReceivedNotification of this.pendingReceivedNotifications) {
+          onReceived(pendingReceivedNotification);
         }
+
         this.pendingReceivedNotifications = [];
 
         resolve(true);
       } catch (ex) {
         console.log("Error in LocalNotifications.addOnMessageReceivedCallback: " + ex);
+
         reject(ex);
       }
     });
@@ -309,11 +356,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return new Promise((resolve, reject) => {
       try {
         if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
-          console.log(id);
-          console.log(typeof id);
           UNUserNotificationCenter.currentNotificationCenter().removePendingNotificationRequestsWithIdentifiers(<any>["" + id]);
           resolve(true);
-
         } else {
           const scheduled = UIApplication.sharedApplication.scheduledLocalNotifications;
           for (let i = 0, l = scheduled.count; i < l; i++) {

@@ -7,3 +7,4 @@ src/*.d.ts
 !src/references.d.ts
 demo/platforms
 publish/package/
+.DS_Store
