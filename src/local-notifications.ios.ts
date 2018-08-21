@@ -64,9 +64,23 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return (settings.types & types) > 0;
   }
 
+  private static guid() {
+    // Not the best, but will it will do. See https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+
+    const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+
+    return `${ s4() }${ s4() }-${ s4() }-${ s4() }-${ s4() }-${ s4() }${ s4() }${ s4() }`;
+  }
+
+  private static getImageName(imageURL: string = "", extension: "png" | "jpeg" | "jpg" = "png"): [string, string] {
+    const name: string = imageURL.split(/[\/\.]/).slice(-2, -1)[0] || LocalNotificationsImpl.guid();
+
+    return [name, `${ name }.${ extension }`];
+  }
+
   private static addObserver(eventName, callback): any {
     return NSNotificationCenter.defaultCenter.addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue, callback);
-  };
+  }
 
   private static getInterval(interval: ScheduleInterval): NSCalendarUnit {
     if (!interval) {
@@ -90,7 +104,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     } else {
       return NSCalendarUnit.CalendarUnitEra;
     }
-  };
+  }
 
   private static schedulePendingNotifications(pending: ScheduleOptions[]): void {
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
@@ -117,31 +131,31 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       content.badge = options.badge;
 
-      const userInfoDict = new NSMutableDictionary({capacity: 1}); // .alloc().initWithCapacity(1);
+      const userInfoDict = new NSMutableDictionary({ capacity: 1 }); // .alloc().initWithCapacity(1);
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       content.userInfo = userInfoDict;
 
-      if (options.image) {
-        const image: ImageSource = await imageSource.fromUrl(options.image);
-        const imageName: string = options.image.split('/').slice(-1)[0];
-        const imageExtension: "png" | "jpeg" | "jpg" = <"png" | "jpeg" | "jpg">imageName.split('.')[1]
-        const folderDest = fileSystemModule.knownFolders.temp();
-        const pathDest = fileSystemModule.path.join(folderDest.path, imageName);
+      const imageURL: string = options.image;
 
-        console.log(`Image will be saved to = ${ pathDest }`);
+      if (imageURL) {
+        const image: ImageSource = await imageSource.fromUrl(imageURL);
+        const [imageName, imageNameWithExtension] = LocalNotificationsImpl.getImageName(imageURL, "png");
+        const path: string = fileSystemModule.path.join(
+          fileSystemModule.knownFolders.temp().path,
+          imageNameWithExtension,
+        );
 
-        const saved = image.saveToFile(pathDest, imageExtension);
+        const saved = image.saveToFile(path, "png");
 
-        console.log(`Image ${ saved ? '' : 'not' } saved. `);
-        console.log(`Image does ${ fileSystemModule.File.exists(pathDest) ? '' : 'not' } exist. `);
+        console.log(`Image ${ saved ? '' : 'not ' }saved to ${ path }`);
+        console.log(`Image does ${ fileSystemModule.File.exists(path) ? '' : 'not ' }exist.`);
 
-        if (saved || fileSystemModule.File.exists(pathDest)) {
+        if (saved || fileSystemModule.File.exists(path)) {
           console.log('Attaching image...');
 
           try {
             const attachment = UNNotificationAttachment
-              .attachmentWithIdentifierURLOptionsError('attachment', NSURL.fileURLWithPath(pathDest), null);
-              // .attachmentWithIdentifierURLOptionsError('attachment', NSURL.fileURLWithPath('file://' + pathDest), null);
+              .attachmentWithIdentifierURLOptionsError(imageName, NSURL.fileURLWithPath(path), null);
 
             content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(attachment);
           } catch(err) {
@@ -149,8 +163,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           }
 
           console.log('Image attached!');
-
-          // TODO: Delete image when dismissed?
         }
       }
 
