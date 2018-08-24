@@ -53,8 +53,8 @@ You can pass several options to this function, everything is optional:
 |------|-----------|
 |`id`     |A number so you can easily distinguish your notifications. Default 0.|
 |`title`  |The title which is shown in the statusbar. Default empty.|
-|`subtitle`  |Shown below the title. Default empty. iOS >= 10 only. Available since plugin version 3.0.0.|
-|`body`   |The text below the title. Default empty.|
+|`subtitle`  |Shown below the title in iOS and nex to the App name in Android. Default empty. Available since plugin version 3.0.0.|
+|`body`   |The text below the title. If not provided, the subtitle or title (in this order or priority) will be swapped for it in iOS, as iOS won't display notifications without a body. Default empty.|
 |`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Note: The array would be trimed from the top if the messages exceed five. Default not set |
 |`groupSummary`| An [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html) notification summary. Default empty|
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
@@ -62,13 +62,12 @@ You can pass several options to this function, everything is optional:
 |`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|
 |`sound`  |Notification sound. For custom notification sound (iOS only), copy the file to `App_Resources/iOS`. Set this to "default" (or do not set at all) in order to use default OS sound. Set this to `null` to suppress sound.|
 |`interval` |Set to one of `second minute hour day week month quarter year` if you want a recurring notification.|
-|`smallIcon` | Custom icon to show in the system tray on Android, which lives in App_Resouces/Android/drawable folders. Example: 'res://filename.png'. Defaults to 'res://ic_stat_notify.png' or the app icon if not present. Android < Lollipop (21) only. |
-|`smallSilhouetteIcon` | Same as 'smallIcon' but for Android >= Lollipop (21). Should be an alpha-only image. Defaults to 'res://ic_stat_notify_silhouette.png' or the app icon if not present. |
-|`largeIcon` | Custom icon to show in the notification center on Android, which lives in App_Resouces/Android/drawable folders. Example: 'res://filename.png'. Defaults to 'res://ic_notify.png' or the app icon if not present. Android only < Lollipop (21). |
-|`largeSilhouetteIcon` | Same as 'largeIcon' but for Android >= Lollipop (21).  Should be an alpha-only image. Defaults to 'res://ic_notify_silhouette.png' or the app icon if not present. |
+|`icon` | Custom icon to show in the system tray on Android, which lives in App_Resouces/Android/drawable folders. Example: 'res://filename.png'. Defaults to 'res://ic_stat_notify.png' or the app icon if not present. Android < Lollipop (21) only. |
+|`silhouetteIcon` | Same as 'smallIcon' but for Android >= Lollipop (21). Should be an alpha-only image. Defaults to 'res://ic_stat_notify_silhouette.png' or the app icon if not present. |
+|`thumbnail` | Custom thumbnail/icon to show in the notification center on Android, this can be: - true if you want to use the image as the thumbnail as well - A resource url that lives in App_Resouces/Android/drawable folders. E.g.: 'res://filename.png' - A Bitmap. Android only. Default not set. |
 |`color` | Custom color for the notification icon and title that will be applied when the notification center is expanded. Android >= Lollipop (21) only. |
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them. (**Android Only**) |
-|`image` | Expandable notification image. |
+|`image` | URL of the image to use as an expandable notification image. |
 |`channel` |Default is (`Channel`). Set the channel name for Android API >= 26, which is shown when the user longpresses a  notification. (**Android Only**) |
 |`forceShowWhenInForeground` |Default is `false`. Set to `true` to always show the notification. Note that on iOS < 10 this is ignored (the notification is not shown), and on newer Androids it's currently ignored as well (the notification always shows, per platform default). |
 |`actions` |Add an array of `NotificationAction` objects (see below) to add buttons or text input to a notification. |

@@ -74,22 +74,34 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return utils.ad.getApplicationContext().getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
   };
 
-  private static getIcon(context: any,
-    resources: any,
-    iconLocation: string,
-    defaultIcon: string,
-    asDrawable: boolean = false,
-  ): string {
+  private static getIcon(context: any, resources: any, iconLocation: string): string {
     const packageName: string = context.getApplicationInfo().packageName;
 
-    const icon = iconLocation
+    return iconLocation
       && iconLocation.indexOf(utils.RESOURCE_PREFIX) === 0
       && resources.getIdentifier(iconLocation.substr(utils.RESOURCE_PREFIX.length), "drawable", packageName)
-      || resources.getIdentifier(defaultIcon, "drawable", packageName)
+      || (LocalNotificationsImpl.IS_GTE_LOLLIPOP && resources.getIdentifier("ic_stat_notify_silhouette", "drawable", packageName))
+      || resources.getIdentifier("ic_stat_notify", "drawable", packageName)
       || context.getApplicationInfo().icon;
 
-    return asDrawable ? (icon ? android.graphics.BitmapFactory.decodeResource(resources, icon) : null) : icon;
+    // return asDrawable ? (icon ? android.graphics.BitmapFactory.decodeResource(resources, icon) : null) : icon;
   };
+
+  private static async getThumbnail(context: any, resources: any, thumbnailString: string): Promise<android.graphics.Bitmap> {
+    const packageName: string = context.getApplicationInfo().packageName;
+
+    if (thumbnailString.indexOf(utils.RESOURCE_PREFIX) === 0) {
+      const thumbnail = resources.getIdentifier(thumbnailString.substr(utils.RESOURCE_PREFIX.length), "drawable", packageName);
+
+      return Promise.resolve(thumbnail ? android.graphics.BitmapFactory.decodeResource(resources, thumbnail) : null);
+    }
+
+    try {
+      return (await imageSource.fromUrl(thumbnailString)).android;
+    } catch(err) {
+      return Promise.resolve(null);
+    }
+  }
 
   hasPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -196,13 +208,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         for (var n in scheduleOptions) {
           const options = LocalNotificationsImpl.merge(scheduleOptions[n], LocalNotificationsImpl.defaults);
 
-          if (LocalNotificationsImpl.IS_GTE_LOLLIPOP) {
-            options.smallIcon = LocalNotificationsImpl.getIcon(context, resources, options.smallSilhouetteIcon, "ic_stat_notify_silhouette");
-            options.largeIconDrawable = LocalNotificationsImpl.getIcon(context, resources, options.largeSilhouetteIcon, "ic_notify_silhouette", true);
-          } else {
-            options.smallIcon = LocalNotificationsImpl.getIcon(context, resources, options.smallIcon, "ic_stat_notify");
-            options.largeIconDrawable = LocalNotificationsImpl.getIcon(context, resources, options.largeIcon, "ic_notify", true);
-          }
+          options.icon = LocalNotificationsImpl.getIcon(
+            context, resources, LocalNotificationsImpl.IS_GTE_LOLLIPOP && options.silhouetteIcon || options.icon);
 
           options.atTime = options.at ? options.at.getTime() : new Date().getTime();
           options.color = options.color.android;
@@ -232,9 +239,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           const builder = new android.support.v4.app.NotificationCompat.Builder(context)
               .setDefaults(0) // IIRC this is deprecated, can prolly remove it without trouble
               .setContentTitle(options.title)
+              .setSubText(options.subtitle)
               .setContentText(options.body)
-              .setSmallIcon(options.smallIcon)
-              .setLargeIcon(options.largeIconDrawable)
+              .setSmallIcon(options.icon)
               .setAutoCancel(true) // removes the notification from the statusbar once tapped
               // .setSound(options.sound)
               .setNumber(options.badge)
@@ -243,16 +250,27 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
               .setTicker(options.ticker || options.body)
               .setPriority(options.forceShowWhenInForeground ? 1 : 0); // 0 = default, 1 = high
 
+          const thumbnail = options.thumbnail;
+
+          if (thumbnail instanceof android.graphics.Bitmap) {
+            builder.setLargeIcon(thumbnail);
+          } else if (thumbnail && typeof thumbnail === 'string') {
+            builder.setLargeIcon(await LocalNotificationsImpl.getThumbnail(context, resources, thumbnail));
+          }
+
           if (android.os.Build.VERSION.SDK_INT >= 26 && builder.setChannelId) {
             const channelId = "myChannelId"; // package scoped, so no need to add it ourselves
             const notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+
             if (notificationManager && notificationManager.getNotificationChannel) {
               let notificationChannel = notificationManager.getNotificationChannel(channelId);
+
               if (notificationChannel === null) {
                 // for 'importance' (expose one day as plugin property), see https://developer.android.com/reference/android/app/NotificationManager.html
                 notificationChannel = new android.app.NotificationChannel(channelId, options.channel, android.app.NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(notificationChannel);
               }
+
               builder.setChannelId(channelId);
             }
           }
@@ -277,21 +295,26 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             }
             options.groupSummary !== null ? inboxStyle.setSummaryText(options.groupSummary) : 0;
             builder
-                .setGroup(options.group)
-                .setStyle(inboxStyle)
+              .setGroup(options.group)
+              .setStyle(inboxStyle)
           } else if (options.bigTextStyle) {
-            const bigTextStyle = new android.support.v4.app.NotificationCompat.BigTextStyle();
-
-            bigTextStyle.bigText(options.body);
-            bigTextStyle.setBigContentTitle(options.title);
-            builder.setStyle(bigTextStyle);
+            builder.setStyle(new android.support.v4.app.NotificationCompat.BigTextStyle()
+              .setBigContentTitle(options.title)
+              .bigText(options.body)
+            );
           } else if (options.image) {
             try {
-              const bigPictureStyle = new android.support.v4.app.NotificationCompat.BigPictureStyle();
+              // TODO: Update this to also use local images (res://...)
+              const imageBitmap: android.graphics.Bitmap = (await imageSource.fromUrl(options.image)).android;
+              const style = new android.support.v4.app.NotificationCompat.BigPictureStyle()
+                .bigPicture(imageBitmap);
 
-              bigPictureStyle.bigPicture((await imageSource.fromUrl(options.image)).android);
-              bigPictureStyle.setBigContentTitle(options.title);
-              builder.setStyle(bigPictureStyle);
+              if (options.thumbnail === true) {
+                builder.setLargeIcon(imageBitmap); // Set the thumbnail...
+                style.bigLargeIcon(null) // ...which goes away when expanded.
+              }
+
+              builder.setStyle(style);
             } catch(err) {
               // Just create a normal notification instead...
             }

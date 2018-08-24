@@ -114,9 +114,13 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       const content = UNMutableNotificationContent.new();
 
-      content.title = options.title;
-      content.subtitle = options.subtitle;
-      content.body = options.body;
+      let { title, subtitle, body } = options;
+
+      // In iOS, a notification with no body won't show up, so the subtitle or title will be swaped for it if not provided.
+
+      content.title = body || subtitle ? title : undefined;
+      content.subtitle = body ? subtitle : undefined;
+      content.body = body || subtitle || title;
       content.badge = options.badge;
 
       if (options.sound === undefined || options.sound === "default") {
@@ -346,7 +350,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         resolve(true);
       } catch (ex) {
         console.log("Error in LocalNotifications.addOnMessageReceivedCallback: " + ex);
-
         reject(ex);
       }
     });

@@ -8,3 +8,5 @@ src/*.d.ts
 demo/platforms
 publish/package/
 .DS_Store
+native_src/android/.project
+native_src/android/.settings/
