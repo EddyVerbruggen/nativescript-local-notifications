@@ -30,7 +30,7 @@ export interface ScheduleOptions {
   /**
    * Shown below the title.
    * Default empty.
-   * iOS >= 10 only.
+   * Android and iOS >= 10 only.
    */
   subtitle?: string;
 
@@ -77,31 +77,25 @@ export interface ScheduleOptions {
    *
    * Android < Lollipop (21) only.
    */
-  smallIcon?: string;
+  icon?: string;
 
   /**
    * Same as 'smallIcon' but for Android >= Lollipop (21). Should be an alpha-only image.
    *
    * Defaults to 'res://ic_stat_notify_silhouette.png' or the app icon if not present.
    */
-  smallSilhouetteIcon?: string;
+  silhouetteIcon?: string;
 
   /**
-   * Custom icon to show in the notification center on Android, which lives in App_Resouces/Android/drawable folders.
-   * Example: 'res://filename.png'.
+   * Custom thumbnail/icon to show in the notification center on Android, this can be:
+   * - true if you want to use the image as the thumbnail as well
+   * - A resource url that lives in App_Resouces/Android/drawable folders. E.g.: 'res://filename.png'
+   * - A Bitmap.
    *
-   * Defaults to 'res://ic_notify.png' or the app icon if not present.
-   *
-   * Android only < Lollipop (21).
+   * Android only.
+   * Default not set.
    */
-  largeIcon?: string;
-
-  /**
-   * Same as 'largeIcon' but for Android >= Lollipop (21).  Should be an alpha-only image.
-   *
-   * Defaults to 'res://ic_notify_silhouette.png' or the app icon if not present.
-   */
-  largeSilhouetteIcon?: string;
+  thumbnail?: boolean | string | android.graphics.Bitmap;
 
   /**
    * Custom color for the notification icon and title that will be applied when the notification center is expanded.
@@ -137,12 +131,12 @@ export interface ScheduleOptions {
   groupSummary?: string;
 
   /**
-   * Expandable notification image.
+   * URL of the image to use as an expandable notification image.
    */
   image?: string;
 
   /**
-   * Using the big text style. Deprecated in favour of the style option.
+   * Using the big text style.
    *
    * Android only.
    * Default false.
