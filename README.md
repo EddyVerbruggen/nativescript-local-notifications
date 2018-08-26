@@ -55,6 +55,7 @@ You can pass several options to this function, everything is optional:
 |`title`  |The title which is shown in the statusbar. Default empty.|
 |`subtitle`  |Shown below the title. Default empty. iOS >= 10 only. Available since plugin version 3.0.0.|
 |`body`   |The text below the title. Default empty.|
+|`bigTextStyle`  |Allow more than 1 line of the body text to show in the notification centre. Default `false`. (**Android Only**) |
 |`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Note: The array would be trimed from the top if the messages exceed five. Default not set |
 |`groupSummary`| An [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html) notification summary. Default empty|
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
