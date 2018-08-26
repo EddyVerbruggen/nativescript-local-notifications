@@ -42,8 +42,8 @@ export class HelloWorldModel extends Observable {
           id: 1,
           title: 'THE TITLE',
           subtitle: 'The subtitle',
-          body: 'The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big body.',
-          bigTextStyle: true, // Adds an 'expansion arrow' to the notification (Android only)
+          body: 'The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body.',
+          bigTextStyle: true, // Allow more than 1 row of the 'body' text
           sound: "customsound",
           forceShowWhenInForeground: true,
           channel: "My Awesome Channel",
@@ -113,7 +113,7 @@ export class HelloWorldModel extends Observable {
         .catch(error => console.log("doScheduleAndSetBadgeNumber error: " + error));
   }
 
-  public doScheduleId4WithCustomIcon(): void {
+  public doScheduleId4GroupedWithCustomIcon(): void {
     LocalNotifications.schedule(
         [{
           id: 4,
@@ -122,6 +122,8 @@ export class HelloWorldModel extends Observable {
           smallIcon: 'res://launcher_icon_arrow',
           largeIcon: 'res://ic_notify', // although this is the default fallback as well ;)
           at: new Date(new Date().getTime() + 10 * 1000),
+          groupedMessages: ["The first", "Second", "Keep going", "one more..", "OK Stop"], // android only
+          groupSummary: "Summary of the grouped messages above" // android only
         }])
         .then(() => {
           alert({
@@ -146,16 +148,19 @@ export class HelloWorldModel extends Observable {
             {
               id: "input-richard",
               type: "input",
+              title: "The title",
               placeholder: "Type to reply..",
               submitLabel: "Reply",
-              launch: false
+              launch: true,
+              editable: true,
+              choices: ["Red", "Yellow", "Green"]
             }
           ]
         }])
         .then(() => {
           alert({
             title: "Notification scheduled",
-            message: 'ID: 5',
+            message: "ID: 5",
             okButtonText: "OK, thanks"
           });
         })

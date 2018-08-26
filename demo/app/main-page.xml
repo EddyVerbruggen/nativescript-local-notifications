@@ -19,7 +19,7 @@
               <Button row="3" col="1"  text="2. no sound" tap="{{ doScheduleNoSound }}" class="button" />
 
               <Button row="4" col="0" text="3. with badge" tap="{{ doScheduleAndSetBadgeNumber }}" class="button"  />
-              <Button row="4" col="1" text="4. custom icon" tap="{{ doScheduleId4WithCustomIcon }}" class="button"  />
+              <Button row="4" col="1" text="4. custom icon" tap="{{ doScheduleId4GroupedWithCustomIcon }}" class="button"  />
 
               <Button row="5" col="0" text="5. with input" tap="{{ doScheduleId5WithInput }}" class="button"  />
               <Button row="5" col="1" text="6. repeat minutely" tap="{{ doScheduleEveryMinute }}" class="button"  />
