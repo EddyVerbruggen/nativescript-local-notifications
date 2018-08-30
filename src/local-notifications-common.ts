@@ -4,9 +4,24 @@ export interface NotificationAction {
   id: string;
   type: "button" | "input";
   title?: string;
+  /**
+   * Launch the app when the action is triggered.
+   * Default false.
+   */
   launch?: boolean;
   submitLabel?: string;
   placeholder?: string;
+  /**
+   * For type = "input".
+   * Default true.
+   * Android only.
+   */
+  editable?: boolean;
+  /**
+   * For type = "input".
+   * Android only.
+   */
+  choices?: Array<string>;
 }
 
 /**
@@ -135,7 +150,7 @@ export interface ScheduleOptions {
 
 export interface ReceivedNotification {
   id: number;
-  // foreground: boolean;
+  foreground: boolean;
   title?: string;
   body?: string;
   event?: string;

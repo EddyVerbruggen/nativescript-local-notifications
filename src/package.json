@@ -40,7 +40,16 @@
     "Notification",
     "Local Notification"
   ],
-  "author": "Telerik / Eddy Verbruggen <eddyverbruggen@gmail.com>",
+  "author": {
+    "name": "Eddy Verbruggen",
+    "url": "https://github.com/EddyVerbruggen/"
+  },
+  "contributors": [
+    {
+      "name": "Dani Gámez Franco",
+      "url": "https://github.com/Danziger"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/eddyverbruggen/nativescript-local-notifications/issues"

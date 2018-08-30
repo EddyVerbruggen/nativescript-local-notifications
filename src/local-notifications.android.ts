@@ -1,4 +1,5 @@
 import * as utils from "tns-core-modules/utils/utils";
+import * as app from "tns-core-modules/application";
 import {
   LocalNotificationsCommon,
   LocalNotificationsApi,
@@ -8,6 +9,19 @@ import {
 } from "./local-notifications-common";
 
 declare const android, com: any;
+
+(() => {
+  const registerLifecycleEvents = () => {
+    com.telerik.localnotifications.LifecycleCallbacks.registerCallbacks(app.android.nativeApp);
+  };
+
+  // Hook on the application events
+  if (app.android.nativeApp) {
+    registerLifecycleEvents();
+  } else {
+    app.on(app.launchEvent, registerLifecycleEvents);
+  }
+})();
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
@@ -26,8 +40,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       return android.app.AlarmManager.INTERVAL_DAY * 7;
     } else if (interval === "month") {
       return android.app.AlarmManager.INTERVAL_DAY * 31; // well that's almost accurate
-    } else if (interval === "quarter") {
-      return android.app.AlarmManager.INTERVAL_HOUR * 2190;
     } else if (interval === "year") {
       return android.app.AlarmManager.INTERVAL_DAY * 365; // same here
     } else {
@@ -128,16 +140,25 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   cancelAll(): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
+        const context = utils.ad.getApplicationContext();
+
+        // if (android.os.Build.VERSION.SDK_INT >= 26) {
+        //   const notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        //   console.log(">> >= 26, getActiveNotifications: " + notificationManager.getActiveNotifications());
+        // } else {
+        //   console.log(">> < 26, StatusBarNotification[0]: " + new android.service.notification.StatusBarNotification[0]);
+        // }
+
         const sharedPreferences = LocalNotificationsImpl.getSharedPreferences();
         const keys = sharedPreferences.getAll().keySet();
         const iterator = keys.iterator();
 
         while (iterator.hasNext()) {
           const cancelMe = iterator.next();
-          console.log(">> canceling " + cancelMe);
           LocalNotificationsImpl.cancelById(cancelMe);
         }
 
+        android.support.v4.app.NotificationManagerCompat.from(context).cancelAll();
         resolve();
       } catch (ex) {
         console.log("Error in LocalNotifications.cancelAll: " + ex);
@@ -173,7 +194,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         const context = utils.ad.getApplicationContext();
         const resources = context.getResources();
 
-        for (var n in scheduleOptions) {
+        for (let n in scheduleOptions) {
           const options = LocalNotificationsImpl.merge(scheduleOptions[n], LocalNotificationsImpl.defaults);
 
           // small icon
@@ -205,125 +226,16 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             // resort to the regular launcher icon
             options.largeIcon = context.getApplicationInfo().icon;
           }
-          if (options.largeIcon) {
-            // options.largeIconDrawable = android.support.v4.content.ContextCompat.getDrawable(context, options.largeIcon).getBitmap();
-            options.largeIconDrawable = android.graphics.BitmapFactory.decodeResource(context.getResources(), options.largeIcon);
-          }
 
           options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 
-          // custom sounds do not currently work, so using the default in all cases except when set to null
-          const useDefaultSound = options.sound !== null;
+          // used when restoring the notification after a reboot
+          options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
 
-          /*
-          switch (options.sound) {
-            case null:
-            case false:
-              options.sound = null;
-              break;
-            case undefined:
-            case "default":
-              options.sound = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION).toString();
-              break;
-            default:
-              options.sound = null;
-            //   const res = context.getResources();
-            //   const identifier = res.getIdentifier(options.sound, "raw", context.getApplicationInfo().packageName);
-            //   options.sound = android.net.Uri.parse("android.resource://" + context.getApplicationInfo().packageName + identifier);
-          }
-          */
+          com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(
+              new org.json.JSONObject(JSON.stringify(options)),
+              context);
 
-          // TODO best move this to native lib so we can reuse it in the restorereceiver (dupe for now)
-          const builder = new android.support.v4.app.NotificationCompat.Builder(context)
-              .setDefaults(0) // IIRC this is deprecated, can prolly remove it without trouble
-              .setContentTitle(options.title)
-              .setContentText(options.body)
-              .setSmallIcon(options.smallIcon)
-              .setLargeIcon(options.largeIconDrawable)
-              .setAutoCancel(true) // removes the notification from the statusbar once tapped
-              // .setSound(options.sound)
-              .setNumber(options.badge)
-              .setOngoing(options.ongoing)
-              .setTicker(options.ticker || options.body)
-              .setPriority(options.forceShowWhenInForeground ? 1 : 0); // 0 = default, 1 = high
-
-          if (android.os.Build.VERSION.SDK_INT >= 26 && builder.setChannelId) {
-            const channelId = "myChannelId"; // package scoped, so no need to add it ourselves
-            const notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-            if (notificationManager && notificationManager.getNotificationChannel) {
-              let notificationChannel = notificationManager.getNotificationChannel(channelId);
-              if (notificationChannel === null) {
-                // for 'importance' (expose one day as plugin property), see https://developer.android.com/reference/android/app/NotificationManager.html
-                notificationChannel = new android.app.NotificationChannel(channelId, options.channel, android.app.NotificationManager.IMPORTANCE_HIGH);
-                notificationManager.createNotificationChannel(notificationChannel);
-              }
-              builder.setChannelId(channelId);
-            }
-          }
-
-          if (options.groupedMessages !== null && Array.isArray(options.groupedMessages)) {
-            const inboxStyle = new android.support.v4.app.NotificationCompat.InboxStyle();
-            const events = options.groupedMessages;
-            (events.length > 5) ? events.splice(0, events.length - 5) : 0;
-
-            // Sets a title for the Inbox in expanded layout
-            inboxStyle.setBigContentTitle(options.title);
-            for (var i = 0; i < events.length; i++) {
-              inboxStyle.addLine(events[i]);
-            }
-            options.groupSummary !== null ? inboxStyle.setSummaryText(options.groupSummary) : 0;
-            builder
-                .setGroup(options.group)
-                .setStyle(inboxStyle)
-          }
-
-          // add the intent that handles the event when the notification is clicked (which should launch the app)
-          const reqCode = new java.util.Random().nextInt();
-          const clickIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationClickedActivity.class)
-              .putExtra("pushBundle", JSON.stringify(options))
-              .setFlags(android.content.Intent.FLAG_ACTIVITY_NO_HISTORY);
-
-          const pendingContentIntent = android.app.PendingIntent.getActivity(context, reqCode, clickIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
-          builder.setContentIntent(pendingContentIntent);
-
-          // set big text style (adds an 'expansion arrow' to the notification)
-          if (options.bigTextStyle) {
-            const bigTextStyle = new android.support.v4.app.NotificationCompat.BigTextStyle();
-            bigTextStyle.setBigContentTitle(options.title);
-            bigTextStyle.bigText(options.body);
-            builder.setStyle(bigTextStyle);
-          }
-
-          const notification = builder.build();
-
-          if (useDefaultSound) {
-            notification.defaults |= android.app.Notification.DEFAULT_SOUND;
-          }
-
-          // add the intent which schedules the notification
-          const notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class)
-              .setAction("" + options.id)
-              .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION_ID, options.id)
-              .putExtra(com.telerik.localnotifications.NotificationPublisher.NOTIFICATION, notification);
-
-          const pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, android.app.PendingIntent.FLAG_CANCEL_CURRENT);
-
-          // configure when we'll show the event
-          const alarmManager = utils.ad.getApplicationContext().getSystemService(android.content.Context.ALARM_SERVICE);
-
-          const repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
-          options.repeatInterval = repeatInterval; // used when restoring the notification after a reboot
-
-          if (repeatInterval > 0) {
-            alarmManager.setRepeating(android.app.AlarmManager.RTC_WAKEUP, options.atTime, repeatInterval, pendingIntent);
-          } else {
-            if (options.at) {
-              alarmManager.set(android.app.AlarmManager.RTC_WAKEUP, options.atTime, pendingIntent);
-            } else {
-              const notiManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-              notiManager.notify(options.id, notification);
-            }
-          }
           LocalNotificationsImpl.persist(options);
         }
 

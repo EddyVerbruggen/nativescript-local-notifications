@@ -46,8 +46,8 @@ export class HelloWorldModel extends Observable {
           bigTextStyle: true, // Allow more than 1 row of the 'body' text
           sound: "customsound",
           forceShowWhenInForeground: true,
-          channel: "My Awesome Channel",
-          ticker: 'Special ticker text (Android only)',
+          channel: "My Awesome Channel", // not that this is revealed in the notification tray when you longpress it on Android
+          ticker: "Special ticker text (Android only)",
           at: new Date(new Date().getTime() + (10 * 1000)),
           actions: [
             {
@@ -148,12 +148,12 @@ export class HelloWorldModel extends Observable {
             {
               id: "input-richard",
               type: "input",
-              title: "The title",
+              title: "Tap here to reply",
               placeholder: "Type to reply..",
               submitLabel: "Reply",
               launch: true,
               editable: true,
-              choices: ["Red", "Yellow", "Green"]
+              // choices: ["Red", "Yellow", "Green"] // TODO Android only, but yet to see it in action
             }
           ]
         }])

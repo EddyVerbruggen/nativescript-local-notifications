@@ -17,17 +17,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private receivedNotificationCallback: (data: ReceivedNotification) => void;
   private notificationHandler: any;
   private notificationManager: any;
-  notificationOptions: Map<string, ScheduleOptions> = new Map();
-
   private delegate: UNUserNotificationCenterDelegateImpl;
 
   constructor() {
     super();
-    // TODO make sure that if we require this in both app/main.js and main-view-model.js, this only runs once
-    console.log("LocalNotifications constructor @ " + new Date().getTime());
-
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
-      // TODO if the delegate is only for getting the msg details, consider moving it to the native lib (so no wiring is required in app.js)
       this.delegate = UNUserNotificationCenterDelegateImpl.initWithOwner(new WeakRef(this));
       UNUserNotificationCenter.currentNotificationCenter().delegate = this.delegate;
 
@@ -63,26 +57,44 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   };
 
   private static getInterval(interval: ScheduleInterval): NSCalendarUnit {
-    if (!interval) {
-      return NSCalendarUnit.CalendarUnitEra;
-    } else if (interval === "second") {
+    if (interval === "minute") {
       return NSCalendarUnit.CalendarUnitSecond;
-    } else if (interval === "minute") {
-      return NSCalendarUnit.CalendarUnitMinute;
     } else if (interval === "hour") {
-      return NSCalendarUnit.CalendarUnitHour;
+      return NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "day") {
-      return NSCalendarUnit.CalendarUnitDay;
+      return NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "week") {
-      return NSCalendarUnit.CalendarUnitWeekOfYear;
+      return NSCalendarUnit.CalendarUnitWeekday | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "month") {
-      return NSCalendarUnit.CalendarUnitMonth;
-    } else if (interval === "quarter") {
-      return NSCalendarUnit.CalendarUnitQuarter;
+      return NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "year") {
-      return NSCalendarUnit.CalendarUnitYear;
+      return NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else {
-      return NSCalendarUnit.CalendarUnitEra;
+      return NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
+    }
+  };
+
+  private static getIntervalSeconds(interval: ScheduleInterval, ticks: number): number {
+    if (!interval) {
+      return ticks;
+    } else if (interval === "second") {
+      return ticks;
+    } else if (interval === "minute") {
+      return ticks * 60;
+    } else if (interval === "hour") {
+      return ticks * 60 * 60;
+    } else if (interval === "day") {
+      return ticks * 60 * 60 * 24;
+    } else if (interval === "week") {
+      return ticks * 60 * 60 * 24 * 7;
+    } else if (interval === "month") {
+      return ticks * 60 * 60 * 24 * 30.438;
+    } else if (interval === "quarter") {
+      return ticks * 60 * 60 * 24 * 91.313;
+    } else if (interval === "year") {
+      return ticks * 60 * 60 * 24 * 365;
+    } else {
+      return ticks;
     }
   };
 
@@ -108,34 +120,16 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       }
       content.badge = options.badge;
 
-      const userInfoDict = new NSMutableDictionary({capacity: 1}); // .alloc().initWithCapacity(1);
+      const userInfoDict = new NSMutableDictionary({capacity: 1});
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       content.userInfo = userInfoDict;
 
-      // content.setValueForKey(options.forceShowWhenInForeground, "shouldAlwaysAlertWhileAppIsForeground");
-
       // Notification trigger and repeat
       const trigger_at = options.at ? options.at : new Date();
-
-      // TODO
-      // const repeats = options.repeat !== 0;
-      const repeats = options.interval !== undefined;
-      console.log(">> repeats: " + repeats);
-
-      let trigger;
-      if (options.trigger === "timeInterval") { // TODO see https://github.com/katzer/cordova-plugin-local-notifications/blob/6d1b27f1e9d8e2198fd1ea6e9032419295690c47/www/local-notification.js#L706
-        // trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(trigger_at, repeats);
-      } else {
-        const FormattedDate = NSDateComponents.new();
-        FormattedDate.day = trigger_at.getUTCDate();
-        FormattedDate.month = trigger_at.getUTCMonth() + 1;
-        FormattedDate.year = trigger_at.getUTCFullYear();
-        FormattedDate.minute = trigger_at.getMinutes();
-        FormattedDate.hour = trigger_at.getHours();
-        FormattedDate.second = trigger_at.getSeconds();
-        trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(FormattedDate, repeats);
-        console.log(">> trigger: " + trigger);
-      }
+      const cal = LocalNotificationsImpl.calendarWithMondayAsFirstDay();
+      const date = cal.componentsFromDate(LocalNotificationsImpl.getInterval(options.interval), trigger_at);
+      date.timeZone = NSTimeZone.defaultTimeZone;
+      const trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(date, options.interval !== undefined);
 
       // actions
       if (options.actions) {
@@ -179,9 +173,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         content.categoryIdentifier = categoryIdentifier;
 
         UNUserNotificationCenter.currentNotificationCenter().getNotificationCategoriesWithCompletionHandler((categories: NSSet<UNNotificationCategory>) => {
-          console.log({categories});
           UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(categories.setByAddingObject(notificationCategory));
-          // UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(NSSet.setWithObject(notificationCategory));
         });
       }
 
@@ -191,10 +183,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       // Add the request
       UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(request, (error: NSError) => {
         if (error) {
-          console.log("Error scheduling notification (id " + options.id + "): " + error.localizedDescription);
+          console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`);
         }
       });
     }
+  }
+
+  private static calendarWithMondayAsFirstDay(): NSCalendar {
+    const cal = NSCalendar.alloc().initWithCalendarIdentifier(NSCalendarIdentifierISO8601);
+    cal.firstWeekday = 2;
+    cal.minimumDaysInFirstWeek = 1;
+    return cal;
   }
 
   private static schedulePendingNotificationsLegacy(pending: ScheduleOptions[]): void {
@@ -235,7 +234,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         notification.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
       }
 
-      // TODO add these after v1
       // notification.soundName = custom..;
       // notification.resumeApplicationInBackground = true;
 
@@ -292,7 +290,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       try {
         this.receivedNotificationCallback = onReceived;
         for (let p in this.pendingReceivedNotifications) {
-          console.log("notificationDetails p: " + JSON.parse(p));
+          // console.log("notificationDetails p: " + JSON.parse(p));
           onReceived(this.pendingReceivedNotifications[p]);
         }
         this.pendingReceivedNotifications = [];
@@ -404,6 +402,7 @@ class UNUserNotificationCenterDelegateImpl extends NSObject implements UNUserNot
   public static ObjCProtocols = [];
 
   private _owner: WeakRef<LocalNotificationsImpl>;
+  private receivedInForeground = false;
 
   public static new(): UNUserNotificationCenterDelegateImpl {
     try {
@@ -449,9 +448,12 @@ class UNUserNotificationCenterDelegateImpl extends NSObject implements UNUserNot
       id: +request.identifier,
       title: notificationContent.title,
       body: notificationContent.body,
+      foreground: this.receivedInForeground || UIApplication.sharedApplication.applicationState === UIApplicationState.Active,
       event,
       response
     });
+
+    this.receivedInForeground = false;
 
     completionHandler();
   }
@@ -464,6 +466,8 @@ class UNUserNotificationCenterDelegateImpl extends NSObject implements UNUserNot
       return;
     }
 
+    this.receivedInForeground = true;
+
     if (notification.request.content.userInfo.valueForKey("forceShowWhenInForeground")) {
       completionHandler(UNNotificationPresentationOptions.Badge | UNNotificationPresentationOptions.Sound | UNNotificationPresentationOptions.Alert);
     } else {
@@ -472,4 +476,5 @@ class UNUserNotificationCenterDelegateImpl extends NSObject implements UNUserNot
   }
 }
 
-export const LocalNotifications = new LocalNotificationsImpl();
+const instance = new LocalNotificationsImpl();
+export const LocalNotifications = instance;

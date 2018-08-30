@@ -19,6 +19,15 @@ From the command prompt go to your app's root folder and execute:
 tns plugin add nativescript-local-notifications
 ```
 
+## Setup (since plugin version 3.0.0)
+Add this so for iOS 10+ we can do some wiring (set the iOS `UNUserNotificationCenter.delegate`, to be precise).
+Not needed if your app loads the plugin on startup anyway.
+You'll know you need this if on iOS 10+ notifications are not received by your app... better safe than sorry, though!
+
+```typescript
+require ("nativescript-local-notifications");
+```
+
 #### TypeScript support
 And do yourself a favor by adding TypeScript support to your nativeScript app:
 
@@ -62,7 +71,7 @@ You can pass several options to this function, everything is optional:
 |`at`     |A JavaScript Date object indicating when the notification should be shown. Default 'now'.|
 |`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|
 |`sound`  |Notification sound. For custom notification sound (iOS only), copy the file to `App_Resources/iOS`. Set this to "default" (or do not set at all) in order to use default OS sound. Set this to `null` to suppress sound.|
-|`interval` |Set to one of `second minute hour day week month quarter year` if you want a recurring notification.|
+|`interval` |Set to one of `second`, `minute`, `hour`, `day`, `week`, `month`, `year` if you want a recurring notification.|
 |`smallIcon` |On Android you can set a custom icon in the system tray. Pass in 'res://filename' (without the extension) which lives in App_Resouces/Android/drawable folders. If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders. Default: the app icon.|
 |`largeIcon` |Same as `smallIcon`, but this one is shown when you expand the notification center. The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.|
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them. (**Android Only**) |
