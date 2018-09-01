@@ -1,6 +1,7 @@
 import { Observable } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { LocalNotifications } from "nativescript-local-notifications";
+import { Color } from "tns-core-modules/color";
 
 export class HelloWorldModel extends Observable {
 
@@ -45,6 +46,7 @@ export class HelloWorldModel extends Observable {
           body: 'The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body.',
           bigTextStyle: true, // Allow more than 1 row of the 'body' text
           sound: "customsound",
+          color: new Color("green") ,
           forceShowWhenInForeground: true,
           channel: "My Awesome Channel", // not that this is revealed in the notification tray when you longpress it on Android
           ticker: "Special ticker text (Android only)",
@@ -79,6 +81,8 @@ export class HelloWorldModel extends Observable {
         [{
           id: 2,
           title: 'Hi',
+          subtitle: 'There',
+          color: new Color("red"),
           forceShowWhenInForeground: false, // default
           body: 'I\'m soundless',
           sound: null,
@@ -99,7 +103,8 @@ export class HelloWorldModel extends Observable {
         [{
           id: 3,
           title: 'Hi',
-          body: 'You should see a \'3\' somewhere',
+          subtitle: 'Whatsubtitle',
+          // body: 'You should see a \'3\' somewhere',
           at: new Date(new Date().getTime() + 10 * 1000),
           badge: 3
         }])

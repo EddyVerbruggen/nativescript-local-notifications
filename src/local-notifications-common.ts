@@ -1,3 +1,5 @@
+import { Color } from "tns-core-modules/color/color";
+
 export type ScheduleInterval = "second" | "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year";
 
 export interface NotificationAction {
@@ -43,7 +45,6 @@ export interface ScheduleOptions {
   /**
    * Shown below the title.
    * Default empty.
-   * iOS >= 10 only.
    */
   subtitle?: string;
 
@@ -80,6 +81,12 @@ export interface ScheduleOptions {
    */
   sound?: string;
 
+  /**
+   * Custom color for the notification icon and title that will be applied when the notification center is expanded.
+   * Android >= Lollipop (21) only.
+   */
+  color?: Color;
+
   interval?: ScheduleInterval;
 
   /**
@@ -106,7 +113,7 @@ export interface ScheduleOptions {
    */
   ongoing?: boolean;
 
-  /***
+  /**
    * An array of messages to be displayed as a single notification using the inbox style
    * Note: the length of the array cannot be greater than five, in a situation where it
    * is, the array would be trimmed from the top
@@ -116,7 +123,7 @@ export interface ScheduleOptions {
   groupedMessages?: Array<string>
 
 
-  /***
+  /**
    * The summary of the grouped message (see #groupedMessage) when using the inbox style
    *
    * Android only.

@@ -80,10 +80,12 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
         .setDefaults(0)
         .setContentTitle(options.optString("title"))
         .setContentText(options.optString("body"))
+        .setSubText(options.optString("subtitle"))
         .setSmallIcon(options.optInt("smallIcon"))
         .setLargeIcon(largeIconDrawable)
         .setAutoCancel(true) // removes the notification from the statusbar once tapped
         .setNumber(options.optInt("badge"))
+        .setColor(options.optInt("color"))
         .setOngoing(options.optBoolean("ongoing"))
         .setPriority(options.optBoolean("forceShowWhenInForeground") ? 1 : 0)
         .setTicker(options.optString("ticker", options.optString("body")));
@@ -109,14 +111,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     applyActions(options, context, builder);
 //    applyDeleteReceiver(options, context, builder);
     applyContentReceiver(options, context, builder);
-
-    // set big text style (adds an 'expansion arrow' to the notification)
-    if (options.optBoolean("bigTextStyle")) {
-      final NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
-      bigTextStyle.setBigContentTitle(options.optString("title"));
-      bigTextStyle.bigText(options.optString("body"));
-      builder.setStyle(bigTextStyle);
-    }
+    applyBigTextStyle(options, builder);
 
     final Notification notification = builder.build();
 
@@ -181,6 +176,16 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
     final PendingIntent pendingContentIntent = PendingIntent.getService(context, RANDOM.nextInt(), intent, FLAG_UPDATE_CURRENT);
     builder.setContentIntent(pendingContentIntent);
+  }
+
+  private static void applyBigTextStyle(JSONObject options, NotificationCompat.Builder builder) throws JSONException {
+    // set big text style (adds an 'expansion arrow' to the notification)
+    if (options.optBoolean("bigTextStyle")) {
+      final NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+      bigTextStyle.setBigContentTitle(options.optString("title"));
+      bigTextStyle.bigText(options.optString("body"));
+      builder.setStyle(bigTextStyle);
+    }
   }
 
   private static void applyGroup(JSONObject options, NotificationCompat.Builder builder) throws JSONException {

@@ -1,3 +1,5 @@
+TODO see https://github.com/EddyVerbruggen/nativescript-local-notifications/pull/103/files
+
 # NativeScript Local Notifications Plugin
 
 [![NPM version][npm-image]][npm-url]
@@ -62,9 +64,10 @@ You can pass several options to this function, everything is optional:
 |------|-----------|
 |`id`     |A number so you can easily distinguish your notifications. Default 0.|
 |`title`  |The title which is shown in the statusbar. Default empty.|
-|`subtitle`  |Shown below the title. Default empty. iOS >= 10 only. Available since plugin version 3.0.0.|
+|`subtitle`  |Shown below the title. Default empty.|
 |`body`   |The text below the title. Default empty.|
-|`bigTextStyle`  |Allow more than 1 line of the body text to show in the notification centre. Default `false`. (**Android Only**) |
+|`color` |Custom color for the notification icon and title that will be applied when the notification center is expanded. (**Android Only**)|
+|`bigTextStyle`  |Allow more than 1 line of the body text to show in the notification centre. Default `false`. (**Android Only**)|
 |`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Note: The array would be trimed from the top if the messages exceed five. Default not set |
 |`groupSummary`| An [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html) notification summary. Default empty|
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
@@ -100,6 +103,7 @@ This is a known issue and can be fixed in a future version.
     title: 'The title',
     body: 'Recurs every minute until cancelled',
     ticker: 'The ticker',
+    color: new Color("red"),
     badge: 1,
     groupedMessages:["The first", "Second", "Keep going", "one more..", "OK Stop"], //android only
     groupSummary:"Summary of the grouped messages above", //android only

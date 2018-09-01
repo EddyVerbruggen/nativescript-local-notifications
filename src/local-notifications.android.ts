@@ -232,6 +232,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           // used when restoring the notification after a reboot
           options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
 
+          if (options.color) {
+            options.color = options.color.android;
+          }
+
           com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(
               new org.json.JSONObject(JSON.stringify(options)),
               context);
