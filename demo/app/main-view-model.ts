@@ -83,6 +83,7 @@ export class HelloWorldModel extends Observable {
           title: 'Hi',
           subtitle: 'There',
           color: new Color("red"),
+          image: "https://cdn-images-1.medium.com/max/1200/1*c3cQvYJrVezv_Az0CoDcbA.jpeg",
           forceShowWhenInForeground: false, // default
           body: 'I\'m soundless',
           sound: null,
@@ -104,6 +105,7 @@ export class HelloWorldModel extends Observable {
           id: 3,
           title: 'Hi',
           subtitle: 'Whatsubtitle',
+          image: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
           // body: 'You should see a \'3\' somewhere',
           at: new Date(new Date().getTime() + 10 * 1000),
           badge: 3

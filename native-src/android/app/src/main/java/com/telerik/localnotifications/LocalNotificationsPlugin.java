@@ -3,7 +3,6 @@ package com.telerik.localnotifications;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LocalNotificationsPlugin {
@@ -43,7 +42,7 @@ public class LocalNotificationsPlugin {
     }
   }
 
-  public static void scheduleNotification(JSONObject options, Context context) throws JSONException {
+  public static void scheduleNotification(JSONObject options, Context context) throws Exception {
     NotificationRestoreReceiver.scheduleNotification(options, context);
   }
 }

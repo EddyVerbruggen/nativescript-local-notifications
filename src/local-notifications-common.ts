@@ -131,6 +131,11 @@ export interface ScheduleOptions {
   groupSummary?: string;
 
   /**
+   * URL of the image to use as an expandable notification image.
+   */
+  image?: string;
+
+  /**
    * Using the big text style
    *
    * Android only.

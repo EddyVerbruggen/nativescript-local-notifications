@@ -1,4 +1,6 @@
 import * as utils from "tns-core-modules/utils/utils";
+import * as fileSystemModule from "tns-core-modules/file-system";
+import { fromUrl } from "tns-core-modules/image-source";
 import {
   LocalNotificationsApi,
   LocalNotificationsCommon,
@@ -50,6 +52,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     const settings = UIApplication.sharedApplication.currentUserNotificationSettings;
     const types = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
     return (settings.types & types) > 0;
+  }
+
+  private static guid() {
+    // Not the best, but it will work. See https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+    const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    return `${ s4() }${ s4() }-${ s4() }-${ s4() }-${ s4() }-${ s4() }${ s4() }${ s4() }`;
+  }
+
+  private static getImageName(imageURL: string = "", extension: "png" | "jpeg" | "jpg" = "png"): [string, string] {
+    const name: string = imageURL.split(/[\/\.]/).slice(-2, -1)[0] || LocalNotificationsImpl.guid();
+    return [name, `${ name }.${ extension }`];
   }
 
   private static addObserver(eventName, callback): any {
@@ -185,15 +198,36 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         });
       }
 
-      // Notification Request
-      const request = UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger);
-
-      // Add the request
-      UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(request, (error: NSError) => {
-        if (error) {
-          console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`);
-        }
-      });
+      if (!options.image) {
+        UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(
+            UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
+            (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
+      } else {
+        fromUrl(options.image).then(image => {
+          const [imageName, imageNameWithExtension] = LocalNotificationsImpl.getImageName(options.image, "png");
+          const path: string = fileSystemModule.path.join(
+              fileSystemModule.knownFolders.temp().path,
+              imageNameWithExtension,
+          );
+          const saved = image.saveToFile(path, "png");
+          if (saved || fileSystemModule.File.exists(path)) {
+            try {
+              content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(
+                  UNNotificationAttachment.attachmentWithIdentifierURLOptionsError(
+                      imageName,
+                      NSURL.fileURLWithPath(path),
+                      null
+                  ));
+            } catch (err) {
+              console.log("Error adding image attachment - ignoring the image. Error: " + err);
+              // Just fall back to a normal notification...
+            }
+          }
+          UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(
+              UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
+              (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
+        });
+      }
     }
   }
 
@@ -220,7 +254,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       const userInfoDict = NSMutableDictionary.alloc().initWithCapacity(4);
       userInfoDict.setObjectForKey(options.id, "id");
       userInfoDict.setObjectForKey(options.title, "title");
-      // TODO is there a subtitle?
       userInfoDict.setObjectForKey(options.body, "body");
       userInfoDict.setObjectForKey(options.interval, "interval");
       notification.userInfo = userInfoDict;
@@ -381,7 +414,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  schedule(options: ScheduleOptions[]): Promise<any> {
+  schedule(options: ScheduleOptions[]): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         if (!LocalNotificationsImpl.hasPermission()) {

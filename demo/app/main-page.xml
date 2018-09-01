@@ -16,9 +16,9 @@
               <Label row="2" colSpan="2" text="After scheduling a notification, it pops up after 10 sec. In some cases you'll need to close the app first (see 'forceShowWhenInForeground')." class="hint" textWrap="true" />
 
               <Button row="3" col="0" text="1. with buttons" tap="{{ doScheduleWithButtons }}" class="button" />
-              <Button row="3" col="1"  text="2. no sound" tap="{{ doScheduleNoSound }}" class="button" />
+              <Button row="3" col="1"  text="2. with img" tap="{{ doScheduleNoSound }}" class="button" />
 
-              <Button row="4" col="0" text="3. with badge" tap="{{ doScheduleAndSetBadgeNumber }}" class="button"  />
+              <Button row="4" col="0" text="3. with badge+img" tap="{{ doScheduleAndSetBadgeNumber }}" class="button"  />
               <Button row="4" col="1" text="4. custom icon" tap="{{ doScheduleId4GroupedWithCustomIcon }}" class="button"  />
 
               <Button row="5" col="0" text="5. with input" tap="{{ doScheduleId5WithInput }}" class="button"  />

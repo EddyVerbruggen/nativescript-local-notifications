@@ -13,13 +13,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
+import android.util.Base64;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,7 +63,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     }
   }
 
-  static void scheduleNotification(JSONObject options, Context context) throws JSONException {
+  static void scheduleNotification(JSONObject options, Context context) throws Exception {
     Bitmap largeIconDrawable = null;
 
     if (options.has("largeIcon")) {
@@ -107,11 +110,21 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
       }
     }
 
+    // log a warning if incommpatible options are passed
+    int nrOfFeatures = 0;
+    if (options.has("groupedMessages")) nrOfFeatures++;
+    if (options.optBoolean("bigTextStyle")) nrOfFeatures++;
+    if (options.has("image")) nrOfFeatures++;
+    if (nrOfFeatures > 1) {
+      Log.w(TAG, "Multiple notification styles found. Only one of 'groupedMessages', 'bigTextStyle', or 'image' will be used (in this order of preference.");
+    }
+
     applyGroup(options, builder);
+    applyBigTextStyle(options, builder);
+    applyImage(options, context, builder);
     applyActions(options, context, builder);
 //    applyDeleteReceiver(options, context, builder);
     applyContentReceiver(options, context, builder);
-    applyBigTextStyle(options, builder);
 
     final Notification notification = builder.build();
 
@@ -178,7 +191,21 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     builder.setContentIntent(pendingContentIntent);
   }
 
-  private static void applyBigTextStyle(JSONObject options, NotificationCompat.Builder builder) throws JSONException {
+  private static void applyImage(JSONObject options, Context context, NotificationCompat.Builder builder) throws JSONException, ExecutionException, InterruptedException {
+    if (options.has("image")) {
+      final double MAX_WIDTH_HEIGHT = 320; // 500 is known to crash the app, 400 is not, but this seems a bit safer
+      Bitmap bitmap = new DownloadFileFromUrl(options.getString("image"), MAX_WIDTH_HEIGHT).execute().get();
+      final NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle().bigPicture(bitmap);
+      // TODO:
+//      if (options.thumbnail === true) {
+//        builder.setLargeIcon(imageBitmap); // Set the thumbnail...
+//        style.bigLargeIcon(null) // ...which goes away when expanded.
+//      }
+      builder.setStyle(bigPictureStyle);
+    }
+  }
+
+  private static void applyBigTextStyle(JSONObject options, NotificationCompat.Builder builder) {
     // set big text style (adds an 'expansion arrow' to the notification)
     if (options.optBoolean("bigTextStyle")) {
       final NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();

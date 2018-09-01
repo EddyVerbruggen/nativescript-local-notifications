@@ -188,7 +188,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  schedule(scheduleOptions: ScheduleOptions[]): Promise<any> {
+  schedule(scheduleOptions: ScheduleOptions[]): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         const context = utils.ad.getApplicationContext();
