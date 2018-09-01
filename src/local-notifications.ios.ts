@@ -112,24 +112,32 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       // Notification content
       const content = UNMutableNotificationContent.new();
-      content.title = options.title;
-      content.subtitle = options.subtitle;
-      content.body = options.body;
+
+      const {title, subtitle, body} = options;
+      content.title = body || subtitle ? title : undefined;
+      content.subtitle = body ? subtitle : undefined;
+      // On iOS, a notification with no body won't show up, so the subtitle or title will be used in this case.
+      content.body = body || subtitle || title;
+
+      content.badge = options.badge;
+
       if (options.sound === undefined || options.sound === "default") {
         content.sound = UNNotificationSound.defaultSound();
       }
-      content.badge = options.badge;
-
       const userInfoDict = new NSMutableDictionary({capacity: 1});
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       content.userInfo = userInfoDict;
 
       // Notification trigger and repeat
-      const trigger_at = options.at ? options.at : new Date();
-      const cal = LocalNotificationsImpl.calendarWithMondayAsFirstDay();
-      const date = cal.componentsFromDate(LocalNotificationsImpl.getInterval(options.interval), trigger_at);
-      date.timeZone = NSTimeZone.defaultTimeZone;
-      const trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(date, options.interval !== undefined);
+      let trigger;
+      if (options.at) {
+        const cal = LocalNotificationsImpl.calendarWithMondayAsFirstDay();
+        const date = cal.componentsFromDate(LocalNotificationsImpl.getInterval(options.interval), options.at);
+        date.timeZone = NSTimeZone.defaultTimeZone;
+        trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponentsRepeats(date, options.interval !== undefined);
+      } else {
+        trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeIntervalRepeats(2, false);
+      }
 
       // actions
       if (options.actions) {
@@ -289,9 +297,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return new Promise((resolve, reject) => {
       try {
         this.receivedNotificationCallback = onReceived;
-        for (let p in this.pendingReceivedNotifications) {
-          // console.log("notificationDetails p: " + JSON.parse(p));
-          onReceived(this.pendingReceivedNotifications[p]);
+        for (const pendingReceivedNotification of this.pendingReceivedNotifications) {
+          onReceived(pendingReceivedNotification);
         }
         this.pendingReceivedNotifications = [];
 
@@ -307,8 +314,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return new Promise((resolve, reject) => {
       try {
         if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
-          console.log(id);
-          console.log(typeof id);
           UNUserNotificationCenter.currentNotificationCenter().removePendingNotificationRequestsWithIdentifiers(<any>["" + id]);
           resolve(true);
 
