@@ -104,6 +104,17 @@ export interface ScheduleOptions {
   largeIcon?: string;
 
   /**
+   * Custom thumbnail/icon to show in the notification center on Android, this can be:
+   * - true if you want to use the image as the thumbnail as well.
+   * - A resource url that lives in App_Resouces/Android/drawable folders. E.g.: 'res://filename.png'.
+   * - A http url from anywhere on the web.
+   *
+   * Android only.
+   * Default not set.
+   */
+  thumbnail?: boolean | string;
+
+  /**
    * Set whether this is an "ongoing" notification.
    * Ongoing notifications cannot be dismissed by the user,
    * so your application or must take care of canceling them.
@@ -122,7 +133,6 @@ export interface ScheduleOptions {
    */
   groupedMessages?: Array<string>
 
-
   /**
    * The summary of the grouped message (see #groupedMessage) when using the inbox style
    *
@@ -131,7 +141,7 @@ export interface ScheduleOptions {
   groupSummary?: string;
 
   /**
-   * URL of the image to use as an expandable notification image.
+   * URL (http) of the image to use as an expandable notification image.
    */
   image?: string;
 

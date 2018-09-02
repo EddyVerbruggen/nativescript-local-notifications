@@ -10,13 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
-import android.util.Base64;
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -64,11 +61,11 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
   }
 
   static void scheduleNotification(JSONObject options, Context context) throws Exception {
-    Bitmap largeIconDrawable = null;
+//    Bitmap largeIconDrawable = null;
 
-    if (options.has("largeIcon")) {
-      largeIconDrawable = BitmapFactory.decodeResource(context.getResources(), options.getInt("largeIcon"));
-    }
+//    if (options.has("largeIcon")) {
+//      largeIconDrawable = BitmapFactory.decodeResource(context.getResources(), options.getInt("largeIcon"));
+//    }
 
     final String channelId = "myChannelId"; // package scoped, so no need to add it ourselves
 
@@ -85,6 +82,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
         .setContentText(options.optString("body"))
         .setSubText(options.optString("subtitle"))
         .setSmallIcon(options.optInt("smallIcon"))
+//        .setSmallIcon(options.optInt("icon"))
         .setLargeIcon(largeIconDrawable)
         .setAutoCancel(true) // removes the notification from the statusbar once tapped
         .setNumber(options.optInt("badge"))
@@ -92,6 +90,11 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
         .setOngoing(options.optBoolean("ongoing"))
         .setPriority(options.optBoolean("forceShowWhenInForeground") ? 1 : 0)
         .setTicker(options.optString("ticker", options.optString("body")));
+
+    final Object thumbnail = options.opt("thumbnail");
+    if (thumbnail != null && thumbnail instanceof String) {
+      builder.setLargeIcon(getThumbnail(context, (String) thumbnail));
+    }
 
     // TODO sound preference is not doing anything
 //    builder.setSound(options.has("sound") ? Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + options.getString("sound")) : Uri.parse("android.resource://" + context.getPackageName() + "/raw/notify"))
@@ -174,7 +177,17 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
   }
    */
 
-  //
+  private static Bitmap getThumbnail(Context context, String thumbnailString) throws ExecutionException, InterruptedException {
+    if (thumbnailString.indexOf("res://") == 0) {
+      final int resourceId = context.getResources().getIdentifier(thumbnailString.substring("res://".length()), "drawable", context.getApplicationInfo().packageName);
+      return resourceId != 0 ? android.graphics.BitmapFactory.decodeResource(context.getResources(), resourceId) : null;
+    } else if (thumbnailString.indexOf("http") == 0) {
+      final double MAX_WIDTH_HEIGHT = 320;
+      return new DownloadFileFromUrl(thumbnailString, MAX_WIDTH_HEIGHT).execute().get();
+    } else {
+      return null;
+    }
+  }
 
   /**
    * Add the intent that handles the event when the notification is clicked (which should launch the app).
@@ -196,11 +209,13 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
       final double MAX_WIDTH_HEIGHT = 320; // 500 is known to crash the app, 400 is not, but this seems a bit safer
       Bitmap bitmap = new DownloadFileFromUrl(options.getString("image"), MAX_WIDTH_HEIGHT).execute().get();
       final NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle().bigPicture(bitmap);
-      // TODO:
-//      if (options.thumbnail === true) {
-//        builder.setLargeIcon(imageBitmap); // Set the thumbnail...
-//        style.bigLargeIcon(null) // ...which goes away when expanded.
-//      }
+
+      final Object thumbnail = options.opt("thumbnail");
+      if (thumbnail == Boolean.TRUE) {
+        builder.setLargeIcon(bitmap); // Set the thumbnail...
+        bigPictureStyle.bigLargeIcon(null); // ...which goes away when expanded.
+      }
+
       builder.setStyle(bigPictureStyle);
     }
   }
