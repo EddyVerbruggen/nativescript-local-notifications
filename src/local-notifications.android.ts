@@ -77,7 +77,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static persist(options): void {
     const sharedPreferences = LocalNotificationsImpl.getSharedPreferences();
     const sharedPreferencesEditor = sharedPreferences.edit();
-    options.largeIconDrawable = null;
     sharedPreferencesEditor.putString("" + options.id, JSON.stringify(options));
     sharedPreferencesEditor.apply();
   };
@@ -208,21 +207,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
         for (let n in scheduleOptions) {
           const options = LocalNotificationsImpl.merge(scheduleOptions[n], LocalNotificationsImpl.defaults);
-
-          // small icon
-          if (options.smallIcon) {
-            if (options.smallIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
-              options.smallIcon = resources.getIdentifier(options.smallIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', context.getApplicationInfo().packageName);
-            }
-          }
-          if (!options.smallIcon) {
-            // look for an icon named ic_stat_notify.png
-            options.smallIcon = resources.getIdentifier("ic_stat_notify", "drawable", context.getApplicationInfo().packageName);
-          }
-          if (!options.smallIcon) {
-            // resort to the regular launcher icon
-            options.smallIcon = context.getApplicationInfo().icon;
-          }
 
           options.icon = LocalNotificationsImpl.getIcon(
               context,

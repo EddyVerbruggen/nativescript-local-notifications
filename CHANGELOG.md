@@ -1,14 +1,7 @@
 # Change Log
 
-## [3.0.0](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/3.0.0) (2018-07-XX)
+## [3.0.0](https://github.com/EddyVerbruggen/nativescript-local-notifications/milestone/11?closed=1) (2018-09-02)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-local-notifications/compare/2.0.4...3.0.0)
-
-**Implemented enhancements:**
-
-- Show notifications when app is in the foreground? [\#87](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/87)
-- Add more options, like 'action buttons' [\#95](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/95)
-- heads up notificatiion for sdk < 26 [\#98](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/98)
-- TypeScript overhaul [\#99](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/99)
 
 
 ## [2.0.4](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/2.0.4) (2018-06-19)

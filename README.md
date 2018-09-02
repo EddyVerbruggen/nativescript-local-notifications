@@ -13,7 +13,7 @@
 The Local Notifications plugin allows your app to show notifications when the app is not running.
 Just like remote push notifications, but a few orders of magnitude easier to set up.
 
-> Breaking changes in 3.0.0: `smallIcon` is now `icon`/`silhouetteIcon`, and `largeIcon` is now `image`. Also, read the 'Setup' paragraph below.
+> **Breaking changes in 3.0.0**: `smallIcon` is now `icon`/`silhouetteIcon`, and `largeIcon` is now `image`. Also, read the 'Setup' paragraph below.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
@@ -106,7 +106,9 @@ You can pass several options to this function, everything is optional:
     groupedMessages:["The first", "Second", "Keep going", "one more..", "OK Stop"], //android only
     groupSummary:"Summary of the grouped messages above", //android only
     ongoing: true, // makes the notification ongoing (Android only)
-    smallIcon: 'res://heart',
+    icon: 'res://heart',
+    image: "https://cdn-images-1.medium.com/max/1200/1*c3cQvYJrVezv_Az0CoDcbA.jpeg",
+    thumbnail: true,
     interval: 'minute',
     channel: 'My Channel', // default: 'Channel'
     sound: "customsound-ios.wav", // falls back to the default sound on Android
