@@ -84,6 +84,7 @@ export class HelloWorldModel extends Observable {
           subtitle: 'There',
           color: new Color("red"),
           image: "https://cdn-images-1.medium.com/max/1200/1*c3cQvYJrVezv_Az0CoDcbA.jpeg",
+          thumbnail: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
           forceShowWhenInForeground: false, // default
           body: 'I\'m soundless',
           sound: null,
@@ -106,6 +107,7 @@ export class HelloWorldModel extends Observable {
           title: 'Hi',
           subtitle: 'Whatsubtitle',
           image: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
+          thumbnail: true,
           // body: 'You should see a \'3\' somewhere',
           at: new Date(new Date().getTime() + 10 * 1000),
           badge: 3
@@ -126,6 +128,7 @@ export class HelloWorldModel extends Observable {
           id: 4,
           title: 'Custom icon',
           body: 'Check it out!',
+          thumbnail: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
           smallIcon: 'res://launcher_icon_arrow',
           largeIcon: 'res://ic_notify', // although this is the default fallback as well ;)
           at: new Date(new Date().getTime() + 10 * 1000),
@@ -147,6 +150,7 @@ export class HelloWorldModel extends Observable {
     LocalNotifications.schedule(
         [{
           id: 5,
+          thumbnail: true,
           title: 'Richard wants your input',
           body: '"Hey man, what do you think of the new design?" (swipe down to reply, or tap to open the app)',
           forceShowWhenInForeground: true,
