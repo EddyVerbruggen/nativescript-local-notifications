@@ -13,7 +13,7 @@
 The Local Notifications plugin allows your app to show notifications when the app is not running.
 Just like remote push notifications, but a few orders of magnitude easier to set up.
 
-> Breaking changes in 3.0.0: `smallIcon` is now `icon`, and `largeIcon` is now `image`. Also, read the 'Setup' paragraph below.
+> Breaking changes in 3.0.0: `smallIcon` is now `icon`/`silhouetteIcon`, and `largeIcon` is now `image`. Also, read the 'Setup' paragraph below.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
@@ -75,7 +75,8 @@ You can pass several options to this function, everything is optional:
 |`badge`  |On iOS (and some Android devices) you see a number on top of the app icon. On most Android devices you'll see this number in the notification center. Default not set (0).|
 |`sound`  |Notification sound. For custom notification sound (iOS only), copy the file to `App_Resources/iOS`. Set this to "default" (or do not set at all) in order to use default OS sound. Set this to `null` to suppress sound.|
 |`interval` |Set to one of `second`, `minute`, `hour`, `day`, `week`, `month`, `year` if you want a recurring notification.|
-|`icon`|On Android you can set a custom icon in the system tray. Pass in `res://filename` (without the extension) which lives in `App_Resouces/Android/drawable` folders. If not passed, we'll look there for a file named `ic_stat_notify.png`. By default the app icon is used. Oh, and [here's a great guide on how to easily create these icons on Android](https://developer.android.com/studio/write/image-asset-studio).|
+|`icon`|On Android you can set a custom icon in the system tray. Pass in `res://filename` (without the extension) which lives in `App_Resouces/Android/drawable` folders. If not passed, we'll look there for a file named `ic_stat_notify.png`. By default the app icon is used. Android < Lollipop (21) only (see `silhouetteIcon` below).|
+|`silhouetteIcon`|Same as `icon`, but for Android >= Lollipop (21). Should be an alpha-only image. Defaults to `res://ic_stat_notify_silhouette`, or the app icon if not present.|
 |`image` |*URL* (`http..`) of the image to use as an expandable notification image.|
 |`thumbnail` |Custom thumbnail/icon to show in the notification center (to the right) on Android, this can be either: `true` (if you want to use the `image` as the thumbnail), a resource URL (that lives in the `App_Resouces/Android/drawable` folders, e.g.: `res://filename`), or a http URL from anywhere on the web. (**Android Only**). Default not set.|
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them. (**Android Only**) |
@@ -120,30 +121,26 @@ You can pass several options to this function, everything is optional:
   )
 ```
 
-### Notification icons
+### Notification icons (Android)
+These options default to `res://ic_stat_notify` and `res://ic_stat_notify_silhouette` respectively, or the app icon if not present.
 
-> __Background information:__ Local notifications may fail silently if you don't provide the notification icons in the correct dimensions. They may do work perfectly fine on one device but fail on the other. That's because android might fallback to your xxxhdpi launcher icon which is too big. This type of error is noticeable in logcat: `!!! FAILED BINDER TRANSACTION !!! (parcel size = 1435376)`
+`largeSilhouetteIcon` should be an alpha-only image and will be used in Android >= Lollipop (21).
 
-#### Spec for ic_stat_notify.png (smallIcon)
-
-[Android API Guides → Status Bar Icons](https://developer.android.com/guide/practices/ui_guidelines/icon_design_status_bar.html)
-
-#### Spec for ic_notify.png (largeIcon)
-
-Unfortunately it seems like there's no official guide for these. Anyways there's a [dimen](https://github.com/android/platform_frameworks_base/blob/2d5dbba/core/res/res/values/dimens.xml#L181) that's telling us the dp size which we can translate to the following spec:
+[These are the official icon size guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_status_bar.html),
+and [here's a great guide on how to easily create these icons on Android](https://developer.android.com/studio/write/image-asset-studio).
 
 | Density qualifier | px | dpi
-| -- | -- | --
-| ldpi | 48 x 48 | 120
-| mdpi | 64 x 64 | 160
-| hdpi | 96 x 96 | 240
-| xhdpi | 128 x 128 | 320
-| xxhdpi | 192 x 192 | 480
+| ------- | ------- | ---
+|    ldpi | 18 × 18 | 120
+|    mdpi | 24 × 24 | 160
+|    hdpi | 36 × 36 | 240
+|   xhdpi | 48 × 48 | 320
+|  xxhdpi | 72 × 72 | 480
+| xxxhdpi | 96 × 96 | 640 approx.
+ 
+__Don't include xxxhdpi__ as it may crash your app when a notification is received.
 
-__Don't include xxxhdpi__
-
-> __xxxhdpi__: Extra-extra-extra-high-density uses (__launcher icon only__, see the note in Supporting Multiple Screens); approximately 640dpi. Added in API Level 18  
-> Source: [Density Qualifier Docs](https://developer.android.com/guide/topics/resources/providing-resources.html#DensityQualifier)
+__Source:__ [Density Qualifier Docs](https://developer.android.com/guide/topics/resources/providing-resources.html#DensityQualifier)
 
 ### addOnMessageReceivedCallback
 Tapping a notification in the notification center will launch your app.
@@ -228,13 +225,4 @@ If the `requestPermission` or `schedule` functions previously ran you may want t
         console.log("Permission granted? " + granted);
       }
   )
-```
-
-## Help, my Android app is restarted
-When your app is launched from a notification you may notice the app is not continuing from when you
-put it in the background. To fix that, open `app/App_Resources/AndroidManifest.xml` and change the
-`launchMode` of the NativeScript activity. For instance:
-
-```xml
-<activity android:launchMode="singleTop" />
 ```

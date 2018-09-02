@@ -91,11 +91,19 @@ export interface ScheduleOptions {
 
   /**
    * On Android you can set a custom icon in the system tray.
-   * Pass in 'res://filename.png' which lives in App_Resouces/Android/drawable folders.
-   * If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders.
-   * Default: the app icon.
+   * Pass in `res://filename` (without the extension) which lives in `App_Resouces/Android/drawable` folders.
+   * If not passed, we'll look there for a file named `ic_stat_notify.png`.
+   * By default the app icon is used.
+   * Android < Lollipop (21) only (also see 'silhouetteIcon').
    */
   icon?: string;
+
+  /**
+   * Same as `icon`, but for Android >= Lollipop (21) (also see 'icon').
+   * Should be an alpha-only image.
+   * Defaults to `res://ic_stat_notify_silhouette`, or the app icon if not present.
+   */
+  silhouetteIcon?: string;
 
   /**
    * Custom thumbnail/icon to show in the notification center on Android, this can be:
