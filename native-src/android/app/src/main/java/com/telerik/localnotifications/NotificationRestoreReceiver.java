@@ -81,9 +81,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
         .setContentTitle(options.optString("title"))
         .setContentText(options.optString("body"))
         .setSubText(options.optString("subtitle"))
-        .setSmallIcon(options.optInt("smallIcon"))
-//        .setSmallIcon(options.optInt("icon"))
-        .setLargeIcon(largeIconDrawable)
+        .setSmallIcon(options.optInt("icon"))
         .setAutoCancel(true) // removes the notification from the statusbar once tapped
         .setNumber(options.optInt("badge"))
         .setColor(options.optInt("color"))

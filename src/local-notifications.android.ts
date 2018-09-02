@@ -25,6 +25,8 @@ declare const android, com: any;
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
+  private static IS_GTE_LOLLIPOP: boolean = android.os.Build.VERSION.SDK_INT >= 21;
+
   private static getInterval(interval: ScheduleInterval): number {
     if (interval === undefined) {
       return 0;
@@ -46,6 +48,16 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       return 0;
     }
   }
+
+  private static getIcon(context: any /* android.content.Context */, resources: any, iconLocation?: string): string {
+    const packageName: string = context.getApplicationInfo().packageName;
+    return iconLocation
+        && iconLocation.indexOf(utils.RESOURCE_PREFIX) === 0
+        && resources.getIdentifier(iconLocation.substr(utils.RESOURCE_PREFIX.length), "drawable", packageName)
+        || (LocalNotificationsImpl.IS_GTE_LOLLIPOP && resources.getIdentifier("ic_stat_notify_silhouette", "drawable", packageName))
+        || resources.getIdentifier("ic_stat_notify", "drawable", packageName)
+        || context.getApplicationInfo().icon;
+  };
 
   private static cancelById(id): void {
     const context = utils.ad.getApplicationContext();
@@ -212,20 +224,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             options.smallIcon = context.getApplicationInfo().icon;
           }
 
-          // large icon
-          if (options.largeIcon) {
-            if (options.largeIcon.indexOf(utils.RESOURCE_PREFIX) === 0) {
-              options.largeIcon = resources.getIdentifier(options.largeIcon.substr(utils.RESOURCE_PREFIX.length), 'drawable', context.getApplicationInfo().packageName);
-            }
-          }
-          if (!options.largeIcon) {
-            // look for an icon named ic_notify.png
-            options.largeIcon = resources.getIdentifier("ic_notify", "drawable", context.getApplicationInfo().packageName);
-          }
-          if (!options.largeIcon) {
-            // resort to the regular launcher icon
-            options.largeIcon = context.getApplicationInfo().icon;
-          }
+          options.icon = LocalNotificationsImpl.getIcon(
+              context,
+              resources,
+              LocalNotificationsImpl.IS_GTE_LOLLIPOP && options.silhouetteIcon || options.icon);
 
           options.atTime = options.at ? options.at.getTime() : new Date().getTime();
 

@@ -95,13 +95,7 @@ export interface ScheduleOptions {
    * If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders.
    * Default: the app icon.
    */
-  smallIcon?: string;
-
-  /**
-   * Same as 'smallIcon', but this one is shown when you expand the notification center.
-   * The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.
-   */
-  largeIcon?: string;
+  icon?: string;
 
   /**
    * Custom thumbnail/icon to show in the notification center on Android, this can be:

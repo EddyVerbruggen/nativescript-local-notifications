@@ -82,6 +82,7 @@ export class HelloWorldModel extends Observable {
           id: 2,
           title: 'Hi',
           subtitle: 'There',
+          icon: 'res://ic_stat_notify',
           color: new Color("red"),
           image: "https://cdn-images-1.medium.com/max/1200/1*c3cQvYJrVezv_Az0CoDcbA.jpeg",
           thumbnail: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
@@ -129,8 +130,7 @@ export class HelloWorldModel extends Observable {
           title: 'Custom icon',
           body: 'Check it out!',
           thumbnail: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
-          smallIcon: 'res://launcher_icon_arrow',
-          largeIcon: 'res://ic_notify', // although this is the default fallback as well ;)
+          icon: 'res://ic_stat_smiley',
           at: new Date(new Date().getTime() + 10 * 1000),
           groupedMessages: ["The first", "Second", "Keep going", "one more..", "OK Stop"], // android only
           groupSummary: "Summary of the grouped messages above" // android only
@@ -185,6 +185,8 @@ export class HelloWorldModel extends Observable {
           title: 'Every minute!',
           interval: 'minute', // some constant
           body: 'I\'m repeating until cancelled',
+          icon: 'res://ic_stat_smiley',
+          thumbnail: "res://ic_stat_notify",
           forceShowWhenInForeground: true,
           at: new Date(new Date().getTime() + 10 * 1000)
         }])
