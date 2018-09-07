@@ -124,15 +124,15 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     applyBigTextStyle(options, builder);
     applyImage(options, context, builder);
     applyActions(options, context, builder);
-//    applyDeleteReceiver(options, context, builder);
+    // applyDeleteReceiver(options, context, builder);
     applyContentReceiver(options, context, builder);
 
     final Notification notification = builder.build();
     final long triggerTime = options.getLong("atTime");
 
     if (triggerTime == 0) {
-      Log.d(TAG, "Immediate notification!");
-
+      // If we just want to show the notification immediately, there's no need to create an Intent,
+      // we just send the notification to the Notification Service:
       ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(options.optInt("id"), notification);
 
       return;

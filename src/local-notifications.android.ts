@@ -217,8 +217,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
           console.log(`options.atTime = ${ options.atTime }`);
 
-          com.telerik.localnotifications.LocalNotificationsPlugin.log('TEST');
-
           // used when restoring the notification after a reboot
           options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
 

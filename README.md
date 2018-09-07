@@ -63,9 +63,9 @@ You can pass several options to this function, everything is optional:
 |option|description|
 |------|-----------|
 |`id`     |A number so you can easily distinguish your notifications. Default 0.|
-|`title`  |The title which is shown in the statusbar. Default empty.|
-|`subtitle`  |Shown below the title on iOS, and next to the App name on Android. Default empty.|
-|`body`   |The text below the title. If not provided, the subtitle or title (in this order or priority) will be swapped for it on iOS, as iOS won't display notifications without a body. Default empty.|
+|`title`  |The title which is shown in the statusbar. Default not set.|
+|`subtitle`  |Shown below the title on iOS, and next to the App name on Android. Default not set. All android and iOS >= 10 only.|
+|`body`   |The text below the title. If not provided, the subtitle or title (in this order or priority) will be swapped for it on iOS, as iOS won't display notifications without a body. Default not set on Android, `' '` on iOS, as otherwise the notification won't show up at all.|
 |`color` |Custom color for the notification icon and title that will be applied when the notification center is expanded. (**Android Only**)|
 |`bigTextStyle`  |Allow more than 1 line of the body text to show in the notification centre. Default `false`. (**Android Only**)|
 |`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Note: The array would be trimed from the top if the messages exceed five. Default not set |
@@ -124,9 +124,10 @@ You can pass several options to this function, everything is optional:
 ```
 
 ### Notification icons (Android)
+
 These options default to `res://ic_stat_notify` and `res://ic_stat_notify_silhouette` respectively, or the app icon if not present.
 
-`largeSilhouetteIcon` should be an alpha-only image and will be used in Android >= Lollipop (21).
+`silhouetteIcon` should be an alpha-only image and will be used in Android >= Lollipop (21).
 
 [These are the official icon size guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_status_bar.html),
 and [here's a great guide on how to easily create these icons on Android](https://developer.android.com/studio/write/image-asset-studio).
@@ -139,10 +140,9 @@ and [here's a great guide on how to easily create these icons on Android](https:
 |   xhdpi | 48 × 48 | 320
 |  xxhdpi | 72 × 72 | 480
 | xxxhdpi | 96 × 96 | 640 approx.
- 
-__Don't include xxxhdpi__ as it may crash your app when a notification is received.
 
 __Source:__ [Density Qualifier Docs](https://developer.android.com/guide/topics/resources/providing-resources.html#DensityQualifier)
+
 
 ### addOnMessageReceivedCallback
 Tapping a notification in the notification center will launch your app.

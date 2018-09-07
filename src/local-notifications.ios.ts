@@ -129,8 +129,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       const {title, subtitle, body} = options;
       content.title = body || subtitle ? title : undefined;
       content.subtitle = body ? subtitle : undefined;
-      // On iOS, a notification with no body won't show up, so the subtitle or title will be used in this case.
-      content.body = body || subtitle || title;
+      // On iOS, a notification with no body won't show up, so the subtitle or title will be used in this case as body
+      // instead. If none of them is set, we set it to ' ' and will show up as an empty line in the notification:
+      content.body = body || subtitle || title || ' ';
 
       content.badge = options.badge;
 
