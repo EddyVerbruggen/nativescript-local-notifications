@@ -38,19 +38,21 @@ export interface ScheduleOptions {
 
   /**
    * The title which is shown in the statusbar.
-   * Default empty.
+   * Default not set.
    */
   title?: string;
 
   /**
-   * Shown below the title.
-   * Default empty.
+   * Shown below the title on iOS >= 10, and next to the App name on Android.
+   * Default not set.
+   * All android and iOS >= 10 only.
    */
   subtitle?: string;
 
   /**
    * The text below the title.
-   * Default empty.
+   * Default not set on Android. On iOS, the subtitle, title (in this order or priority) will be swapped for it on iOS,
+   * as iOS won't display notifications without a body. If none of them are set, `' '` will be used.
    */
   body?: string;
 
@@ -243,8 +245,6 @@ export interface LocalNotificationsApi {
 export abstract class LocalNotificationsCommon {
   public static defaults = {
     id: 0,
-    title: "",
-    body: "",
     badge: 0,
     interval: undefined,
     ongoing: false,
