@@ -215,8 +215,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
           options.atTime = options.at ? options.at.getTime() : 0;
 
-          console.log(`options.atTime = ${ options.atTime }`);
-
           // used when restoring the notification after a reboot
           options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
 
