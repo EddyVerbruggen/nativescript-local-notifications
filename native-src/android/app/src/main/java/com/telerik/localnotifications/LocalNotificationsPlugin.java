@@ -43,7 +43,16 @@ public class LocalNotificationsPlugin {
   }
 
   public static void scheduleNotification(JSONObject options, Context context) throws Exception {
+    Log.d(TAG, "Getting here...");
+
     NotificationRestoreReceiver.scheduleNotification(options, context);
+  }
+
+  public static void log(String str) {
+    Log.v(TAG, str);
+    Log.d(TAG, str);
+    Log.i(TAG, str);
+    Log.e(TAG, str);
   }
 }
 

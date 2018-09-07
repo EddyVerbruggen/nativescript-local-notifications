@@ -7,3 +7,6 @@ src/*.d.ts
 !src/references.d.ts
 demo/platforms
 publish/package/
+native-src/android/.project
+native-src/android/local.properties
+native-src/android/.settings/

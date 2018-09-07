@@ -128,6 +128,15 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     applyContentReceiver(options, context, builder);
 
     final Notification notification = builder.build();
+    final long triggerTime = options.getLong("atTime");
+
+    if (triggerTime == 0) {
+      Log.d(TAG, "Immediate notification!");
+
+      ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(options.optInt("id"), notification);
+
+      return;
+    }
 
     // add the intent which schedules the notification
     final Intent notificationIntent = new Intent(context, NotificationPublisher.class)
@@ -140,7 +149,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
     // configure when we'll show the event
-    long triggerTime = options.getLong("atTime");
+
     long interval = options.optLong("repeatInterval", 0); // in ms
     final boolean isRepeating = interval > 0;
     final Date triggerDate = new Date(triggerTime);

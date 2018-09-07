@@ -142,7 +142,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       content.userInfo = userInfoDict;
 
       // Notification trigger and repeat
-      let trigger;
+      let trigger: UNNotificationTrigger;
       if (options.at) {
         const cal = LocalNotificationsImpl.calendarWithMondayAsFirstDay();
         const date = cal.componentsFromDate(LocalNotificationsImpl.getInterval(options.interval), options.at);

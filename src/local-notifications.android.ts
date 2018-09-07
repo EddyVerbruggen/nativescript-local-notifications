@@ -213,7 +213,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
               resources,
               LocalNotificationsImpl.IS_GTE_LOLLIPOP && options.silhouetteIcon || options.icon);
 
-          options.atTime = options.at ? options.at.getTime() : new Date().getTime();
+          options.atTime = options.at ? options.at.getTime() : 0;
+
+          console.log(`options.atTime = ${ options.atTime }`);
+
+          com.telerik.localnotifications.LocalNotificationsPlugin.log('TEST');
 
           // used when restoring the notification after a reboot
           options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
