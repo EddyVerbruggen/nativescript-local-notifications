@@ -47,7 +47,13 @@ LocalNotifications.hasPermission()
 ```
 
 ## Demo app (XML)
-If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen/nativescript-local-notifications-demo).
+If you want a quickstart, clone our [demo app](https://github.com/EddyVerbruggen/nativescript-local-notifications-demo):
+
+```bash
+git clone https://github.com/EddyVerbruggen/nativescript-local-notifications
+cd nativescript-local-notifications/src
+npm run demo.ios # or demo.android
+```
 
 
 ## Demo app (Angular)
