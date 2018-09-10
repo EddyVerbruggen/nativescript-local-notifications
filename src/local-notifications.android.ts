@@ -67,30 +67,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     alarmManager.cancel(pendingIntent);
     const notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
     notificationManager.cancel(id);
-    LocalNotificationsImpl.unpersist(id);
-  };
 
-  /**
-   * Persist notification info to the Android Shared Preferences.
-   * This way we can later retrieve it to cancel it, or restore upon reboot.
-   */
-  private static persist(options): void {
-    const sharedPreferences = LocalNotificationsImpl.getSharedPreferences();
-    const sharedPreferencesEditor = sharedPreferences.edit();
-    sharedPreferencesEditor.putString("" + options.id, JSON.stringify(options));
-    sharedPreferencesEditor.apply();
-  };
-
-  private static unpersist(id): void {
-    const sharedPreferences = LocalNotificationsImpl.getSharedPreferences();
-    const sharedPreferencesEditor = sharedPreferences.edit();
-    sharedPreferencesEditor.remove("" + id);
-    sharedPreferencesEditor.commit();
-  };
-
-  private static getSharedPreferences(): any {
-    const PREF_KEY = "LocalNotificationsPlugin";
-    return utils.ad.getApplicationContext().getSharedPreferences(PREF_KEY, android.content.Context.MODE_PRIVATE);
+    com.telerik.localnotifications.Store.remove(context, id);
   };
 
   hasPermission(): Promise<boolean> {
@@ -160,14 +138,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         //   console.log(">> < 26, StatusBarNotification[0]: " + new android.service.notification.StatusBarNotification[0]);
         // }
 
-        const sharedPreferences = LocalNotificationsImpl.getSharedPreferences();
-        const keys = sharedPreferences.getAll().keySet();
-        const iterator = keys.iterator();
-
-        while (iterator.hasNext()) {
-          const cancelMe = iterator.next();
-          LocalNotificationsImpl.cancelById(cancelMe);
-        }
+        com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).forEach(id => {
+          LocalNotificationsImpl.cancelById(id);
+        });
 
         android.support.v4.app.NotificationManagerCompat.from(context).cancelAll();
         resolve();
@@ -181,17 +154,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   getScheduledIds(): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
-        const scheduledIds = [];
-
-        const sharedPreferences = LocalNotificationsImpl.getSharedPreferences();
-        const keys = sharedPreferences.getAll().keySet();
-
-        const iterator = keys.iterator();
-        while (iterator.hasNext()) {
-          scheduledIds.push(iterator.next());
-        }
-
-        resolve(scheduledIds);
+        resolve(com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()));
       } catch (ex) {
         console.log("Error in LocalNotifications.getScheduledIds: " + ex);
         reject(ex);
@@ -225,8 +188,6 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(
               new org.json.JSONObject(JSON.stringify(options)),
               context);
-
-          LocalNotificationsImpl.persist(options);
         }
 
         resolve();

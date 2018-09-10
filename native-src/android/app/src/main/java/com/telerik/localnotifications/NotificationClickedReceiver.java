@@ -53,31 +53,42 @@ public class NotificationClickedReceiver extends IntentService {
 
   private void onClick(Bundle bundle) throws JSONException {
     final String action = getAction();
-    final JSONObject data = processPushBundle(); // note that for the non-default action this will be empty
+    final Context context = getApplicationContext();
+
+    // Note that for the non-default action this will be empty:
+    final JSONObject opts = Store.get(context, bundle.getInt(NotificationPublisher.NOTIFICATION_ID), false);
 
     boolean isAppActive = LocalNotificationsPlugin.isActive;
     boolean doLaunch = intent.getBooleanExtra("NOTIFICATION_LAUNCH", true);
+
+    Log.d(TAG, "doLaunch = " + doLaunch);
 
     if (!isAppActive && doLaunch) {
       forceMainActivityReload();
     }
 
-    if (setTextInput(action, data)) {
-      data.put("event", "input");
+    if (setTextInput(action, opts)) {
+      opts.put("event", "input");
     } else if (!CLICK_ACTION_ID.equals(action)) {
-      data.put("event", "button");
-      data.put("response", action);
+      opts.put("event", "button");
+      opts.put("response", action);
     } else {
-      data.put("event", "default");
+      opts.put("event", "default");
     }
-    data.put("foreground", isAppActive);
 
-    LocalNotificationsPlugin.executeOnMessageReceivedCallback(data);
+    opts.put("foreground", isAppActive);
+    // opts.put("coldstart", !isPluginActive);
 
-    // clear the notification from the tray (unless it's marker as ongoing/sticky)
-    if (data.has("id") && !data.optBoolean("ongoing", false)) {
-      NotificationManager mgr = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-      mgr.cancel(data.getInt("id"));
+    LocalNotificationsPlugin.executeOnMessageReceivedCallback(opts);
+
+    if (opts.has("id") && !opts.optBoolean("ongoing", false)) {
+      int id = opts.getInt("id");
+
+      // Clear the notification from the tray, unless it's marker as ongoing/sticky:
+      ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(id);
+
+      // And also unpersist it:
+      Store.remove(context, id);
     }
   }
 
@@ -92,33 +103,6 @@ public class NotificationClickedReceiver extends IntentService {
 
   private String getAction() {
     return intent == null || intent.getExtras() == null ? null : intent.getExtras().getString(EXTRA_ID, CLICK_ACTION_ID);
-  }
-
-  /**
-   * Takes the pushBundle extras from the intent,
-   * and sends it through to the LocalNotificationsPlugin for processing.
-   */
-  private JSONObject processPushBundle() {
-    Bundle extras = intent.getExtras();
-    JSONObject options = new JSONObject();
-
-    if (extras != null) {
-      String data = extras.getString(NotificationPublisher.PUSH_BUNDLE);
-      if (data != null) {
-        try {
-          options = new JSONObject(data);
-//                options.put("foreground", false);
-//                options.put("coldstart", !isPluginActive);
-
-          boolean doLaunch = intent.getBooleanExtra("launch", true);
-          Log.d(TAG, "doLaunch = " + doLaunch);
-
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    return options;
   }
 
   private void forceMainActivityReload() {
