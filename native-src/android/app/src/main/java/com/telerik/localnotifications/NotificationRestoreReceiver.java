@@ -78,9 +78,9 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
     builder
         .setDefaults(0)
-        .setContentTitle(options.optString("title"))
-        .setContentText(options.optString("body"))
-        .setSubText(options.optString("subtitle"))
+        .setContentTitle(options.optString("title", null))
+        .setSubText(options.optString("subtitle", null))
+        .setContentText(options.optString("body", null))
         .setSmallIcon(options.optInt("icon"))
         .setAutoCancel(true) // removes the notification from the statusbar once tapped
         .setNumber(options.optInt("badge"))
@@ -124,10 +124,19 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     applyBigTextStyle(options, builder);
     applyImage(options, context, builder);
     applyActions(options, context, builder);
-//    applyDeleteReceiver(options, context, builder);
+    // applyDeleteReceiver(options, context, builder);
     applyContentReceiver(options, context, builder);
 
     final Notification notification = builder.build();
+    final long triggerTime = options.getLong("atTime");
+
+    if (triggerTime == 0) {
+      // If we just want to show the notification immediately, there's no need to create an Intent,
+      // we just send the notification to the Notification Service:
+      ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(options.optInt("id"), notification);
+
+      return;
+    }
 
     // add the intent which schedules the notification
     final Intent notificationIntent = new Intent(context, NotificationPublisher.class)
@@ -140,7 +149,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
     final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
     // configure when we'll show the event
-    long triggerTime = options.getLong("atTime");
+
     long interval = options.optLong("repeatInterval", 0); // in ms
     final boolean isRepeating = interval > 0;
     final Date triggerDate = new Date(triggerTime);
