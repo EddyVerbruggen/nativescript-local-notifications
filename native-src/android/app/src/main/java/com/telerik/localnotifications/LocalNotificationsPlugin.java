@@ -10,7 +10,9 @@ public class LocalNotificationsPlugin {
 
   static boolean isActive = false;
   private static JSONObject cachedData; // TODO: This should be an array!
+  private static JSONObject clearedCachedData;
   private static LocalNotificationsPluginListener onMessageReceivedCallback;
+  private static LocalNotificationsPluginListener onMessageClearedCallback;
 
   /**
    * Set the on message received callback
@@ -42,6 +44,36 @@ public class LocalNotificationsPlugin {
     }
   }
 
+  /**
+   * Set the on message cleared callback
+   *
+   * @param callbacks
+   */
+  public static void setOnMessageClearedCallback(LocalNotificationsPluginListener callbacks) {
+    onMessageClearedCallback = callbacks;
+
+    if (clearedCachedData != null) {
+      executeOnMessageClearedCallback(clearedCachedData);
+      clearedCachedData = null;
+    }
+  }
+
+  /**
+   * Execute the onMessageClearedCallback with the data passed.
+   * In case the callback is not present, cache the data;
+   *
+   * @param data
+   */
+  public static void executeOnMessageClearedCallback(JSONObject data) {
+    if (onMessageClearedCallback != null) {
+      Log.d(TAG, "Sending message to client");
+      onMessageClearedCallback.success(data);
+    } else {
+      Log.d(TAG, "No callback function - caching the data for later retrieval.");
+      clearedCachedData = data;
+    }
+  }
+
   public static void scheduleNotification(JSONObject options, Context context) throws Exception {
     // Persist the options so that we can access them later to:
     // - Restore a notification after reboot.
@@ -50,18 +82,13 @@ public class LocalNotificationsPlugin {
     //
     // This way we don't need to pass them around as extras in the Intents.
 
+    // TODO: Maybe return notification ID?
+
     Store.save(context, options);
 
     // Display or schedule the notification, depending on the options:
 
     NotificationRestoreReceiver.scheduleNotification(options, context);
-
-    // TODO: Always store, but we need to remove them as well!
-
-    /*if (opts.optInt("repeatInterval", 0) > 0) {
-      // Remove the persisted notification data if it's not repeating:
-      Store.remove(context, id);
-    }*/
   }
 }
 

@@ -114,6 +114,25 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
+  addOnMessageClearedCallback(onReceived: (data: ReceivedNotification) => void): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        // note that this is ONLY triggered when the user clicked the notification in the statusbar
+        com.telerik.localnotifications.LocalNotificationsPlugin.setOnMessageClearedCallback(
+            new com.telerik.localnotifications.LocalNotificationsPluginListener({
+              success: notification => {
+                onReceived(JSON.parse(notification));
+              }
+            })
+        );
+        resolve();
+      } catch (ex) {
+        console.log("Error in LocalNotifications.addOnMessageClearedCallback: " + ex);
+        reject(ex);
+      }
+    });
+  }
+
   cancel(id: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {

@@ -344,6 +344,12 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
+  addOnMessageClearedCallback(onReceived: (data: ReceivedNotification) => void): Promise<any> {
+    // TODO: To be implemented...
+
+    return Promise.resolve(false);
+  }
+
   cancel(id: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {

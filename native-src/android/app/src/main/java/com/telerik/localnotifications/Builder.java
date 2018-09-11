@@ -75,7 +75,7 @@ public final class Builder {
         }
 
         applyContentReceiver(options, builder, context, notificationID);
-        applyDeleteReceiver(options, builder, context, notificationID);
+        applyDeleteReceiver(builder, context, notificationID);
         applyStyle(options, builder, context);
         applyActions(options, builder, context);
 
@@ -103,13 +103,13 @@ public final class Builder {
     * Add the intent that handles the delete event (which is fired when the X or 'clear all'
     * was pressed in the notification center).
     */
-    private static void applyDeleteReceiver(JSONObject options, NotificationCompat.Builder builder, Context context, int notificationID) {
-        /*final Intent intent = new Intent(context, NotificationClearedReceiver.class)
+    private static void applyDeleteReceiver(NotificationCompat.Builder builder, Context context, int notificationID) {
+        final Intent intent = new Intent(context, NotificationClearedReceiver.class)
             .setAction(String.valueOf(notificationID))
             .putExtra(Action.EXTRA_ID, notificationID);
 
         final PendingIntent deleteIntent = PendingIntent.getBroadcast(context, RANDOM.nextInt(), intent, FLAG_UPDATE_CURRENT);
-        builder.setDeleteIntent(deleteIntent);*/
+        builder.setDeleteIntent(deleteIntent);
     }
 
 
