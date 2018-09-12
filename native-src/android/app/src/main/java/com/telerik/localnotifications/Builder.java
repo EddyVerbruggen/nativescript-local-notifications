@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -55,12 +56,12 @@ public final class Builder {
             .setSubText(options.optString("subtitle", null))
             .setContentText(options.optString("body", null))
             .setSmallIcon(options.optInt("icon"))
-            .setAutoCancel(true) // removes the notification from the statusbar once tapped
+            .setAutoCancel(true) // Remove the notification from the status bar once tapped.
             .setNumber(options.optInt("badge"))
             .setColor(options.optInt("color"))
             .setOngoing(options.optBoolean("ongoing"))
             .setPriority(options.optBoolean("forceShowWhenInForeground") ? 1 : 0)
-            .setTicker(options.optString("ticker", options.optString("body"))); // TODO: Meeec
+            .setTicker(options.optString("ticker", null)); // Let the OS handle the default value for the ticker.
 
         final Object thumbnail = options.opt("thumbnail");
 
@@ -138,7 +139,7 @@ public final class Builder {
 
         final Object thumbnail = options.opt("thumbnail");
 
-        if (thumbnail == Boolean.TRUE) {
+        if (Boolean.TRUE.equals(thumbnail)) {
             builder.setLargeIcon(bitmap); // Set the thumbnail...
             bigPictureStyle.bigLargeIcon(null); // ...which goes away when expanded.
         }
@@ -240,10 +241,6 @@ public final class Builder {
                 .putExtra("NOTIFICATION_LAUNCH", action.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        // if (extras != null) {
-        //     intent.putExtras(extras);
-        // }
-
         int reqCode = RANDOM.nextInt();
 
         return PendingIntent.getService(context, reqCode, intent, FLAG_UPDATE_CURRENT);
@@ -251,7 +248,7 @@ public final class Builder {
 
     // Utility methods:
 
-    private static Bitmap getBitmap(Context context, String src) {
+    private static @Nullable Bitmap getBitmap(Context context, String src) {
         if (src.indexOf("res://") == 0) {
             final int resourceId = context.getResources().getIdentifier(src.substring(6), "drawable", context.getApplicationInfo().packageName);
 
