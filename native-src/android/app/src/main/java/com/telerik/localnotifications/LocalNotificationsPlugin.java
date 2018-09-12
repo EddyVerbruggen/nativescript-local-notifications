@@ -9,8 +9,7 @@ public class LocalNotificationsPlugin {
   static final String TAG = "LocalNotifyPlugin";
 
   static boolean isActive = false;
-  private static JSONObject cachedData; // TODO: This should be an array!
-  private static JSONObject clearedCachedData;
+  private static JSONObject cachedData;
   private static LocalNotificationsPluginListener onMessageReceivedCallback;
   private static LocalNotificationsPluginListener onMessageClearedCallback;
 
@@ -51,11 +50,6 @@ public class LocalNotificationsPlugin {
    */
   public static void setOnMessageClearedCallback(LocalNotificationsPluginListener callbacks) {
     onMessageClearedCallback = callbacks;
-
-    if (clearedCachedData != null) {
-      executeOnMessageClearedCallback(clearedCachedData);
-      clearedCachedData = null;
-    }
   }
 
   /**
@@ -66,11 +60,7 @@ public class LocalNotificationsPlugin {
    */
   public static void executeOnMessageClearedCallback(JSONObject data) {
     if (onMessageClearedCallback != null) {
-      Log.d(TAG, "Sending message to client");
       onMessageClearedCallback.success(data);
-    } else {
-      Log.d(TAG, "No callback function - caching the data for later retrieval.");
-      clearedCachedData = data;
     }
   }
 
@@ -82,11 +72,11 @@ public class LocalNotificationsPlugin {
     //
     // This way we don't need to pass them around as extras in the Intents.
 
-    // TODO: Maybe return notification ID?
-
     Store.save(context, options);
 
     // Display or schedule the notification, depending on the options:
+    // If there's already a notification with the same ID, the intent flags should take care of updating all the
+    // intents but the alarm one, which would be cancelled and rescheduled.
 
     NotificationRestoreReceiver.scheduleNotification(options, context);
   }

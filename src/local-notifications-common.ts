@@ -190,7 +190,7 @@ export interface LocalNotificationsApi {
    * (the notification will be scheduled in case the user granted permission),
    * or you can manually invoke `requestPermission` if that's your thing.
    */
-  schedule(options: ScheduleOptions[]): Promise<any>;
+  schedule(options: ScheduleOptions[]): Promise<void>;
 
   /**
    * Tapping a notification in the notification center will launch your app.
@@ -204,7 +204,7 @@ export interface LocalNotificationsApi {
   /**
    * Use when you want to know the id's of all notifications which have been scheduled.
    */
-  getScheduledIds(): Promise<any>;
+  getScheduledIds(): Promise<number[]>;
 
   /**
    * Cancels the 'id' passed in.
@@ -242,9 +242,10 @@ export interface LocalNotificationsApi {
   requestPermission(): Promise<boolean>;
 }
 
+// TODO: This could be just an utils file!
+
 export abstract class LocalNotificationsCommon {
-  public static defaults = {
-    id: 0,
+  protected static defaults = {
     badge: 0,
     interval: undefined,
     ongoing: false,
@@ -254,7 +255,7 @@ export abstract class LocalNotificationsCommon {
     forceShowWhenInForeground: false
   };
 
-  public static merge(obj1: {}, obj2: {}): any {
+  protected static merge(obj1: {}, obj2: {}): any {
     let result = {};
     for (let i in obj1) {
       if ((i in obj2) && (typeof obj1[i] === "object") && (i !== null)) {
@@ -270,5 +271,26 @@ export abstract class LocalNotificationsCommon {
       result[i] = obj2[i];
     }
     return result;
+  }
+
+  protected static generateUUID(): string {
+    // Not the best, but it will work. See https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+    const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    return `${ s4() }${ s4() }-${ s4() }-${ s4() }-${ s4() }-${ s4() }${ s4() }${ s4() }`;
+  }
+
+  protected static generateNotificationID(): number {
+    return new Date().getTime() + (10e6 * Math.random() | 0 );
+  }
+
+  protected static ensureID(opts: ScheduleOptions): number {
+    const id = opts.id;
+
+    if (typeof id == 'number') {
+      return id;
+    } else {
+      // We need unique IDs in all notifications to be able to persist them without overwriting one another:
+      return opts.id = LocalNotificationsCommon.generateNotificationID();
+    }
   }
 }

@@ -15,18 +15,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 public final class Builder {
 
+    public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
+
     private static final String TAG = "Builder";
     private static final String DEFAULT_CHANNEL = "Notifications";
-
-    // To generate unique request codes:
-    private static final Random RANDOM = new Random();
 
     // Methods to build notifications:
 
@@ -75,42 +73,12 @@ public final class Builder {
             builder.setSound(android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION));
         }
 
-        applyContentReceiver(options, builder, context, notificationID);
-        applyDeleteReceiver(builder, context, notificationID);
         applyStyle(options, builder, context);
-        applyActions(options, builder, context);
+        applyTapReceiver(options, builder, context, notificationID);
+        applyClearReceiver(builder, context, notificationID);
+        applyActions(options, builder, context, notificationID);
 
         return builder.build();
-    }
-
-
-    // Notification click and cancel handlers:
-
-    /**
-     * Add the intent that handles the event when the notification is clicked (which should launch the app).
-     */
-    private static void applyContentReceiver(JSONObject options, NotificationCompat.Builder builder, Context context, int notificationID) {
-        final Intent intent = new Intent(context, NotificationClickedReceiver.class)
-                .putExtra(NotificationPublisher.NOTIFICATION_ID, notificationID)
-                .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
-                .putExtra("NOTIFICATION_LAUNCH", options.optBoolean("launch", true))
-                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
-        final PendingIntent pendingContentIntent = PendingIntent.getService(context, RANDOM.nextInt(), intent, FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pendingContentIntent);
-    }
-
-    /**
-    * Add the intent that handles the delete event (which is fired when the X or 'clear all'
-    * was pressed in the notification center).
-    */
-    private static void applyDeleteReceiver(NotificationCompat.Builder builder, Context context, int notificationID) {
-        final Intent intent = new Intent(context, NotificationClearedReceiver.class)
-            .setAction(String.valueOf(notificationID))
-            .putExtra(Action.EXTRA_ID, notificationID);
-
-        final PendingIntent deleteIntent = PendingIntent.getBroadcast(context, RANDOM.nextInt(), intent, FLAG_UPDATE_CURRENT);
-        builder.setDeleteIntent(deleteIntent);
     }
 
 
@@ -186,7 +154,44 @@ public final class Builder {
             .setStyle(inboxStyle);
     }
 
-    private static void applyActions(JSONObject options, NotificationCompat.Builder builder, Context context) {
+
+    // Notification click and cancel handlers:
+
+    /**
+     * Add the intent that handles the event when the notification is clicked (which should launch the app).
+     */
+    private static void applyTapReceiver(JSONObject options, NotificationCompat.Builder builder, Context context, int notificationID) {
+        final Intent intent = new Intent(context, NotificationActionReceiver.class)
+                .putExtra(NOTIFICATION_ID, notificationID)
+                .putExtra("NOTIFICATION_LAUNCH", options.optBoolean("launch", true))
+                .setAction(Action.CLICK_ACTION_ID)
+                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        builder.setContentIntent(PendingIntent.getService(
+            context,
+            notificationID,
+            intent,
+            FLAG_UPDATE_CURRENT
+        ));
+    }
+
+    /**
+    * Add the intent that handles the delete event (which is fired when the X or 'clear all'
+    * was pressed in the notification center).
+    */
+    private static void applyClearReceiver(NotificationCompat.Builder builder, Context context, int notificationID) {
+        final Intent intent = new Intent(context, NotificationClearedReceiver.class)
+            .putExtra(NOTIFICATION_ID, notificationID);
+
+        builder.setDeleteIntent(PendingIntent.getBroadcast(
+            context,
+            notificationID,
+            intent,
+            FLAG_UPDATE_CURRENT
+        ));
+    }
+
+    private static void applyActions(JSONObject options, NotificationCompat.Builder builder, Context context, int notificationID) {
         Action[] actions = getActions(options, context);
 
         if (actions == null || actions.length == 0) {
@@ -198,7 +203,7 @@ public final class Builder {
             btn = new NotificationCompat.Action.Builder(
                     action.getIcon(),
                     action.getTitle(),
-                    getPendingIntentForAction(options, context, action));
+                    getPendingIntentForAction(options, context, action, notificationID));
 
             if (action.isWithInput()) {
                 Log.d(TAG, "applyActions, isWithInput");
@@ -232,18 +237,16 @@ public final class Builder {
         return (group != null) ? group.getActions() : null;
     }
 
-    private static PendingIntent getPendingIntentForAction(JSONObject options, Context context, Action action) {
+    private static PendingIntent getPendingIntentForAction(JSONObject options, Context context, Action action, int notificationID) {
         Log.d(TAG, "getPendingIntentForAction action.id " + action.getId() + ", action.isLaunchingApp(): " + action.isLaunchingApp());
-        Intent intent = new Intent(context, NotificationClickedReceiver.class)
-                .putExtra(NotificationPublisher.NOTIFICATION_ID, options.optInt("id", 0))
-                .putExtra(Action.EXTRA_ID, action.getId())
+        Intent intent = new Intent(context, NotificationActionReceiver.class)
+                .putExtra(NOTIFICATION_ID, options.optInt("id", 0))
                 // TODO see https://github.com/katzer/cordova-plugin-local-notifications/blob/ca1374325bb27ec983332d55dcb6975d929bca4b/src/android/notification/Builder.java#L396
                 .putExtra("NOTIFICATION_LAUNCH", action.isLaunchingApp())
+                .setAction(action.getId())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        int reqCode = RANDOM.nextInt();
-
-        return PendingIntent.getService(context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(context, notificationID, intent, FLAG_UPDATE_CURRENT);
     }
 
     // Utility methods:

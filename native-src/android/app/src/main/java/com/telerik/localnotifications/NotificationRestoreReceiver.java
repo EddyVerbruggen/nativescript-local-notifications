@@ -41,6 +41,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
     // We might create the notification IMMEDIATELY:
 
+    // If no ID is provided, we automatically assign different IDs so that all notifications are persisted:
     final int notificationID = options.optInt("id", 0);
     final long triggerTime = options.optLong("atTime", 0);
 
@@ -69,10 +70,10 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
     final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-    final Intent notificationIntent = new Intent(context, NotificationPublisher.class)
-      .putExtra(NotificationPublisher.NOTIFICATION_ID, notificationID);
+    final Intent notificationIntent = new Intent(context, NotificationAlarmReceiver.class)
+      .putExtra(Builder.NOTIFICATION_ID, notificationID);
 
-    final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+    final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
     try {
       if (interval > 0) {

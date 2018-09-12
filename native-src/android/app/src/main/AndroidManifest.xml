@@ -6,15 +6,15 @@
 
     <application>
         <service
-            android:name="com.telerik.localnotifications.NotificationClickedReceiver"
-            android:exported="false" />
-
-        <receiver
-            android:name="com.telerik.localnotifications.NotificationPublisher"
+            android:name="com.telerik.localnotifications.NotificationActionReceiver"
             android:exported="false" />
 
         <receiver
             android:name="com.telerik.localnotifications.NotificationClearedReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.telerik.localnotifications.NotificationAlarmReceiver"
             android:exported="false" />
 
         <receiver

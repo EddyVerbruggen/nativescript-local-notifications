@@ -14,20 +14,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.telerik.localnotifications.Action.CLICK_ACTION_ID;
-import static com.telerik.localnotifications.Action.EXTRA_ID;
 
 /**
  * IntentService which is an entry point, whenever a notification from the bar is tapped and executed.
  * The activity fires, notifies the callback.
  */
-public class NotificationClickedReceiver extends IntentService {
-  private static String TAG = "NotificationClickedActivity";
+public class NotificationActionReceiver extends IntentService {
+  private static String TAG = "NotificationActionReceiver";
 
   // Hold a reference to the intent to handle.
   private Intent intent;
 
-  public NotificationClickedReceiver() {
-    super("NotificationClickedReceiver");
+  public NotificationActionReceiver() {
+    super("NotificationActionReceiver");
   }
 
   @Override
@@ -45,18 +44,17 @@ public class NotificationClickedReceiver extends IntentService {
     }
 
     try {
-      onClick(bundle);
+      onClick(intent.getAction(), bundle);
     } catch (JSONException e) {
       Log.e(TAG, e.getMessage(), e);
     }
   }
 
-  private void onClick(Bundle bundle) throws JSONException {
-    final String action = getAction();
+  private void onClick(String action, Bundle bundle) throws JSONException {
     final Context context = getApplicationContext();
 
     // Note that for the non-default action this will be empty:
-    final JSONObject opts = Store.get(context, bundle.getInt(NotificationPublisher.NOTIFICATION_ID), false);
+    final JSONObject opts = Store.get(context, bundle.getInt(Builder.NOTIFICATION_ID), false);
 
     boolean isAppActive = LocalNotificationsPlugin.isActive;
     boolean doLaunch = intent.getBooleanExtra("NOTIFICATION_LAUNCH", true);
@@ -99,10 +97,6 @@ public class NotificationClickedReceiver extends IntentService {
       return true;
     }
     return false;
-  }
-
-  private String getAction() {
-    return intent == null || intent.getExtras() == null ? null : intent.getExtras().getString(EXTRA_ID, CLICK_ACTION_ID);
   }
 
   private void forceMainActivityReload() {

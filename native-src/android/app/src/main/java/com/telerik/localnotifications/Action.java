@@ -18,9 +18,6 @@ import static com.telerik.localnotifications.LocalNotificationsPlugin.TAG;
  */
 public final class Action {
 
-  // Key name for bundled extras
-  public static final String EXTRA_ID = "NOTIFICATION_ACTION_ID";
-
   // The id for the click action
   public static final String CLICK_ACTION_ID = "default_action";
 

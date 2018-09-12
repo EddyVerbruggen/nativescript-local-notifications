@@ -28,9 +28,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static IS_GTE_LOLLIPOP: boolean = android.os.Build.VERSION.SDK_INT >= 21;
 
   private static getInterval(interval: ScheduleInterval): number {
-    if (interval === undefined) {
-      return 0;
-    } else if (interval === "second") {
+    if (interval === "second") {
       return 1000; // it's in ms
     } else if (interval === "minute") {
       return android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15;
@@ -45,7 +43,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     } else if (interval === "year") {
       return android.app.AlarmManager.INTERVAL_DAY * 365; // same here
     } else {
-      return 0;
+      return undefined;
     }
   }
 
@@ -62,7 +60,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static cancelById(id): void {
     const context = utils.ad.getApplicationContext();
     const notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class).setAction("" + id);
-    const pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
+    const pendingIntent = android.app.PendingIntent.getBroadcast(context, id, notificationIntent, 0);
     const alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE);
     alarmManager.cancel(pendingIntent);
     const notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
@@ -170,10 +168,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  getScheduledIds(): Promise<any> {
+  getScheduledIds(): Promise<number[]> {
     return new Promise((resolve, reject) => {
       try {
-        resolve(com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()));
+        resolve(com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).map(Number));
       } catch (ex) {
         console.log("Error in LocalNotifications.getScheduledIds: " + ex);
         reject(ex);
@@ -187,26 +185,33 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         const context = utils.ad.getApplicationContext();
         const resources = context.getResources();
 
+        // TODO: All these changes in the options (other than setting the ID) should rather be done in Java so that
+        // the persisted options are exactly like the original ones.
+
         for (let n in scheduleOptions) {
           const options = LocalNotificationsImpl.merge(scheduleOptions[n], LocalNotificationsImpl.defaults);
 
           options.icon = LocalNotificationsImpl.getIcon(
-              context,
-              resources,
-              LocalNotificationsImpl.IS_GTE_LOLLIPOP && options.silhouetteIcon || options.icon);
+            context,
+            resources,
+            LocalNotificationsImpl.IS_GTE_LOLLIPOP && options.silhouetteIcon || options.icon
+          );
 
           options.atTime = options.at ? options.at.getTime() : 0;
 
-          // used when restoring the notification after a reboot
+          // Used when restoring the notification after a reboot:
           options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
 
           if (options.color) {
             options.color = options.color.android;
           }
 
+          LocalNotificationsImpl.ensureID(options);
+
           com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(
-              new org.json.JSONObject(JSON.stringify(options)),
-              context);
+            new org.json.JSONObject(JSON.stringify(options)),
+            context,
+          );
         }
 
         resolve();

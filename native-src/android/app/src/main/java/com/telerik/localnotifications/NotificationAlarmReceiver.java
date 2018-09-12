@@ -8,14 +8,12 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-public class NotificationPublisher extends BroadcastReceiver {
+public class NotificationAlarmReceiver extends BroadcastReceiver {
 
   private static final String TAG = "NotificationPublisher";
 
-  public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
-
   public void onReceive(Context context, Intent intent) {
-    final int id = intent.getIntExtra(NOTIFICATION_ID, 0);
+    final int id = intent.getIntExtra(Builder.NOTIFICATION_ID, 0);
     final JSONObject opts = Store.get(context, id);
 
     if (opts == null) {
