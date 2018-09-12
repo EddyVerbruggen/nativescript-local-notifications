@@ -280,7 +280,7 @@ export abstract class LocalNotificationsCommon {
   }
 
   protected static generateNotificationID(): number {
-    return new Date().getTime() + (10e6 * Math.random() | 0 );
+    return Date.now() + (10e6 * Math.random() | 0 );
   }
 
   protected static ensureID(opts: ScheduleOptions): number {
