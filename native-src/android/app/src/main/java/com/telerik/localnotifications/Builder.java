@@ -144,7 +144,7 @@ public final class Builder {
             try {
                 inboxStyle.addLine(groupedMessages.getString(i));
             } catch (JSONException e) {
-                // Just continue...
+                Log.e(TAG, "Error parsing message at index " + i, e);
             }
 
         }
