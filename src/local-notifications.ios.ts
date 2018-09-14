@@ -344,7 +344,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   }
 
   addOnMessageClearedCallback(onReceived: (data: ReceivedNotification) => void): Promise<any> {
-    // TODO: To be implemented...
+    // Not possible on iOS. It looks like this would only work if the notification has categories set, which might not
+    // be the case. Therefore, this method is just a placeholder in case users use it without checking the platform
+    // they are in. See:
+    // - https://stackoverflow.com/questions/44009707/customdismissaction-not-working-for-remote-notifications
+    // - https://stackoverflow.com/questions/31929274/know-if-ios-notification-was-dismiss.
 
     return Promise.resolve(false);
   }

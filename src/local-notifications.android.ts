@@ -57,7 +57,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         || context.getApplicationInfo().icon;
   };
 
-  private static cancelById(id): void {
+  private static cancelById(id: number): void {
     const context = utils.ad.getApplicationContext();
     const notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class).setAction("" + id);
     const pendingIntent = android.app.PendingIntent.getBroadcast(context, id, notificationIntent, 0);
@@ -143,7 +143,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  cancelAll(): Promise<any> {
+  cancelAll(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         const context = utils.ad.getApplicationContext();
@@ -155,9 +155,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         //   console.log(">> < 26, StatusBarNotification[0]: " + new android.service.notification.StatusBarNotification[0]);
         // }
 
-        com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).forEach(id => {
-          LocalNotificationsImpl.cancelById(id);
-        });
+        const iterator: java.util.Iterator<string> = com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).iterator;
+
+        while (iterator.hasNext()) {
+          LocalNotificationsImpl.cancelById(parseInt(iterator.next()));
+        }
 
         android.support.v4.app.NotificationManagerCompat.from(context).cancelAll();
         resolve();
@@ -171,7 +173,15 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   getScheduledIds(): Promise<number[]> {
     return new Promise((resolve, reject) => {
       try {
-        resolve(com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).map(Number));
+        const iterator: java.util.Iterator<string> = com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).iterator;
+
+        const ids: number[] = [];
+
+        while (iterator.hasNext()) {
+          ids.push(parseInt(iterator.next()));
+        }
+
+        resolve(ids);
       } catch (ex) {
         console.log("Error in LocalNotifications.getScheduledIds: " + ex);
         reject(ex);
