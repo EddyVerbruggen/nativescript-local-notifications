@@ -11,6 +11,7 @@ public class LocalNotificationsPlugin {
   static boolean isActive = false;
   private static JSONObject cachedData;
   private static LocalNotificationsPluginListener onMessageReceivedCallback;
+  private static LocalNotificationsPluginListener onMessageClearedCallback;
 
   /**
    * Set the on message received callback
@@ -42,7 +43,41 @@ public class LocalNotificationsPlugin {
     }
   }
 
+  /**
+   * Set the on message cleared callback
+   *
+   * @param callbacks
+   */
+  public static void setOnMessageClearedCallback(LocalNotificationsPluginListener callbacks) {
+    onMessageClearedCallback = callbacks;
+  }
+
+  /**
+   * Execute the onMessageClearedCallback with the data passed.
+   * In case the callback is not present, cache the data;
+   *
+   * @param data
+   */
+  public static void executeOnMessageClearedCallback(JSONObject data) {
+    if (onMessageClearedCallback != null) {
+      onMessageClearedCallback.success(data);
+    }
+  }
+
   public static void scheduleNotification(JSONObject options, Context context) throws Exception {
+    // Persist the options so that we can access them later to:
+    // - Restore a notification after reboot.
+    // - Create a notification after an alarm triggers (for recurrent or scheduled notifications).
+    // - Pass them back to the notification clicked or notification cleared callbacks.
+    //
+    // This way we don't need to pass them around as extras in the Intents.
+
+    Store.save(context, options);
+
+    // Display or schedule the notification, depending on the options:
+    // If there's already a notification with the same ID, the intent flags should take care of updating all the
+    // intents but the alarm one, which would be cancelled and rescheduled.
+
     NotificationRestoreReceiver.scheduleNotification(options, context);
   }
 }
