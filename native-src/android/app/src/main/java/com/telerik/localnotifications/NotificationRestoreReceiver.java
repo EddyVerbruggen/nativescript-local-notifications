@@ -49,7 +49,7 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
       // If we just want to show the notification immediately, there's no need to create an Intent,
       // we just send the notification to the Notification Service:
       ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(
-        notificationID, com.telerik.localnotifications.Builder.build(options, context, notificationID)
+          notificationID, com.telerik.localnotifications.Builder.build(options, context, notificationID)
       );
 
       return;
@@ -70,18 +70,19 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
     final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-    final Intent notificationIntent = new Intent(context, NotificationAlarmReceiver.class)
-      .putExtra(Builder.NOTIFICATION_ID, notificationID);
-
-    final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
     try {
+      final Intent notificationIntent = new Intent(context, NotificationAlarmReceiver.class)
+          .setAction(options.getString("id"))
+          .putExtra(Builder.NOTIFICATION_ID, notificationID);
+
+      final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
       if (interval > 0) {
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, interval, pendingIntent);
       } else {
         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
       }
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       Log.e(TAG, "Notification could not be scheduled!" + e.getMessage(), e);
     }
   }

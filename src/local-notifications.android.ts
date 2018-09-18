@@ -59,8 +59,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
   private static cancelById(id: number): void {
     const context = utils.ad.getApplicationContext();
-    const notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationPublisher.class).setAction("" + id);
-    const pendingIntent = android.app.PendingIntent.getBroadcast(context, id, notificationIntent, 0);
+    const notificationIntent = new android.content.Intent(context, com.telerik.localnotifications.NotificationAlarmReceiver.class).setAction("" + id);
+    const pendingIntent = android.app.PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
     const alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE);
     alarmManager.cancel(pendingIntent);
     const notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
@@ -155,10 +155,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         //   console.log(">> < 26, StatusBarNotification[0]: " + new android.service.notification.StatusBarNotification[0]);
         // }
 
-        const iterator: java.util.Iterator<string> = com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).iterator;
+        const keys: Array<string> = com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext());
 
-        while (iterator.hasNext()) {
-          LocalNotificationsImpl.cancelById(parseInt(iterator.next()));
+        for (let i = 0; i < keys.length; i++) {
+          LocalNotificationsImpl.cancelById(parseInt(keys[i]));
         }
 
         android.support.v4.app.NotificationManagerCompat.from(context).cancelAll();
@@ -173,12 +173,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   getScheduledIds(): Promise<number[]> {
     return new Promise((resolve, reject) => {
       try {
-        const iterator: java.util.Iterator<string> = com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext()).iterator;
+        const keys: Array<string> = com.telerik.localnotifications.Store.getKeys(utils.ad.getApplicationContext());
 
         const ids: number[] = [];
-
-        while (iterator.hasNext()) {
-          ids.push(parseInt(iterator.next()));
+        for (let i = 0; i < keys.length; i++) {
+          ids.push(parseInt(keys[i]));
         }
 
         resolve(ids);

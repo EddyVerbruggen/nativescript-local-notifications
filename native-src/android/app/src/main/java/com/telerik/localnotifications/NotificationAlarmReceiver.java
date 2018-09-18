@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class NotificationAlarmReceiver extends BroadcastReceiver {
 
-  private static final String TAG = "NotificationPublisher";
+  private static final String TAG = "NotificationAlarmRcvr";
 
   public void onReceive(Context context, Intent intent) {
     final int id = intent.getIntExtra(Builder.NOTIFICATION_ID, 0);
