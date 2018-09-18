@@ -54,14 +54,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return (settings.types & types) > 0;
   }
 
-  private static guid() {
-    // Not the best, but it will work. See https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-    const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    return `${ s4() }${ s4() }-${ s4() }-${ s4() }-${ s4() }-${ s4() }${ s4() }${ s4() }`;
-  }
-
   private static getImageName(imageURL: string = "", extension: "png" | "jpeg" | "jpg" = "png"): [string, string] {
-    const name: string = imageURL.split(/[\/\.]/).slice(-2, -1)[0] || LocalNotificationsImpl.guid();
+    const name: string = imageURL.split(/[\/\.]/).slice(-2, -1)[0] || LocalNotificationsImpl.generateUUID();
     return [name, `${ name }.${ extension }`];
   }
 
@@ -70,20 +64,22 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   };
 
   private static getInterval(interval: ScheduleInterval): NSCalendarUnit {
-    if (interval === "minute") {
+    if (interval === "second") {
       return NSCalendarUnit.CalendarUnitSecond;
-    } else if (interval === "hour") {
+    } else if (interval === "minute") {
       return NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
-    } else if (interval === "day") {
+    } else if (interval === "hour") {
       return NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
-    } else if (interval === "week") {
+    } else if (interval === "day") {
       return NSCalendarUnit.CalendarUnitWeekday | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
-    } else if (interval === "month") {
+    } else if (interval === "week") {
       return NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
-    } else if (interval === "year") {
+    } else if (interval === "month") {
       return NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
-    } else {
+    } else if (interval === "year") {
       return NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
+    } else {
+      return undefined;
     }
   };
 
@@ -122,6 +118,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private static schedulePendingNotificationsNew(pending: ScheduleOptions[]): void {
     for (const n in pending) {
       const options: ScheduleOptions = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
+
+      LocalNotificationsImpl.ensureID(options);
 
       // Notification content
       const content = UNMutableNotificationContent.new();
@@ -243,6 +241,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     for (const n in pending) {
       const options = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
 
+      LocalNotificationsImpl.ensureID(options);
+
       const notification = UILocalNotification.new();
       notification.fireDate = options.at ? options.at : new Date();
       notification.alertTitle = options.title;
@@ -272,9 +272,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           break;
       }
 
-      if (options.interval !== undefined) {
-        notification.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
-      }
+      // Used when restoring the notification after a reboot:
+      options.repeatInterval = LocalNotificationsImpl.getInterval(options.interval);
 
       // notification.soundName = custom..;
       // notification.resumeApplicationInBackground = true;
@@ -344,6 +343,16 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
+  addOnMessageClearedCallback(onReceived: (data: ReceivedNotification) => void): Promise<any> {
+    // Not possible on iOS. It looks like this would only work if the notification has categories set, which might not
+    // be the case. Therefore, this method is just a placeholder in case users use it without checking the platform
+    // they are in. See:
+    // - https://stackoverflow.com/questions/44009707/customdismissaction-not-working-for-remote-notifications
+    // - https://stackoverflow.com/questions/31929274/know-if-ios-notification-was-dismiss.
+
+    return Promise.resolve(false);
+  }
+
   cancel(id: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
@@ -387,7 +396,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  getScheduledIds(): Promise<any> {
+  getScheduledIds(): Promise<number[]> {
     return new Promise((resolve, reject) => {
       try {
         const scheduledIds = [];
@@ -397,7 +406,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             for (let i = 0; i < notRequests.count; i++) {
               scheduledIds.push(notRequests[i].identifier);
             }
-            resolve(scheduledIds);
+            resolve(scheduledIds.map(Number));
           });
 
         } else {
@@ -405,7 +414,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           for (let i = 0, l = scheduled.count; i < l; i++) {
             scheduledIds.push(scheduled.objectAtIndex(i).userInfo.valueForKey("id"));
           }
-          resolve(scheduledIds);
+          resolve(scheduledIds.map(Number));
         }
 
       } catch (ex) {

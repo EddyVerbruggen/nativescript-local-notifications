@@ -1,31 +1,18 @@
 package com.telerik.localnotifications;
 
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 /**
  * Notifications need to be restored when the device is rebooted,
@@ -33,292 +20,69 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
  */
 public class NotificationRestoreReceiver extends BroadcastReceiver {
 
-  static final String TAG = "NotifyRestoreReceiver";
-
-  public static final String SHARED_PREFERENCES_KEY = "LocalNotificationsPlugin";
-
-  // To generate unique request codes
-  private static final Random RANDOM = new Random();
+  private static final String TAG = "NotifyRestoreReceiver";
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
-    final Set notificationOptions = sharedPreferences.getAll().entrySet();
+    for (Map.Entry<String, String> entry : Store.getAll(context).entrySet()) {
+      final String notificationString = entry.getValue();
 
-    final Iterator<Map.Entry> iterator = notificationOptions.iterator();
-    while (iterator.hasNext()) {
-      final Map.Entry item = iterator.next();
-      final String notificationString = (String) item.getValue();
       Log.e(TAG, "Will restore previously scheduled notification: " + notificationString);
+
       try {
-        final JSONObject options = new JSONObject(notificationString);
-        scheduleNotification(options, context);
-      } catch (Throwable t) {
-        Log.e(TAG, "Notification scheduling error: " + t.getMessage());
-        t.printStackTrace();
+        scheduleNotification(new JSONObject(notificationString), context);
+      } catch (JSONException e) {
+        Log.e(TAG, "Notification could not be scheduled! " + e.getMessage(), e);
       }
     }
   }
 
-  static void scheduleNotification(JSONObject options, Context context) throws Exception {
-//    Bitmap largeIconDrawable = null;
+  static void scheduleNotification(JSONObject options, Context context) {
 
-//    if (options.has("largeIcon")) {
-//      largeIconDrawable = BitmapFactory.decodeResource(context.getResources(), options.getInt("largeIcon"));
-//    }
+    // We might create the notification IMMEDIATELY:
 
-    final String channelId = "myChannelId"; // package scoped, so no need to add it ourselves
-
-    Builder builder;
-    if (android.os.Build.VERSION.SDK_INT >= 26) {
-      builder = new Builder(context, channelId);
-    } else {
-      builder = new Builder(context);
-    }
-
-    builder
-        .setDefaults(0)
-        .setContentTitle(options.optString("title", null))
-        .setSubText(options.optString("subtitle", null))
-        .setContentText(options.optString("body", null))
-        .setSmallIcon(options.optInt("icon"))
-        .setAutoCancel(true) // removes the notification from the statusbar once tapped
-        .setNumber(options.optInt("badge"))
-        .setColor(options.optInt("color"))
-        .setOngoing(options.optBoolean("ongoing"))
-        .setPriority(options.optBoolean("forceShowWhenInForeground") ? 1 : 0)
-        .setTicker(options.optString("ticker", options.optString("body")));
-
-    final Object thumbnail = options.opt("thumbnail");
-    if (thumbnail != null && thumbnail instanceof String) {
-      builder.setLargeIcon(getThumbnail(context, (String) thumbnail));
-    }
-
-    // TODO sound preference is not doing anything
-//    builder.setSound(options.has("sound") ? Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + options.getString("sound")) : Uri.parse("android.resource://" + context.getPackageName() + "/raw/notify"))
-    if (options.has("sound")) {
-      builder.setSound(android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION));
-    }
-
-    // set channel for Android 8+
-    if (android.os.Build.VERSION.SDK_INT >= 26) {
-      final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-      if (notificationManager != null && notificationManager.getNotificationChannel(channelId) == null) {
-        notificationManager.createNotificationChannel(new NotificationChannel(
-            channelId,
-            options.has("channel") ? options.optString("channel") : "Channel",
-            NotificationManager.IMPORTANCE_HIGH));
-      }
-    }
-
-    // log a warning if incommpatible options are passed
-    int nrOfFeatures = 0;
-    if (options.has("groupedMessages")) nrOfFeatures++;
-    if (options.optBoolean("bigTextStyle")) nrOfFeatures++;
-    if (options.has("image")) nrOfFeatures++;
-    if (nrOfFeatures > 1) {
-      Log.w(TAG, "Multiple notification styles found. Only one of 'groupedMessages', 'bigTextStyle', or 'image' will be used (in this order of preference.");
-    }
-
-    applyGroup(options, builder);
-    applyBigTextStyle(options, builder);
-    applyImage(options, context, builder);
-    applyActions(options, context, builder);
-    // applyDeleteReceiver(options, context, builder);
-    applyContentReceiver(options, context, builder);
-
-    final Notification notification = builder.build();
-    final long triggerTime = options.getLong("atTime");
+    // If no ID is provided, we automatically assign different IDs so that all notifications are persisted:
+    final int notificationID = options.optInt("id", 0);
+    final long triggerTime = options.optLong("atTime", 0);
 
     if (triggerTime == 0) {
       // If we just want to show the notification immediately, there's no need to create an Intent,
       // we just send the notification to the Notification Service:
-      ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(options.optInt("id"), notification);
+      ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(
+        notificationID, com.telerik.localnotifications.Builder.build(options, context, notificationID)
+      );
 
       return;
     }
 
-    // add the intent which schedules the notification
-    final Intent notificationIntent = new Intent(context, NotificationPublisher.class)
-        .setAction(options.getString("id"))
-        .putExtra(NotificationPublisher.PUSH_BUNDLE, options.toString())
-        .putExtra(NotificationPublisher.NOTIFICATION_ID, options.optInt("id"))
-        .putExtra(NotificationPublisher.SOUND, options.optString("sound"))
-        .putExtra(NotificationPublisher.NOTIFICATION, notification);
+    // Check if the notification has EXPIRED:
 
-    final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-    // configure when we'll show the event
-
-    long interval = options.optLong("repeatInterval", 0); // in ms
-    final boolean isRepeating = interval > 0;
+    final long interval = options.optLong("repeatInterval", 0); // in ms
     final Date triggerDate = new Date(triggerTime);
-    final boolean wasInThePast = new Date().after(triggerDate);
+
+    if (interval == 0 && new Date().after(triggerDate)) {
+      Store.remove(context, notificationID);
+
+      return;
+    }
+
+    // Or SCHEDULE it for later:
+
     final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-    if (wasInThePast && !isRepeating) {
-      alarmManager.cancel(pendingIntent);
-      ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(options.getInt("id"));
-      // let's clean this one up then
-      final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
-      sharedPreferences.edit().remove(options.getString("id")).apply();
-    } else {
-      // schedule
-      if (isRepeating) {
+    final Intent notificationIntent = new Intent(context, NotificationAlarmReceiver.class)
+      .putExtra(Builder.NOTIFICATION_ID, notificationID);
+
+    final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+    try {
+      if (interval > 0) {
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, interval, pendingIntent);
       } else {
         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
       }
+    } catch (NullPointerException e) {
+      Log.e(TAG, "Notification could not be scheduled!" + e.getMessage(), e);
     }
-  }
-
-  /*
-   * Add the intent that handles the delete event (which is fired when the X or 'clear all'
-   * was pressed in the notification center).
-  private static void applyDeleteReceiver(JSONObject options, Context context, Builder builder) throws JSONException {
-    final Intent intent = new Intent(context, ClearReceiver.class)
-        .setAction(options.getString("id"));
-
-    final PendingIntent deleteIntent = PendingIntent.getBroadcast(context, RANDOM.nextInt(), intent, FLAG_UPDATE_CURRENT);
-    builder.setDeleteIntent(deleteIntent);
-  }
-   */
-
-  private static Bitmap getThumbnail(Context context, String thumbnailString) throws ExecutionException, InterruptedException {
-    if (thumbnailString.indexOf("res://") == 0) {
-      final int resourceId = context.getResources().getIdentifier(thumbnailString.substring("res://".length()), "drawable", context.getApplicationInfo().packageName);
-      return resourceId != 0 ? android.graphics.BitmapFactory.decodeResource(context.getResources(), resourceId) : null;
-    } else if (thumbnailString.indexOf("http") == 0) {
-      final double MAX_WIDTH_HEIGHT = 320;
-      return new DownloadFileFromUrl(thumbnailString, MAX_WIDTH_HEIGHT).execute().get();
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Add the intent that handles the event when the notification is clicked (which should launch the app).
-   */
-  private static void applyContentReceiver(JSONObject options, Context context, Builder builder) throws JSONException {
-    final Intent intent = new Intent(context, NotificationClickedReceiver.class)
-        .putExtra(NotificationPublisher.PUSH_BUNDLE, options.toString())
-        .putExtra(NotificationPublisher.NOTIFICATION_ID, options.getString("id"))
-        .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
-        .putExtra("NOTIFICATION_LAUNCH", options.optBoolean("launch", true))
-        .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
-    final PendingIntent pendingContentIntent = PendingIntent.getService(context, RANDOM.nextInt(), intent, FLAG_UPDATE_CURRENT);
-    builder.setContentIntent(pendingContentIntent);
-  }
-
-  private static void applyImage(JSONObject options, Context context, NotificationCompat.Builder builder) throws JSONException, ExecutionException, InterruptedException {
-    if (options.has("image")) {
-      final double MAX_WIDTH_HEIGHT = 320; // 500 is known to crash the app, 400 is not, but this seems a bit safer
-      Bitmap bitmap = new DownloadFileFromUrl(options.getString("image"), MAX_WIDTH_HEIGHT).execute().get();
-      final NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle().bigPicture(bitmap);
-
-      final Object thumbnail = options.opt("thumbnail");
-      if (thumbnail == Boolean.TRUE) {
-        builder.setLargeIcon(bitmap); // Set the thumbnail...
-        bigPictureStyle.bigLargeIcon(null); // ...which goes away when expanded.
-      }
-
-      builder.setStyle(bigPictureStyle);
-    }
-  }
-
-  private static void applyBigTextStyle(JSONObject options, NotificationCompat.Builder builder) {
-    // set big text style (adds an 'expansion arrow' to the notification)
-    if (options.optBoolean("bigTextStyle")) {
-      final NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
-      bigTextStyle.setBigContentTitle(options.optString("title"));
-      bigTextStyle.bigText(options.optString("body"));
-      builder.setStyle(bigTextStyle);
-    }
-  }
-
-  private static void applyGroup(JSONObject options, NotificationCompat.Builder builder) throws JSONException {
-    JSONArray groupedMessages = options.optJSONArray("groupedMessages");
-    if (groupedMessages == null) {
-      return;
-    }
-
-    final NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-
-    // Sets a title for the Inbox in expanded layout
-    inboxStyle.setBigContentTitle(options.getString("title"));
-    for (int i = 0; i < Math.min(groupedMessages.length(), 5); i++) {
-      inboxStyle.addLine(groupedMessages.getString(i));
-    }
-    inboxStyle.setSummaryText(options.optString("groupSummary", null));
-
-    builder
-        .setGroup("myGroup") // TODO not sure this needs to be configurable
-        .setStyle(inboxStyle);
-  }
-
-  private static void applyActions(JSONObject options, Context context, NotificationCompat.Builder builder) throws JSONException {
-    Action[] actions = getActions(options, context);
-
-    if (actions == null || actions.length == 0) {
-      return;
-    }
-
-    NotificationCompat.Action.Builder btn;
-    for (Action action : actions) {
-      btn = new NotificationCompat.Action.Builder(
-          action.getIcon(),
-          action.getTitle(),
-          getPendingIntentForAction(options, context, action));
-
-      if (action.isWithInput()) {
-        Log.d(TAG, "applyActions, isWithInput");
-        btn.addRemoteInput(action.getInput());
-      } else {
-        Log.d(TAG, "applyActions, not isWithInput");
-      }
-
-      builder.addAction(btn.build());
-    }
-  }
-
-  private static Action[] getActions(JSONObject options, Context context) {
-    Object value = options.opt("actions");
-    String groupId = null;
-    JSONArray actions = null;
-    ActionGroup group = null;
-
-    if (value instanceof String) {
-      groupId = (String) value;
-    } else if (value instanceof JSONArray) {
-      actions = (JSONArray) value;
-    }
-
-    if (groupId != null) {
-      group = ActionGroup.lookup(groupId);
-    } else if (actions != null && actions.length() > 0) {
-      group = ActionGroup.parse(context, actions);
-    }
-
-    return (group != null) ? group.getActions() : null;
-  }
-
-  private static PendingIntent getPendingIntentForAction(JSONObject options, Context context, Action action) throws JSONException {
-    Log.d(TAG, "getPendingIntentForAction action.id " + action.getId() + ", action.isLaunchingApp(): " + action.isLaunchingApp());
-    Intent intent = new Intent(context, NotificationClickedReceiver.class)
-        .putExtra(NotificationPublisher.PUSH_BUNDLE, options.toString())
-        .putExtra(NotificationPublisher.NOTIFICATION_ID, options.getString("id"))
-        .putExtra(Action.EXTRA_ID, action.getId())
-        // TODO see https://github.com/katzer/cordova-plugin-local-notifications/blob/ca1374325bb27ec983332d55dcb6975d929bca4b/src/android/notification/Builder.java#L396
-        .putExtra("NOTIFICATION_LAUNCH", action.isLaunchingApp())
-        .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
-//    if (extras != null) {
-//      intent.putExtras(extras);
-//    }
-
-    int reqCode = RANDOM.nextInt();
-
-    return PendingIntent.getService(context, reqCode, intent, FLAG_UPDATE_CURRENT);
   }
 }
