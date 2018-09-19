@@ -80,14 +80,14 @@ export class HelloWorldModel extends Observable {
     LocalNotifications.schedule(
         [{
           id: 2,
-          title: 'Hi',
-          subtitle: 'There',
+          title: "Red Alert",
+          subtitle: "Remember this game?",
           icon: 'res://ic_stat_notify',
           color: new Color("red"),
-          image: "https://cdn-images-1.medium.com/max/1200/1*c3cQvYJrVezv_Az0CoDcbA.jpeg",
+          image: "https://rtsplayers.com/wp-content/uploads/2017/03/Command-Conquer-Red-Alert-3.jpg",
           thumbnail: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
           forceShowWhenInForeground: false, // default
-          body: 'I\'m soundless',
+          body: "RTS FTW!",
           sound: null,
           at: new Date(new Date().getTime() + 10 * 1000)
         }])
