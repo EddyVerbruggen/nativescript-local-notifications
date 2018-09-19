@@ -64,22 +64,20 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   };
 
   private static getInterval(interval: ScheduleInterval): NSCalendarUnit {
-    if (interval === "second") {
+    if (interval === "minute") {
       return NSCalendarUnit.CalendarUnitSecond;
-    } else if (interval === "minute") {
-      return NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "hour") {
-      return NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
+      return NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "day") {
-      return NSCalendarUnit.CalendarUnitWeekday | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
+      return NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "week") {
-      return NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
+      return NSCalendarUnit.CalendarUnitWeekday | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "month") {
-      return NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
+      return NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else if (interval === "year") {
-      return NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
+      return NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     } else {
-      return undefined;
+      return NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     }
   };
 
@@ -134,8 +132,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       content.badge = options.badge;
 
       if (options.sound === undefined || options.sound === "default") {
-        content.sound = UNNotificationSound.defaultSound();
+        content.sound = utils.ios.getter(UNNotificationSound, UNNotificationSound.defaultSound);
       }
+
       const userInfoDict = new NSMutableDictionary({capacity: 1});
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       content.userInfo = userInfoDict;
@@ -193,7 +192,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         content.categoryIdentifier = categoryIdentifier;
 
         UNUserNotificationCenter.currentNotificationCenter().getNotificationCategoriesWithCompletionHandler((categories: NSSet<UNNotificationCategory>) => {
-          UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(categories.setByAddingObject(notificationCategory));
+          if (categories) {
+            UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(categories.setByAddingObject(notificationCategory));
+          } else {
+            UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(NSSet.setWithObject<UNNotificationCategory>(notificationCategory));
+          }
         });
       }
 

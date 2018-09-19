@@ -56,9 +56,9 @@
   },
   "homepage": "https://github.com/eddyverbruggen/nativescript-local-notifications",
   "devDependencies": {
-    "nativescript-dev-typescript": "~0.7.2",
-    "tns-core-modules": "~4.1.0",
-    "tns-platform-declarations": "~4.1.0",
+    "nativescript-dev-typescript": "~0.7.4",
+    "tns-core-modules": "~4.2.0",
+    "tns-platform-declarations": "next",
     "tslint": "^5.10.0",
     "typescript": "~2.8.0"
   }
