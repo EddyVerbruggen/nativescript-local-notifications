@@ -46,7 +46,7 @@ export class HelloWorldModel extends Observable {
           body: 'The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body.',
           bigTextStyle: true, // Allow more than 1 row of the 'body' text
           sound: "customsound",
-          color: new Color("green") ,
+          color: new Color("green"),
           forceShowWhenInForeground: true,
           channel: "My Awesome Channel", // not that this is revealed in the notification tray when you longpress it on Android
           ticker: "Special ticker text (Android only)",
@@ -198,6 +198,43 @@ export class HelloWorldModel extends Observable {
           });
         })
         .catch(error => console.log("doScheduleEveryMinute error: " + error));
+  }
+
+  public doScheduleMultiple(): void {
+    LocalNotifications.schedule(
+        [
+          {
+            id: 7,
+            title: 'Multiple - id 7',
+            icon: 'res://ic_stat_smiley',
+            at: new Date(new Date().getTime() + 5 * 1000)
+          },
+          {
+            id: 8,
+            title: 'Multiple - id 8',
+            icon: 'res://ic_stat_notify',
+            at: new Date(new Date().getTime() + 6 * 1000)
+          },
+          {
+            id: 9,
+            title: 'Multiple - id 9',
+            icon: 'res://ic_stat_smiley',
+            at: new Date(new Date().getTime() + 7 * 1000)
+          },
+          {
+            id: 10,
+            title: 'Multiple - id 10',
+            icon: 'res://ic_stat_smiley',
+            at: new Date(new Date().getTime() + 8 * 1000)
+          },
+        ])
+        .then(() => {
+          alert({
+            title: "Notification 7-10 scheduled",
+            okButtonText: "OK, thanks"
+          });
+        })
+        .catch(error => console.log("doScheduleMultiple error: " + error));
   }
 
   public doGetScheduledIds(): void {
