@@ -78,10 +78,7 @@ public final class Builder {
             builder.setSound(android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION));
         }
 
-        if (shouldSetLight(options)) {
-            builder.setLights(options.optInt("ledColor", DEFAULT_NOTIFICATION_COLOR), options.optInt("ledOn", DEFAULT_NOTIFICATION_LED_ON),options.optInt("ledOff", DEFAULT_NOTIFICATION_LED_OFF));
-        }
-
+        applyNotificationLed(options, builder);
         applyStyle(options, builder, context);
         applyTapReceiver(options, builder, context, notificationID);
         applyClearReceiver(builder, context, notificationID);
@@ -92,6 +89,17 @@ public final class Builder {
 
 
     // Notification styles:
+
+    private static void applyNotificationLed(JSONObject options, NotificationCompat.Builder builder) {
+        if (options.has("notificationLed")) {
+            try {
+                JSONObject notificationLed = options.getJSONObject("notificationLed");
+                builder.setLights(notificationLed.optInt("ledColor", DEFAULT_NOTIFICATION_COLOR), notificationLed.optInt("ledOn", DEFAULT_NOTIFICATION_LED_ON), notificationLed.optInt("ledOff", DEFAULT_NOTIFICATION_LED_OFF));
+            } catch (JSONException e) {
+                Log.e(TAG, "Error parsing options.notificationLed", e);
+            }
+        }
+    }
 
     private static void applyStyle(JSONObject options, NotificationCompat.Builder builder, Context context) {
         if (options.has("groupedMessages")) {
@@ -276,7 +284,4 @@ public final class Builder {
         return null;
     }
 
-    private static boolean shouldSetLight(JSONObject options) {
-        return options.has("ledColor") || options.has("ledOn");
-    }
 }

@@ -215,6 +215,15 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             options.color = options.color.android;
           }
 
+          if (options.notificationLed){
+            console.log("notificationLed received");
+          }
+
+          if (options.notificationLed && options.notificationLed.ledColor){
+            console.log("setting notificationLed.color");
+            options.notificationLed.ledColor = options.notificationLed.ledColor.android;
+          }
+
           LocalNotificationsImpl.ensureID(options);
 
           com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(

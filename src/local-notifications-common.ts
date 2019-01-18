@@ -26,6 +26,32 @@ export interface NotificationAction {
   choices?: Array<string>;
 }
 
+export interface NotificationLedSettings {
+  /**
+   * Custom color for the notification LED light.
+   *
+   * Android only.
+   * Default #FFFFFFFF.
+   */
+  ledColor?: Color;
+
+  /**
+   * The number of milliseconds for the LED light to be on. This together with "ledOff" would specify the blink rate.
+   *
+   * Android only.
+   * Default 500.
+   */
+  ledOn?: number;
+
+  /**
+   * The number of milliseconds for the LED light to be off. This together with "ledOn" would specify the blink rate.
+   *
+   * Android only.
+   * Default 2000.
+   */
+  ledOff?: number;
+}
+
 /**
  * The options object passed into the schedule function.
  */
@@ -156,6 +182,16 @@ export interface ScheduleOptions {
    * Default false.
    */
   bigTextStyle?: boolean;
+
+  /**
+   * Enable the notification LED light with optional LED light style settings
+   * - empty object if you want to use default settings
+   * - or override the settings specifically
+   *
+   * Android only.
+   * Default not set.
+   */
+  notificationLed?: NotificationLedSettings;
 
   /**
    * When longpressing a notification on Android (API >= 26), this 'channel' name is revealed.
