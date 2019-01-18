@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -25,6 +26,10 @@ public final class Builder {
 
     private static final String TAG = "Builder";
     private static final String DEFAULT_CHANNEL = "Notifications";
+
+    private static final int DEFAULT_NOTIFICATION_COLOR = Color.parseColor("#ffffffff");
+    private static final int DEFAULT_NOTIFICATION_LED_ON = 500;
+    private static final int DEFAULT_NOTIFICATION_LED_OFF = 2000;
 
     // Methods to build notifications:
 
@@ -71,6 +76,10 @@ public final class Builder {
         // builder.setSound(options.has("sound") ? Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + options.getString("sound")) : Uri.parse("android.resource://" + context.getPackageName() + "/raw/notify"))
         if (options.has("sound")) {
             builder.setSound(android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION));
+        }
+
+        if (shouldSetLight(options)) {
+            builder.setLights(options.optInt("ledColor", DEFAULT_NOTIFICATION_COLOR), options.optInt("ledOn", DEFAULT_NOTIFICATION_LED_ON),options.optInt("ledOff", DEFAULT_NOTIFICATION_LED_OFF));
         }
 
         applyStyle(options, builder, context);
@@ -265,5 +274,9 @@ public final class Builder {
         }
 
         return null;
+    }
+
+    private static boolean shouldSetLight(JSONObject options) {
+        return options.has("ledColor") || options.has("ledOn");
     }
 }
