@@ -45,7 +45,11 @@ public final class Builder {
             final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             if (notificationManager != null && notificationManager.getNotificationChannel(channelID) == null) {
-                notificationManager.createNotificationChannel(new NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH));
+                NotificationChannel channel = new NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH);
+                if (shouldEnableNotificationLed(options)) {
+                    channel.enableLights(true);
+                }
+                notificationManager.createNotificationChannel(channel);
             }
         }
 
@@ -91,7 +95,7 @@ public final class Builder {
     // Notification styles:
 
     private static void applyNotificationLed(JSONObject options, NotificationCompat.Builder builder) {
-        if (options.has("notificationLed")) {
+        if (shouldEnableNotificationLed(options)) {
             try {
                 JSONObject notificationLed = options.getJSONObject("notificationLed");
                 builder.setLights(notificationLed.optInt("ledColor", DEFAULT_NOTIFICATION_COLOR), notificationLed.optInt("ledOn", DEFAULT_NOTIFICATION_LED_ON), notificationLed.optInt("ledOff", DEFAULT_NOTIFICATION_LED_OFF));
@@ -284,4 +288,7 @@ public final class Builder {
         return null;
     }
 
+    private static boolean shouldEnableNotificationLed(JSONObject options) {
+        return options.has("notificationLed");
+    }
 }
