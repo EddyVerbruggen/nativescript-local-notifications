@@ -215,8 +215,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             options.color = options.color.android;
           }
 
-          if (options.notificationLed && options.notificationLed.ledColor){
-            options.notificationLed.ledColor = options.notificationLed.ledColor.android;
+          if (options.notificationLed && options.notificationLed !== true){
+            options.notificationLed = options.notificationLed.android;
           }
 
           LocalNotificationsImpl.ensureID(options);

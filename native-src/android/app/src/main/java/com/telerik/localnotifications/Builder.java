@@ -97,12 +97,7 @@ public final class Builder {
 
     private static void applyNotificationLed(JSONObject options, NotificationCompat.Builder builder) {
         if (shouldEnableNotificationLed(options)) {
-            try {
-                JSONObject notificationLed = options.getJSONObject("notificationLed");
-                builder.setLights(notificationLed.optInt("ledColor", DEFAULT_NOTIFICATION_COLOR), notificationLed.optInt("ledOn", DEFAULT_NOTIFICATION_LED_ON), notificationLed.optInt("ledOff", DEFAULT_NOTIFICATION_LED_OFF));
-            } catch (JSONException e) {
-                Log.e(TAG, "Error parsing options.notificationLed", e);
-            }
+            builder.setLights(getLedColor(options), DEFAULT_NOTIFICATION_LED_ON, DEFAULT_NOTIFICATION_LED_OFF);
         }
     }
 
@@ -294,11 +289,14 @@ public final class Builder {
     }
 
     private static int getLedColor(JSONObject options) {
-        try {
-            JSONObject notificationLed = options.getJSONObject("notificationLed");
-            return notificationLed.optInt("ledColor", DEFAULT_NOTIFICATION_COLOR);
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing options.notificationLed when trying to get ledColor", e);
+        Object notificationLed = options.opt("notificationLed");
+
+        if (Boolean.TRUE.equals(notificationLed)) {
+            return DEFAULT_NOTIFICATION_COLOR;
+        } else if (notificationLed instanceof Integer) {
+            return (int) notificationLed;
+        } else {
+            Log.e(TAG, "Unable to parse option.notificationLed, using default notification color");
             return DEFAULT_NOTIFICATION_COLOR;
         }
     }
