@@ -48,6 +48,8 @@ public final class Builder {
                 NotificationChannel channel = new NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH);
                 if (shouldEnableNotificationLed(options)) {
                     channel.enableLights(true);
+                    int ledColor = getLedColor(options);
+                    channel.setLightColor(ledColor);
                 }
                 notificationManager.createNotificationChannel(channel);
             }
@@ -290,5 +292,15 @@ public final class Builder {
 
     private static boolean shouldEnableNotificationLed(JSONObject options) {
         return options.has("notificationLed");
+    }
+
+    private static int getLedColor(JSONObject options) {
+        try {
+            JSONObject notificationLed = options.getJSONObject("notificationLed");
+            return notificationLed.optInt("ledColor", DEFAULT_NOTIFICATION_COLOR);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing options.notificationLed when trying to get ledColor", e);
+            return DEFAULT_NOTIFICATION_COLOR;
+        }
     }
 }
