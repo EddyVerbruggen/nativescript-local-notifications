@@ -48,8 +48,7 @@ public final class Builder {
                 NotificationChannel channel = new NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH);
                 if (shouldEnableNotificationLed(options)) {
                     channel.enableLights(true);
-                    int ledColor = getLedColor(options);
-                    channel.setLightColor(ledColor);
+                    channel.setLightColor(getLedColor(options));
                 }
                 notificationManager.createNotificationChannel(channel);
             }
