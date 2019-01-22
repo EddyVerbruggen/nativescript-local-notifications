@@ -24,7 +24,8 @@ tns plugin add nativescript-local-notifications
 ## Setup (since plugin version 3.0.0)
 Add this so for iOS 10+ we can do some wiring (set the iOS `UNUserNotificationCenter.delegate`, to be precise).
 Not needed if your app loads the plugin on startup anyway.
-You'll know you need this if on iOS 10+ notifications are not received by your app... better safe than sorry, though!
+
+You'll know you need this if on iOS 10+ notifications are not received by your app or `addOnMessageReceivedCallback` is not invoked... better safe than sorry, though!
 
 ```js
 require ("nativescript-local-notifications");
@@ -51,9 +52,11 @@ cd nativescript-local-notifications/src
 npm run demo.ios # or demo.android
 ```
 
-
 ## Demo app (Angular)
 This plugin is part of the [plugin showcase app](https://github.com/EddyVerbruggen/nativescript-pluginshowcase/tree/master/app/feedback) I built using Angular.
+
+## Demo app (Vue)
+TODO create one..
 
 ### schedule
 On iOS you need to ask permission to schedule a notification.
@@ -69,7 +72,7 @@ You can pass several options to this function, everything is optional:
 |`subtitle`  |Shown below the title on iOS, and next to the App name on Android. Default not set. All android and iOS >= 10 only.|
 |`body`   |The text below the title. If not provided, the subtitle or title (in this order or priority) will be swapped for it on iOS, as iOS won't display notifications without a body. Default not set on Android, `' '` on iOS, as otherwise the notification won't show up at all.|
 |`color` |Custom color for the notification icon and title that will be applied when the notification center is expanded. (**Android Only**)|
-|`bigTextStyle`  |Allow more than 1 line of the body text to show in the notification centre. Default `false`. (**Android Only**)|
+|`bigTextStyle`  |Allow more than 1 line of the body text to show in the notification centre. Mutually exclusive with `image`. Default `false`. (**Android Only**)|
 |`groupedMessages`| An array of atmost 5 messages that would be displayed using android's notification [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html). Note: The array would be trimed from the top if the messages exceed five. Default not set |
 |`groupSummary`| An [inboxStyle](https://developer.android.com/reference/android/app/Notification.InboxStyle.html) notification summary. Default empty|
 |`ticker` |On Android you can show a different text in the statusbar, instead of the `body`. Default not set, so `body` is used.|
@@ -79,7 +82,7 @@ You can pass several options to this function, everything is optional:
 |`interval` |Set to one of `second`, `minute`, `hour`, `day`, `week`, `month`, `year` if you want a recurring notification.|
 |`icon`|On Android you can set a custom icon in the system tray. Pass in `res://filename` (without the extension) which lives in `App_Resouces/Android/drawable` folders. If not passed, we'll look there for a file named `ic_stat_notify.png`. By default the app icon is used. Android < Lollipop (21) only (see `silhouetteIcon` below).|
 |`silhouetteIcon`|Same as `icon`, but for Android >= Lollipop (21). Should be an alpha-only image. Defaults to `res://ic_stat_notify_silhouette`, or the app icon if not present.|
-|`image` |*URL* (`http..`) of the image to use as an expandable notification image.|
+|`image` |*URL* (`http..`) of the image to use as an expandable notification image. On Android this is mutually exclusive with `bigTextStyle`.|
 |`thumbnail` |Custom thumbnail/icon to show in the notification center (to the right) on Android, this can be either: `true` (if you want to use the `image` as the thumbnail), a resource URL (that lives in the `App_Resouces/Android/drawable` folders, e.g.: `res://filename`), or a http URL from anywhere on the web. (**Android Only**). Default not set.|
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them. (**Android Only**) |
 |`channel` |Default is (`Channel`). Set the channel name for Android API >= 26, which is shown when the user longpresses a  notification. (**Android Only**) |

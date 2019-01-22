@@ -84,7 +84,7 @@ export class HelloWorldModel extends Observable {
           subtitle: "Remember this game?",
           icon: 'res://ic_stat_notify',
           color: new Color("red"),
-          image: "https://rtsplayers.com/wp-content/uploads/2017/03/Command-Conquer-Red-Alert-3.jpg",
+          image: "https://images-na.ssl-images-amazon.com/images/I/61mx-VbrS0L.jpg",
           thumbnail: "https://2.bp.blogspot.com/-H_SZ3nAmNsI/VrJeARpbuSI/AAAAAAAABfc/szsV7_F609k/s200/emoji.jpg",
           forceShowWhenInForeground: false, // default
           body: "RTS FTW!",
