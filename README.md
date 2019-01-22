@@ -26,15 +26,8 @@ Add this so for iOS 10+ we can do some wiring (set the iOS `UNUserNotificationCe
 Not needed if your app loads the plugin on startup anyway.
 You'll know you need this if on iOS 10+ notifications are not received by your app... better safe than sorry, though!
 
-```typescript
+```js
 require ("nativescript-local-notifications");
-```
-
-#### TypeScript support
-And do yourself a favor by adding TypeScript support to your nativeScript app:
-
-```bash
-tns install typescript
 ```
 
 Now you can import the plugin as an object into your `.ts` file as follows:
