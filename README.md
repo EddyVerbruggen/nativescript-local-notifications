@@ -43,8 +43,10 @@ import * as LocalNotifications from "nativescript-local-notifications";
 LocalNotifications.hasPermission()
 ```
 
-## Demo app (XML)
-If you want a quickstart, clone our [demo app](https://github.com/EddyVerbruggen/nativescript-local-notifications-demo):
+## Demo apps
+
+### NativeScript-Core (XML)
+This demo is the one with the most options, so it's a cool one to check out:
 
 ```bash
 git clone https://github.com/EddyVerbruggen/nativescript-local-notifications
@@ -52,11 +54,19 @@ cd nativescript-local-notifications/src
 npm run demo.ios # or demo.android
 ```
 
-## Demo app (Angular)
+### NativeScript-Angular
 This plugin is part of the [plugin showcase app](https://github.com/EddyVerbruggen/nativescript-pluginshowcase/tree/master/app/feedback) I built using Angular.
 
-## Demo app (Vue)
-TODO create one..
+### NativeScript-Vue
+We also have a [Vue demo](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/master/demo-vue):
+
+```bash
+git clone https://github.com/EddyVerbruggen/nativescript-local-notifications
+cd nativescript-local-notifications/src
+npm run demo-vue.ios # or demo-vue.android
+```
+
+## Plugin API
 
 ### schedule
 On iOS you need to ask permission to schedule a notification.
