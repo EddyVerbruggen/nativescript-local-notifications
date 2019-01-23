@@ -115,6 +115,5 @@
     color: #63d4a5;
     padding: 12;
     margin: 16;
-    /*height: 44;*/
   }
 </style>
