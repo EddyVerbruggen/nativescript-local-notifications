@@ -57,6 +57,14 @@ npm run demo.ios # or demo.android
 ### NativeScript-Angular
 This plugin is part of the [plugin showcase app](https://github.com/EddyVerbruggen/nativescript-pluginshowcase/tree/master/app/feedback) I built using Angular.
 
+There's also a simple Angular [demo in this repo](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/master/demo-ng):
+
+```bash
+git clone https://github.com/EddyVerbruggen/nativescript-local-notifications
+cd nativescript-local-notifications/src
+npm run demo-ng.ios # or demo-ng.android
+```
+
 ### NativeScript-Vue
 We also have a [Vue demo](https://github.com/EddyVerbruggen/nativescript-local-notifications/tree/master/demo-vue):
 

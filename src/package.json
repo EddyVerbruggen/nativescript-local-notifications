@@ -1,6 +1,6 @@
 {
   "name": "nativescript-local-notifications",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "The Local Notifications plugin allows your app to show notifications when the app is not running. Just like remote push notifications, but a few orders of magnitude easier to set up.",
   "main": "local-notifications",
   "typings": "index.d.ts",
@@ -14,6 +14,8 @@
     "build": "npm i && tsc --skipLibCheck",
     "demo.ios": "npm run build && cd ../demo && tns run ios --syncAllFiles",
     "demo.android": "npm run build && cd ../demo && tns run android --syncAllFiles",
+    "demo-ng.ios": "npm run build && cd ../demo-ng && tns run ios --syncAllFiles",
+    "demo-ng.android": "npm run build && cd ../demo-ng && tns run android --syncAllFiles",
     "demo-vue.ios": "npm run build && cd ../demo-vue && tns run ios --bundle --syncAllFiles",
     "demo-vue.android": "npm run build && cd ../demo-vue && tns run android --bundle --syncAllFiles",
     "test": "npm run tslint && npm run tslint.demo && cd ../demo && tns build ios && tns build android",

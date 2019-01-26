@@ -145,7 +145,6 @@ export class HelloWorldModel extends Observable {
         .catch(error => console.log("doScheduleId4WithCustomIcon error: " + error));
   }
 
-
   public doScheduleId5WithInput(): void {
     LocalNotifications.schedule(
         [{

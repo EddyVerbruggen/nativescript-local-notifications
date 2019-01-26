@@ -6,6 +6,7 @@ src/*.d.ts
 !src/index.d.ts
 !src/references.d.ts
 demo/platforms
+demo-ng/platforms
 publish/package/
 native-src/android/.project
 native-src/android/local.properties
