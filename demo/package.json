@@ -25,5 +25,8 @@
     "nativescript-dev-typescript": "~0.7.9",
     "tns-platform-declarations": "~5.1.0",
     "typescript": "~2.8.4"
+  },
+  "scripts": {
+    "build.plugin": "cd ../src && npm run build"
   }
 }
