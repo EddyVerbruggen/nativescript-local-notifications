@@ -23,7 +23,7 @@
     "babylon": "6.18.0",
     "lazy": "1.0.11",
     "nativescript-dev-typescript": "~0.7.9",
-    "nativescript-dev-webpack": "~0.15.1",
+    "nativescript-dev-webpack": "~0.19.2",
     "tns-platform-declarations": "~5.1.0",
     "typescript": "~2.8.4"
   },
