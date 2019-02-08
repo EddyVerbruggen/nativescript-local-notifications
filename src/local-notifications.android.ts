@@ -1,11 +1,11 @@
-import * as utils from "tns-core-modules/utils/utils";
 import * as app from "tns-core-modules/application";
+import * as utils from "tns-core-modules/utils/utils";
 import {
-  LocalNotificationsCommon,
   LocalNotificationsApi,
+  LocalNotificationsCommon,
   ReceivedNotification,
-  ScheduleOptions,
-  ScheduleInterval
+  ScheduleInterval,
+  ScheduleOptions
 } from "./local-notifications-common";
 
 declare const android, com: any;
@@ -55,7 +55,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         || (LocalNotificationsImpl.IS_GTE_LOLLIPOP && resources.getIdentifier("ic_stat_notify_silhouette", "drawable", packageName))
         || resources.getIdentifier("ic_stat_notify", "drawable", packageName)
         || context.getApplicationInfo().icon;
-  };
+  }
 
   private static cancelById(id: number): void {
     const context = utils.ad.getApplicationContext();
@@ -67,7 +67,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     notificationManager.cancel(id);
 
     com.telerik.localnotifications.Store.remove(context, id);
-  };
+  }
 
   hasPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -201,9 +201,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           const options = LocalNotificationsImpl.merge(scheduleOptions[n], LocalNotificationsImpl.defaults);
 
           options.icon = LocalNotificationsImpl.getIcon(
-            context,
-            resources,
-            LocalNotificationsImpl.IS_GTE_LOLLIPOP && options.silhouetteIcon || options.icon
+              context,
+              resources,
+              LocalNotificationsImpl.IS_GTE_LOLLIPOP && options.silhouetteIcon || options.icon
           );
 
           options.atTime = options.at ? options.at.getTime() : 0;
@@ -218,8 +218,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           LocalNotificationsImpl.ensureID(options);
 
           com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(
-            new org.json.JSONObject(JSON.stringify(options)),
-            context,
+              new org.json.JSONObject(JSON.stringify(options)),
+              context,
           );
         }
 

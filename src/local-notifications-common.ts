@@ -135,7 +135,7 @@ export interface ScheduleOptions {
    *
    * Android only.
    */
-  groupedMessages?: Array<string>
+  groupedMessages?: Array<string>;
 
   /**
    * The summary of the grouped message (see #groupedMessage) when using the inbox style
@@ -276,17 +276,17 @@ export abstract class LocalNotificationsCommon {
   protected static generateUUID(): string {
     // Not the best, but it will work. See https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
     const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    return `${ s4() }${ s4() }-${ s4() }-${ s4() }-${ s4() }-${ s4() }${ s4() }${ s4() }`;
+    return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
   }
 
   protected static generateNotificationID(): number {
-    return Date.now() + (10e6 * Math.random() | 0 );
+    return Date.now() + (10e6 * Math.random() | 0);
   }
 
   protected static ensureID(opts: ScheduleOptions): number {
     const id = opts.id;
 
-    if (typeof id == 'number') {
+    if (typeof id === "number") {
       return id;
     } else {
       // We need unique IDs in all notifications to be able to persist them without overwriting one another:

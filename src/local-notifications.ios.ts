@@ -1,6 +1,6 @@
-import * as utils from "tns-core-modules/utils/utils";
 import * as fileSystemModule from "tns-core-modules/file-system";
 import { fromUrl } from "tns-core-modules/image-source";
+import * as utils from "tns-core-modules/utils/utils";
 import {
   LocalNotificationsApi,
   LocalNotificationsCommon,
@@ -56,12 +56,12 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
   private static getImageName(imageURL: string = "", extension: "png" | "jpeg" | "jpg" = "png"): [string, string] {
     const name: string = imageURL.split(/[\/\.]/).slice(-2, -1)[0] || LocalNotificationsImpl.generateUUID();
-    return [name, `${ name }.${ extension }`];
+    return [name, `${name}.${extension}`];
   }
 
   private static addObserver(eventName, callback): any {
     return NSNotificationCenter.defaultCenter.addObserverForNameObjectQueueUsingBlock(eventName, null, NSOperationQueue.mainQueue, callback);
-  };
+  }
 
   private static getInterval(interval: ScheduleInterval): NSCalendarUnit {
     if (interval === "minute") {
@@ -79,7 +79,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     } else {
       return NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond;
     }
-  };
+  }
 
   private static getIntervalSeconds(interval: ScheduleInterval, ticks: number): number {
     if (!interval) {
@@ -103,7 +103,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     } else {
       return ticks;
     }
-  };
+  }
 
   private static schedulePendingNotifications(pending: ScheduleOptions[]): void {
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
@@ -127,7 +127,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       content.subtitle = body ? subtitle : undefined;
       // On iOS, a notification with no body won't show up, so the subtitle or title will be used in this case as body
       // instead. If none of them is set, we set it to ' ' and will show up as an empty line in the notification:
-      content.body = body || subtitle || title || ' ';
+      content.body = body || subtitle || title || " ";
 
       content.badge = options.badge;
 
@@ -319,7 +319,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           NSNotificationCenter.defaultCenter.removeObserver(LocalNotificationsImpl.didRegisterUserNotificationSettingsObserver);
           LocalNotificationsImpl.didRegisterUserNotificationSettingsObserver = undefined;
           const granted = result.userInfo.objectForKey("message");
-          resolve(granted != "false");
+          resolve(granted !== "false" && granted !== false);
         });
 
         const types = UIApplication.sharedApplication.currentUserNotificationSettings.types | UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
@@ -367,7 +367,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           const scheduled = UIApplication.sharedApplication.scheduledLocalNotifications;
           for (let i = 0, l = scheduled.count; i < l; i++) {
             const noti = scheduled.objectAtIndex(i);
-            if (id == noti.userInfo.valueForKey("id")) {
+            if (id === +noti.userInfo.valueForKey("id")) {
               UIApplication.sharedApplication.cancelLocalNotification(noti);
               resolve(true);
               return;
