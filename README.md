@@ -1,9 +1,12 @@
 # NativeScript Local Notifications Plugin
 
+[![Build Status][build-status]][build-url]
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][npm-url]
 [![Twitter Follow][twitter-image]][twitter-url]
 
+[build-status]:https://travis-ci.org/EddyVerbruggen/nativescript-local-notifications.svg?branch=master
+[build-url]:https://travis-ci.org/EddyVerbruggen/nativescript-local-notifications
 [npm-image]:http://img.shields.io/npm/v/nativescript-local-notifications.svg
 [npm-url]:https://npmjs.org/package/nativescript-local-notifications
 [downloads-image]:http://img.shields.io/npm/dm/nativescript-local-notifications.svg
