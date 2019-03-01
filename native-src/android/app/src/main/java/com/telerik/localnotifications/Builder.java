@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -26,6 +27,10 @@ public final class Builder {
     private static final String TAG = "Builder";
     private static final String DEFAULT_CHANNEL = "Notifications";
 
+    private static final int DEFAULT_NOTIFICATION_COLOR = Color.parseColor("#ffffffff");
+    private static final int DEFAULT_NOTIFICATION_LED_ON = 500;
+    private static final int DEFAULT_NOTIFICATION_LED_OFF = 2000;
+
     // Methods to build notifications:
 
     static Notification build(JSONObject options, Context context, int notificationID) {
@@ -40,7 +45,12 @@ public final class Builder {
             final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             if (notificationManager != null && notificationManager.getNotificationChannel(channelID) == null) {
-                notificationManager.createNotificationChannel(new NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH));
+                NotificationChannel channel = new NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH);
+                if (shouldEnableNotificationLed(options)) {
+                    channel.enableLights(true);
+                    channel.setLightColor(getLedColor(options));
+                }
+                notificationManager.createNotificationChannel(channel);
             }
         }
 
@@ -73,6 +83,7 @@ public final class Builder {
             builder.setSound(android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION));
         }
 
+        applyNotificationLed(options, builder);
         applyStyle(options, builder, context);
         applyTapReceiver(options, builder, context, notificationID);
         applyClearReceiver(builder, context, notificationID);
@@ -83,6 +94,12 @@ public final class Builder {
 
 
     // Notification styles:
+
+    private static void applyNotificationLed(JSONObject options, NotificationCompat.Builder builder) {
+        if (shouldEnableNotificationLed(options)) {
+            builder.setLights(getLedColor(options), DEFAULT_NOTIFICATION_LED_ON, DEFAULT_NOTIFICATION_LED_OFF);
+        }
+    }
 
     private static void applyStyle(JSONObject options, NotificationCompat.Builder builder, Context context) {
         if (options.has("groupedMessages")) {
@@ -265,5 +282,22 @@ public final class Builder {
         }
 
         return null;
+    }
+
+    private static boolean shouldEnableNotificationLed(JSONObject options) {
+        return options.has("notificationLed");
+    }
+
+    private static int getLedColor(JSONObject options) {
+        Object notificationLed = options.opt("notificationLed");
+
+        if (Boolean.TRUE.equals(notificationLed)) {
+            return DEFAULT_NOTIFICATION_COLOR;
+        } else if (notificationLed instanceof Integer) {
+            return (int) notificationLed;
+        } else {
+            Log.e(TAG, "Unable to parse option.notificationLed, using default notification color");
+            return DEFAULT_NOTIFICATION_COLOR;
+        }
     }
 }

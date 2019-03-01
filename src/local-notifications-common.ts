@@ -158,6 +158,16 @@ export interface ScheduleOptions {
   bigTextStyle?: boolean;
 
   /**
+   * Enable the notification LED light with optional LED light style settings
+   * - true if you want to use default color
+   * - Custom color if you would like to use custom color for the notification LED light.
+   *
+   * Android only.
+   * Default not set.
+   */
+  notificationLed?: boolean | Color;
+
+  /**
    * When longpressing a notification on Android (API >= 26), this 'channel' name is revealed.
    * Default 'Channel'.
    */
