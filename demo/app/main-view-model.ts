@@ -51,6 +51,7 @@ export class HelloWorldModel extends Observable {
           channel: "My Awesome Channel", // not that this is revealed in the notification tray when you longpress it on Android
           ticker: "Special ticker text (Android only)",
           at: new Date(new Date().getTime() + (10 * 1000)),
+          notificationLed: true,
           actions: [
             {
               id: "yes",
