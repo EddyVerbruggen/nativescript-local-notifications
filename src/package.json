@@ -67,6 +67,6 @@
     "typescript": "~2.8.4"
   },
   "dependencies": {
-    "nativescript-shared-notification-delegate": "0.0.1"
+    "nativescript-shared-notification-delegate": "0.0.2"
   }
 }

@@ -456,6 +456,8 @@ class LocalNotificationsDelegateObserverImpl implements DelegateObserver {
   private _owner: WeakRef<LocalNotificationsImpl>;
   private receivedInForeground = false;
 
+  observerUniqueKey = "nativescript-local-notifications";
+
   constructor(owner: WeakRef<LocalNotificationsImpl>) {
     this._owner = owner;
   }
