@@ -65,5 +65,8 @@
     "tns-platform-declarations": "next",
     "tslint": "^5.10.0",
     "typescript": "~2.8.4"
+  },
+  "dependencies": {
+    "nativescript-shared-notification-delegate": "0.0.1"
   }
 }
