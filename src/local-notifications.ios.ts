@@ -137,7 +137,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       }
 
       const userInfoDict = new NSMutableDictionary({ capacity: 1 });
-      userInfoDict.setObjectForKey("__NotificationType", "nativescript-local-notifications");
+      userInfoDict.setObjectForKey("nativescript-local-notifications", "__NotificationType");
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       content.userInfo = userInfoDict;
 
