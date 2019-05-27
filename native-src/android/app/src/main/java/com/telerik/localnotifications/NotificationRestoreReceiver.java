@@ -24,6 +24,10 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
+    if (context == null || !Intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(intent.getAction())) {
+      return;
+    }
+
     for (Map.Entry<String, String> entry : Store.getAll(context).entrySet()) {
       final String notificationString = entry.getValue();
 
