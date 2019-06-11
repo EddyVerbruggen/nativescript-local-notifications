@@ -9,7 +9,7 @@ import {
   ScheduleOptions
 } from "./local-notifications-common";
 
-declare const Notification, NotificationManager: any;
+declare const Notification: any;
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
@@ -17,8 +17,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private notificationReceivedObserver: any;
   private pendingReceivedNotifications: Array<ReceivedNotification> = [];
   private receivedNotificationCallback: (data: ReceivedNotification) => void;
-  private notificationHandler: any;
-  private notificationManager: any;
+  private notificationHandler: Notification;
+  private notificationManager: NotificationManager;
   private delegate: UNUserNotificationCenterDelegateImpl;
 
   constructor() {
