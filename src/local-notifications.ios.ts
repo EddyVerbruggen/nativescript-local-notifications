@@ -1,6 +1,5 @@
 import * as fileSystemModule from "tns-core-modules/file-system";
 import { fromUrl } from "tns-core-modules/image-source";
-import * as utils from "tns-core-modules/utils/utils";
 import {
   LocalNotificationsApi,
   LocalNotificationsCommon,
@@ -132,7 +131,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       content.badge = options.badge;
 
       if (options.sound === undefined || options.sound === "default") {
-        content.sound = utils.ios.getter(UNNotificationSound, UNNotificationSound.defaultSound);
+        content.sound = UNNotificationSound.defaultSound;
       }
 
       const userInfoDict = new NSMutableDictionary({capacity: 1});
@@ -251,7 +250,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       notification.alertTitle = options.title;
       notification.alertBody = options.body;
 
-      notification.timeZone = utils.ios.getter(NSTimeZone, NSTimeZone.defaultTimeZone);
+      notification.timeZone = NSTimeZone.defaultTimeZone;
       notification.applicationIconBadgeNumber = options.badge;
 
       // these are sent back to the plugin when a notification is received
