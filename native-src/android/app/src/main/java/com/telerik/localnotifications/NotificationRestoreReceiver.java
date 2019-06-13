@@ -28,16 +28,16 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
       return;
     }
 
-    for (Map.Entry<String, String> entry : Store.getAll(context).entrySet()) {
-      final String notificationString = entry.getValue();
+    try {
+      for (Map.Entry<String, String> entry : Store.getAll(context).entrySet()) {
+        final String notificationString = entry.getValue();
 
-      Log.e(TAG, "Will restore previously scheduled notification: " + notificationString);
+        Log.e(TAG, "Will restore previously scheduled notification: " + notificationString);
 
-      try {
         scheduleNotification(new JSONObject(notificationString), context);
-      } catch (JSONException e) {
-        Log.e(TAG, "Notification could not be scheduled! " + e.getMessage(), e);
       }
+    } catch (IllegalStateException | JSONException e) {
+      Log.e(TAG, "Notification could not be scheduled! " + e.getMessage(), e);
     }
   }
 
