@@ -8,7 +8,13 @@ import {
   ScheduleOptions
 } from "./local-notifications-common";
 
-declare const android, com: any;
+declare const android, com, global: any;
+
+const NotificationManagerCompatPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
+
+function useAndroidX () {
+  return global.androidx && global.androidx.appcompat;
+}
 
 (() => {
   const registerLifecycleEvents = () => {
@@ -161,7 +167,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           LocalNotificationsImpl.cancelById(parseInt(keys[i]));
         }
 
-        android.support.v4.app.NotificationManagerCompat.from(context).cancelAll();
+        NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).cancelAll();
         resolve();
       } catch (ex) {
         console.log("Error in LocalNotifications.cancelAll: " + ex);
