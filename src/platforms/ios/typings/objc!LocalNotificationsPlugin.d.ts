@@ -3,6 +3,7 @@ declare var LocalNotificationsPluginVersionString: interop.Reference<number>;
 
 declare var LocalNotificationsVersionNumber: number;
 
+// @ts-ignore
 declare class Notification extends NSObject implements UIApplicationDelegate {
 
 	static alloc(): Notification; // inherited from NSObject
