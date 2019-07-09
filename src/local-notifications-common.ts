@@ -32,7 +32,7 @@ export interface NotificationAction {
 export interface ScheduleOptions {
   /**
    * A number so you can easily distinguish your notifications.
-   * Default 0.
+   * Default <generated>.
    */
   id?: number;
 
@@ -200,7 +200,7 @@ export interface LocalNotificationsApi {
    * (the notification will be scheduled in case the user granted permission),
    * or you can manually invoke `requestPermission` if that's your thing.
    */
-  schedule(options: ScheduleOptions[]): Promise<void>;
+  schedule(options: ScheduleOptions[]): Promise<Array<number>>;
 
   /**
    * Tapping a notification in the notification center will launch your app.
@@ -290,7 +290,7 @@ export abstract class LocalNotificationsCommon {
   }
 
   protected static generateNotificationID(): number {
-    return Date.now() + (10e6 * Math.random() | 0);
+    return Math.round((Date.now() + Math.round((100000 * Math.random()))) / 1000);
   }
 
   protected static ensureID(opts: ScheduleOptions): number {

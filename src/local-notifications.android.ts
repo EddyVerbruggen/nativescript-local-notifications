@@ -194,11 +194,12 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  schedule(scheduleOptions: ScheduleOptions[]): Promise<void> {
+  schedule(scheduleOptions: ScheduleOptions[]): Promise<Array<number>> {
     return new Promise((resolve, reject) => {
       try {
         const context = utils.ad.getApplicationContext();
         const resources = context.getResources();
+        const scheduledIds: Array<number> = [];
 
         // TODO: All these changes in the options (other than setting the ID) should rather be done in Java so that
         // the persisted options are exactly like the original ones.
@@ -229,11 +230,12 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
           com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(
               new org.json.JSONObject(JSON.stringify(options)),
-              context,
-          );
+              context);
+
+          scheduledIds.push(options.id);
         }
 
-        resolve();
+        resolve(scheduledIds);
       } catch (ex) {
         console.log("Error in LocalNotifications.schedule: " + ex);
         reject(ex);

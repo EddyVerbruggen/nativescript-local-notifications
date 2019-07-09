@@ -88,7 +88,7 @@ You can pass several options to this function, everything is optional:
 
 |option|description|
 |------|-----------|
-|`id`     |A number so you can easily distinguish your notifications. Default 0.|
+|`id`     |A number so you can easily distinguish your notifications. Will be generated if not set.|
 |`title`  |The title which is shown in the statusbar. Default not set.|
 |`subtitle`  |Shown below the title on iOS, and next to the App name on Android. Default not set. All android and iOS >= 10 only.|
 |`body`   |The text below the title. If not provided, the subtitle or title (in this order or priority) will be swapped for it on iOS, as iOS won't display notifications without a body. Default not set on Android, `' '` on iOS, as otherwise the notification won't show up at all.|
@@ -124,7 +124,7 @@ You can pass several options to this function, everything is optional:
 
 ```js
   LocalNotifications.schedule([{
-    id: 1,
+    id: 1, // generated id if not set
     title: 'The title',
     body: 'Recurs every minute until cancelled',
     ticker: 'The ticker',
@@ -141,8 +141,8 @@ You can pass several options to this function, everything is optional:
     sound: "customsound-ios.wav", // falls back to the default sound on Android
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
   }]).then(
-      function() {
-        console.log("Notification scheduled");
+      function(scheduledIds) {
+        console.log("Notification id(s) scheduled: " + JSON.stringify(scheduledIds));
       },
       function(error) {
         console.log("scheduling error: " + error);

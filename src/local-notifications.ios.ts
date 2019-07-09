@@ -104,19 +104,21 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     }
   }
 
-  private static schedulePendingNotifications(pending: ScheduleOptions[]): void {
+  private static schedulePendingNotifications(pending: ScheduleOptions[]): Array<number> {
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
-      LocalNotificationsImpl.schedulePendingNotificationsNew(pending);
+      return LocalNotificationsImpl.schedulePendingNotificationsNew(pending);
     } else {
-      LocalNotificationsImpl.schedulePendingNotificationsLegacy(pending);
+      return LocalNotificationsImpl.schedulePendingNotificationsLegacy(pending);
     }
   }
 
-  private static schedulePendingNotificationsNew(pending: ScheduleOptions[]): void {
+  private static schedulePendingNotificationsNew(pending: ScheduleOptions[]): Array<number> {
+    const scheduledIds: Array<number> = [];
     for (const n in pending) {
       const options: ScheduleOptions = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
 
       LocalNotificationsImpl.ensureID(options);
+      scheduledIds.push(options.id);
 
       // Notification content
       const content = UNMutableNotificationContent.new();
@@ -230,6 +232,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         });
       }
     }
+    return scheduledIds;
   }
 
   private static calendarWithMondayAsFirstDay(): NSCalendar {
@@ -239,11 +242,13 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return cal;
   }
 
-  private static schedulePendingNotificationsLegacy(pending: ScheduleOptions[]): void {
+  private static schedulePendingNotificationsLegacy(pending: ScheduleOptions[]): Array<number> {
+    const scheduledIds: Array<number> = [];
     for (const n in pending) {
       const options = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
 
       LocalNotificationsImpl.ensureID(options);
+      scheduledIds.push(options.id);
 
       const notification = UILocalNotification.new();
       notification.fireDate = options.at ? options.at : new Date();
@@ -282,6 +287,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       UIApplication.sharedApplication.scheduleLocalNotification(notification);
     }
+    return scheduledIds;
   }
 
   addOrProcessNotification(notificationDetails: ReceivedNotification): void {
@@ -426,19 +432,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  schedule(options: ScheduleOptions[]): Promise<void> {
+  schedule(options: ScheduleOptions[]): Promise<Array<number>> {
     return new Promise((resolve, reject) => {
       try {
         if (!LocalNotificationsImpl.hasPermission()) {
           this.requestPermission().then(granted => {
             if (granted) {
-              LocalNotificationsImpl.schedulePendingNotifications(options);
-              resolve();
+              resolve(LocalNotificationsImpl.schedulePendingNotifications(options));
             }
           });
         } else {
-          LocalNotificationsImpl.schedulePendingNotifications(options);
-          resolve();
+          resolve(LocalNotificationsImpl.schedulePendingNotifications(options));
         }
       } catch (ex) {
         console.log("Error in LocalNotifications.schedule: " + ex);
