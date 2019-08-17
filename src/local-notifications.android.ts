@@ -222,7 +222,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             options.color = options.color.android;
           }
 
-          if (options.notificationLed && options.notificationLed !== true){
+          if (options.notificationLed && options.notificationLed !== true) {
             options.notificationLed = options.notificationLed.android;
           }
 
