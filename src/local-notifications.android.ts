@@ -79,7 +79,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return new Promise((resolve, reject) => {
       try {
         // nothing to do on this platform
-        var context = utils.ad.getApplicationContext();
+        const context = utils.ad.getApplicationContext();
         const hasPermission=NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).areNotificationsEnabled();
         resolve(hasPermission);
       } catch (ex) {
