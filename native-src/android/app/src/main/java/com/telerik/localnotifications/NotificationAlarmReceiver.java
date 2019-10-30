@@ -28,8 +28,8 @@ public class NotificationAlarmReceiver extends BroadcastReceiver {
       ((NotificationManager) context
         .getSystemService(Context.NOTIFICATION_SERVICE))
         .notify(id, Builder.build(opts, context, id));
-    } catch (NullPointerException e) {
-      Log.e(TAG, "Notification could not be restored!" + e.getMessage(), e);
+    } catch (Throwable t) {
+      Log.e(TAG, "Notification could not be restored!" + t.getMessage(), t);
     }
 
     // Note we don't unpersist this notification just yet, as it might still need to be restored
