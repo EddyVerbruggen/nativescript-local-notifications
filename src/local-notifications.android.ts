@@ -78,8 +78,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   hasPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
-        // nothing to do on this platform
-        resolve(true);
+        const context = utils.ad.getApplicationContext();
+        const hasPermission = NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).areNotificationsEnabled();
+        resolve(hasPermission);
       } catch (ex) {
         console.log("Error in LocalNotifications.hasPermission: " + ex);
         reject(ex);
