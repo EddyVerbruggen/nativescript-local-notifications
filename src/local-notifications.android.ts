@@ -80,7 +80,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       try {
         // nothing to do on this platform
         const context = utils.ad.getApplicationContext();
-        const hasPermission=NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).areNotificationsEnabled();
+        const hasPermission = NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).areNotificationsEnabled();
         resolve(hasPermission);
       } catch (ex) {
         console.log("Error in LocalNotifications.hasPermission: " + ex);
