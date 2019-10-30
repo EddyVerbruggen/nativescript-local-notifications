@@ -78,9 +78,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   hasPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
-        const context = utils.ad.getApplicationContext();
-        const hasPermission = NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).areNotificationsEnabled();
-        resolve(hasPermission);
+        resolve(LocalNotificationsImpl.hasPermission());
       } catch (ex) {
         console.log("Error in LocalNotifications.hasPermission: " + ex);
         reject(ex);
@@ -91,7 +89,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   requestPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
-        // nothing to do on this platform
+        // AFAIK can't do it on this platform
         resolve(true);
       } catch (ex) {
         console.log("Error in LocalNotifications.requestPermission: " + ex);
@@ -198,6 +196,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   schedule(scheduleOptions: ScheduleOptions[]): Promise<Array<number>> {
     return new Promise((resolve, reject) => {
       try {
+        if (!LocalNotificationsImpl.hasPermission()) {
+          reject("Permission not granted");
+          return;
+        }
+
         const context = utils.ad.getApplicationContext();
         const resources = context.getResources();
         const scheduledIds: Array<number> = [];
@@ -242,6 +245,11 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         reject(ex);
       }
     });
+  }
+
+  private static hasPermission(): boolean {
+    const context = utils.ad.getApplicationContext();
+    return !context || NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).areNotificationsEnabled();
   }
 }
 

@@ -439,6 +439,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           this.requestPermission().then(granted => {
             if (granted) {
               resolve(LocalNotificationsImpl.schedulePendingNotifications(options));
+            } else {
+              reject("Permission not granted");
             }
           });
         } else {
