@@ -89,8 +89,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   requestPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
-        // AFAIK can't do it on this platform
-        resolve(true);
+        // AFAIK can't do it on this platform.. when 'false' is returned, the app could prompt the user to manually enable them in the Device Settings
+        resolve(LocalNotificationsImpl.hasPermission());
       } catch (ex) {
         console.log("Error in LocalNotifications.requestPermission: " + ex);
         reject(ex);
