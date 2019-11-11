@@ -178,6 +178,8 @@ export interface ScheduleOptions {
    */
   forceShowWhenInForeground?: boolean;
 
+  priority?: number;
+
   /**
    * Buttons or text input.
    */

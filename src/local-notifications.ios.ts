@@ -136,8 +136,9 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         content.sound = UNNotificationSound.defaultSound;
       }
 
-      const userInfoDict = new NSMutableDictionary({capacity: 1});
+      const userInfoDict = new NSMutableDictionary({capacity: 2});
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
+      userInfoDict.setObjectForKey(options.priority, "priority");
       content.userInfo = userInfoDict;
 
       // Notification trigger and repeat
@@ -524,7 +525,7 @@ class UNUserNotificationCenterDelegateImpl extends NSObject implements UNUserNot
 
     this.receivedInForeground = true;
 
-    if (notification.request.content.userInfo.valueForKey("forceShowWhenInForeground")) {
+    if (notification.request.content.userInfo.valueForKey("forceShowWhenInForeground") || notification.request.content.userInfo.valueForKey("priority")) {
       completionHandler(UNNotificationPresentationOptions.Badge | UNNotificationPresentationOptions.Sound | UNNotificationPresentationOptions.Alert);
     } else {
       completionHandler(UNNotificationPresentationOptions.Badge | UNNotificationPresentationOptions.Sound);

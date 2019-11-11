@@ -107,6 +107,7 @@ You can pass several options to this function, everything is optional:
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them. (**Android Only**) |
 |`channel` |Default is (`Channel`). Set the channel name for Android API >= 26, which is shown when the user longpresses a  notification. (**Android Only**) |
 |`forceShowWhenInForeground` |Default is `false`. Set to `true` to always show the notification. Note that on iOS < 10 this is ignored (the notification is not shown), and on newer Androids it's currently ignored as well (the notification always shows, per platform default). |
+|`priority` |Default is `0`. Will override `forceShowWhenInForeground` if set. This can be set to `2` for Android "heads-up" notifications. See [#114](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/114) for details. |
 |`actions` |Add an array of `NotificationAction` objects (see below) to add buttons or text input to a notification. |
 |`notificationLed` |Enable the notification LED light on Android (if supported by the device), this can be either: `true` (if you want to use the default color), or a custom color for the notification LED light (if supported by the device). (**Android Only**). Default not set.|
 
