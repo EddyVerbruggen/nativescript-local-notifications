@@ -138,7 +138,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       const userInfoDict = new NSMutableDictionary({capacity: 2});
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
-      userInfoDict.setObjectForKey(options.priority, "priority");
+      userInfoDict.setObjectForKey(options.priority || 0, "priority");
       content.userInfo = userInfoDict;
 
       // Notification trigger and repeat
