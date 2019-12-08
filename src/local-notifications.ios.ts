@@ -412,8 +412,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
         if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
           UNUserNotificationCenter.currentNotificationCenter().getPendingNotificationRequestsWithCompletionHandler((notRequests: NSArray<UNNotificationRequest>) => {
-            for (let i = 0; i < notRequests.count; i++) {
-              scheduledIds.push(notRequests[i].identifier);
+            if (notRequests) {
+              for (let i = 0; i < notRequests.count; i++) {
+                scheduledIds.push(notRequests[i].identifier);
+              }
             }
             resolve(scheduledIds.map(Number));
           });
