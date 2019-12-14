@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import android.content.BroadcastReceiver;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.json.JSONObject;
 
@@ -27,11 +27,13 @@ public class NotificationClearedReceiver extends BroadcastReceiver {
     final int id = intent.getIntExtra(Builder.NOTIFICATION_ID, 0);
     final JSONObject opts = Store.get(context, id);
 
-    if (opts.optInt("repeatInterval", 0) == 0) {
-      // Remove the persisted notification data if it's not repeating:
-      Store.remove(context, id);
-    }
+    if (opts != null) {
+      if (opts.optInt("repeatInterval", 0) == 0) {
+        // Remove the persisted notification data if it's not repeating:
+        Store.remove(context, id);
+      }
 
-    LocalNotificationsPlugin.executeOnMessageClearedCallback(opts);
+      LocalNotificationsPlugin.executeOnMessageClearedCallback(opts);
+    }
   }
 }

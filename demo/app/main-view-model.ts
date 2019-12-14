@@ -2,6 +2,7 @@ import { Observable } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { LocalNotifications } from "nativescript-local-notifications";
 import { Color } from "tns-core-modules/color";
+import { ScheduleOptions } from "../../src";
 
 export class HelloWorldModel extends Observable {
 
@@ -38,39 +39,45 @@ export class HelloWorldModel extends Observable {
   }
 
   public doScheduleWithButtons(): void {
-    LocalNotifications.schedule(
-        [{
-          id: 1,
-          title: 'THE TITLE',
-          subtitle: 'The subtitle',
-          body: 'The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body.',
-          bigTextStyle: true, // Allow more than 1 row of the 'body' text
-          sound: "customsound",
-          color: new Color("green"),
-          forceShowWhenInForeground: true,
-          channel: "My Awesome Channel", // not that this is revealed in the notification tray when you longpress it on Android
-          ticker: "Special ticker text (Android only)",
-          at: new Date(new Date().getTime() + (10 * 1000)),
-          notificationLed: true,
-          actions: [
-            {
-              id: "yes",
-              type: "button",
-              title: "Yes (and launch app)",
-              launch: true
-            },
-            {
-              id: "no",
-              type: "button",
-              title: "No",
-              launch: false
-            }
-          ]
-        }])
-        .then(() => {
+    const options: Array<ScheduleOptions> = [
+      {
+        id: 1,
+        title: 'THE TITLE',
+        subtitle: 'The subtitle',
+        body: 'The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body. The big fat body.',
+        bigTextStyle: true, // Allow more than 1 row of the 'body' text
+        sound: "customsound",
+        color: new Color("green"),
+        forceShowWhenInForeground: true,
+        channel: "My Awesome Channel", // not that this is revealed in the notification tray when you longpress it on Android
+        ticker: "Special ticker text (Android only)",
+        at: new Date(new Date().getTime() + (10 * 1000)),
+        notificationLed: true,
+        actions: [
+          {
+            id: "yes",
+            type: "button",
+            title: "Yes (and launch app)",
+            launch: true
+          },
+          {
+            id: "no",
+            type: "button",
+            title: "No",
+            launch: false
+          }
+        ]
+      },
+      {
+        title: 'Generated ID',
+        at: new Date(new Date().getTime() + (5 * 1000))
+      }
+    ];
+    LocalNotifications.schedule(options)
+        .then((scheduledIds: Array<number>) => {
           alert({
             title: "Notification scheduled",
-            message: "ID: 1",
+            message: `ID: ${JSON.stringify(scheduledIds)}`,
             okButtonText: "OK, thanks"
           });
         })

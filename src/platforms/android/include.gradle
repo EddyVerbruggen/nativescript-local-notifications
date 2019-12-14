@@ -1,7 +1,0 @@
-dependencies {
-    def supportVer = "26.1+"
-    if (project.hasProperty("supportVersion")) {
-        supportVer = supportVersion
-    }
-    implementation "com.android.support:support-v4:$supportVer"
-}

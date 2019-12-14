@@ -6,26 +6,25 @@
   "nativescript": {
     "id": "org.nativescript.plugindemo.localnotifications",
     "tns-ios": {
-      "version": "5.2.0"
+      "version": "6.0.1"
     },
     "tns-android": {
-      "version": "5.2.0"
+      "version": "6.0.0"
     }
   },
   "dependencies": {
     "nativescript-local-notifications": "file:../src",
-    "nativescript-theme-core": "~1.0.4",
-    "tns-core-modules": "~5.2.0"
+    "nativescript-theme-core": "~1.0.6",
+    "tns-core-modules": "~6.0.0"
   },
   "devDependencies": {
     "babel-traverse": "6.26.0",
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
     "lazy": "1.0.11",
-    "nativescript-dev-typescript": "~0.7.9",
-    "nativescript-dev-webpack": "~0.19.2",
-    "tns-platform-declarations": "~5.2.0",
-    "typescript": "~2.8.4"
+    "nativescript-dev-webpack": "1.0.1",
+    "tns-platform-declarations": "~6.0.0",
+    "typescript": "3.4.5"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build"

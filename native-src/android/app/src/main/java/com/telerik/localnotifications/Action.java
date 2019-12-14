@@ -1,7 +1,7 @@
 package com.telerik.localnotifications;
 
 import android.content.Context;
-import android.support.v4.app.RemoteInput;
+import androidx.core.app.RemoteInput;
 import android.util.Log;
 
 import org.json.JSONArray;

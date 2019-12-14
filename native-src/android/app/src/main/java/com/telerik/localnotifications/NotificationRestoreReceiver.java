@@ -24,16 +24,20 @@ public class NotificationRestoreReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    for (Map.Entry<String, String> entry : Store.getAll(context).entrySet()) {
-      final String notificationString = entry.getValue();
+    if (context == null || !Intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(intent.getAction())) {
+      return;
+    }
 
-      Log.e(TAG, "Will restore previously scheduled notification: " + notificationString);
+    try {
+      for (Map.Entry<String, String> entry : Store.getAll(context).entrySet()) {
+        final String notificationString = entry.getValue();
 
-      try {
+        Log.e(TAG, "Will restore previously scheduled notification: " + notificationString);
+
         scheduleNotification(new JSONObject(notificationString), context);
-      } catch (JSONException e) {
-        Log.e(TAG, "Notification could not be scheduled! " + e.getMessage(), e);
       }
+    } catch (IllegalStateException | JSONException e) {
+      Log.e(TAG, "Notification could not be scheduled! " + e.getMessage(), e);
     }
   }
 

@@ -1,6 +1,5 @@
 # NativeScript Local Notifications Plugin
 
-[![Build Status][build-status]][build-url]
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][npm-url]
 [![Twitter Follow][twitter-image]][twitter-url]
@@ -16,7 +15,7 @@
 The Local Notifications plugin allows your app to show notifications when the app is not running.
 Just like remote push notifications, but a few orders of magnitude easier to set up.
 
-> **Breaking changes in 3.0.0**: `smallIcon` is now `icon`/`silhouetteIcon`, and `largeIcon` is now `image`. Also, read the 'Setup' paragraph below.
+> ⚠️ Plugin version 4.0.0 should be used with NativeScript 6+. If you have an older `tns --version`, please use an older plugin version.
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
@@ -88,7 +87,7 @@ You can pass several options to this function, everything is optional:
 
 |option|description|
 |------|-----------|
-|`id`     |A number so you can easily distinguish your notifications. Default 0.|
+|`id`     |A number so you can easily distinguish your notifications. Will be generated if not set.|
 |`title`  |The title which is shown in the statusbar. Default not set.|
 |`subtitle`  |Shown below the title on iOS, and next to the App name on Android. Default not set. All android and iOS >= 10 only.|
 |`body`   |The text below the title. If not provided, the subtitle or title (in this order or priority) will be swapped for it on iOS, as iOS won't display notifications without a body. Default not set on Android, `' '` on iOS, as otherwise the notification won't show up at all.|
@@ -108,6 +107,7 @@ You can pass several options to this function, everything is optional:
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them. (**Android Only**) |
 |`channel` |Default is (`Channel`). Set the channel name for Android API >= 26, which is shown when the user longpresses a  notification. (**Android Only**) |
 |`forceShowWhenInForeground` |Default is `false`. Set to `true` to always show the notification. Note that on iOS < 10 this is ignored (the notification is not shown), and on newer Androids it's currently ignored as well (the notification always shows, per platform default). |
+|`priority` |Default is `0`. Will override `forceShowWhenInForeground` if set. This can be set to `2` for Android "heads-up" notifications. See [#114](https://github.com/EddyVerbruggen/nativescript-local-notifications/issues/114) for details. |
 |`actions` |Add an array of `NotificationAction` objects (see below) to add buttons or text input to a notification. |
 |`notificationLed` |Enable the notification LED light on Android (if supported by the device), this can be either: `true` (if you want to use the default color), or a custom color for the notification LED light (if supported by the device). (**Android Only**). Default not set.|
 
@@ -124,7 +124,7 @@ You can pass several options to this function, everything is optional:
 
 ```js
   LocalNotifications.schedule([{
-    id: 1,
+    id: 1, // generated id if not set
     title: 'The title',
     body: 'Recurs every minute until cancelled',
     ticker: 'The ticker',
@@ -141,8 +141,8 @@ You can pass several options to this function, everything is optional:
     sound: "customsound-ios.wav", // falls back to the default sound on Android
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
   }]).then(
-      function() {
-        console.log("Notification scheduled");
+      function(scheduledIds) {
+        console.log("Notification id(s) scheduled: " + JSON.stringify(scheduledIds));
       },
       function(error) {
         console.log("scheduling error: " + error);

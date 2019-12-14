@@ -8,7 +8,13 @@ import {
   ScheduleOptions
 } from "./local-notifications-common";
 
-declare const android, com: any;
+declare const android, com, global: any;
+
+const NotificationManagerCompatPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
+
+function useAndroidX () {
+  return global.androidx && global.androidx.appcompat;
+}
 
 (() => {
   const registerLifecycleEvents = () => {
@@ -72,8 +78,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   hasPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
-        // nothing to do on this platform
-        resolve(true);
+        resolve(LocalNotificationsImpl.hasPermission());
       } catch (ex) {
         console.log("Error in LocalNotifications.hasPermission: " + ex);
         reject(ex);
@@ -84,8 +89,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   requestPermission(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
-        // nothing to do on this platform
-        resolve(true);
+        // AFAIK can't do it on this platform.. when 'false' is returned, the app could prompt the user to manually enable them in the Device Settings
+        resolve(LocalNotificationsImpl.hasPermission());
       } catch (ex) {
         console.log("Error in LocalNotifications.requestPermission: " + ex);
         reject(ex);
@@ -161,7 +166,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
           LocalNotificationsImpl.cancelById(parseInt(keys[i]));
         }
 
-        android.support.v4.app.NotificationManagerCompat.from(context).cancelAll();
+        NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).cancelAll();
         resolve();
       } catch (ex) {
         console.log("Error in LocalNotifications.cancelAll: " + ex);
@@ -188,11 +193,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  schedule(scheduleOptions: ScheduleOptions[]): Promise<void> {
+  schedule(scheduleOptions: ScheduleOptions[]): Promise<Array<number>> {
     return new Promise((resolve, reject) => {
       try {
+        if (!LocalNotificationsImpl.hasPermission()) {
+          reject("Permission not granted");
+          return;
+        }
+
         const context = utils.ad.getApplicationContext();
         const resources = context.getResources();
+        const scheduledIds: Array<number> = [];
 
         // TODO: All these changes in the options (other than setting the ID) should rather be done in Java so that
         // the persisted options are exactly like the original ones.
@@ -215,7 +226,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
             options.color = options.color.android;
           }
 
-          if (options.notificationLed && options.notificationLed !== true){
+          if (options.notificationLed && options.notificationLed !== true) {
             options.notificationLed = options.notificationLed.android;
           }
 
@@ -223,16 +234,22 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
           com.telerik.localnotifications.LocalNotificationsPlugin.scheduleNotification(
               new org.json.JSONObject(JSON.stringify(options)),
-              context,
-          );
+              context);
+
+          scheduledIds.push(options.id);
         }
 
-        resolve();
+        resolve(scheduledIds);
       } catch (ex) {
         console.log("Error in LocalNotifications.schedule: " + ex);
         reject(ex);
       }
     });
+  }
+
+  private static hasPermission(): boolean {
+    const context = utils.ad.getApplicationContext();
+    return !context || NotificationManagerCompatPackageName.NotificationManagerCompat.from(context).areNotificationsEnabled();
   }
 }
 

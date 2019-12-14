@@ -8,8 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -68,7 +68,7 @@ public final class Builder {
             .setNumber(options.optInt("badge"))
             .setColor(options.optInt("color"))
             .setOngoing(options.optBoolean("ongoing"))
-            .setPriority(options.optBoolean("forceShowWhenInForeground") ? 1 : 0)
+            .setPriority(options.optInt("priority", options.optBoolean("forceShowWhenInForeground") ? 1 : 0))
             .setTicker(options.optString("ticker", null)); // Let the OS handle the default value for the ticker.
 
         final Object thumbnail = options.opt("thumbnail");

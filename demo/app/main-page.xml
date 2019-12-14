@@ -7,9 +7,9 @@
           <ScrollView>
             <GridLayout columns="*,*" rows="auto, auto, auto, auto, auto, auto, auto, auto, auto, auto" horizontalAlignment="center" class="tab-content">
 
+              <Label row="0" colSpan="2" text="You need permission before being able to schedule local notifications. Either defer to when you schedule it, or do it when the app first loads." class="hint" textWrap="true" />
+              <Button row="1" col="0" text="has permission?" tap="{{ doCheckHasPermission }}" class="button button-neutral"/>
               <iOS>
-                <Label row="0" colSpan="2" text="On iOS you need permission before being able to schedule local notifications. Either defer to when you schedule it, or do it when the app first loads." class="hint" textWrap="true" />
-                <Button row="1" col="0" text="has permission?" tap="{{ doCheckHasPermission }}" class="button button-neutral"/>
                 <Button row="1" col="1" text="request perm." tap="{{ doRequestPermission }}" class="button button-neutral"/>
               </iOS>
 

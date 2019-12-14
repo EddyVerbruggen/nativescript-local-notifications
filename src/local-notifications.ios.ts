@@ -1,6 +1,5 @@
 import * as fileSystemModule from "tns-core-modules/file-system";
 import { fromUrl } from "tns-core-modules/image-source";
-import * as utils from "tns-core-modules/utils/utils";
 import {
   LocalNotificationsApi,
   LocalNotificationsCommon,
@@ -10,7 +9,7 @@ import {
 } from "./local-notifications-common";
 import { DelegateObserver, SharedNotificationDelegate } from "nativescript-shared-notification-delegate";
 
-declare const Notification, NotificationManager: any;
+declare const Notification: any;
 
 export class LocalNotificationsImpl extends LocalNotificationsCommon implements LocalNotificationsApi {
 
@@ -18,8 +17,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private notificationReceivedObserver: any;
   private pendingReceivedNotifications: Array<ReceivedNotification> = [];
   private receivedNotificationCallback: (data: ReceivedNotification) => void;
-  private notificationHandler: any;
-  private notificationManager: any;
+  private notificationHandler: Notification;
+  private notificationManager: NotificationManager;
   private observer: LocalNotificationsDelegateObserverImpl;
 
   constructor() {
@@ -106,19 +105,21 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     }
   }
 
-  private static schedulePendingNotifications(pending: ScheduleOptions[]): void {
+  private static schedulePendingNotifications(pending: ScheduleOptions[]): Array<number> {
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
-      LocalNotificationsImpl.schedulePendingNotificationsNew(pending);
+      return LocalNotificationsImpl.schedulePendingNotificationsNew(pending);
     } else {
-      LocalNotificationsImpl.schedulePendingNotificationsLegacy(pending);
+      return LocalNotificationsImpl.schedulePendingNotificationsLegacy(pending);
     }
   }
 
-  private static schedulePendingNotificationsNew(pending: ScheduleOptions[]): void {
+  private static schedulePendingNotificationsNew(pending: ScheduleOptions[]): Array<number> {
+    const scheduledIds: Array<number> = [];
     for (const n in pending) {
       const options: ScheduleOptions = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
 
       LocalNotificationsImpl.ensureID(options);
+      scheduledIds.push(options.id);
 
       // Notification content
       const content = UNMutableNotificationContent.new();
@@ -133,12 +134,13 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       content.badge = options.badge;
 
       if (options.sound === undefined || options.sound === "default") {
-        content.sound = utils.ios.getter(UNNotificationSound, UNNotificationSound.defaultSound);
+        content.sound = UNNotificationSound.defaultSound;
       }
 
-      const userInfoDict = new NSMutableDictionary({ capacity: 1 });
+      const userInfoDict = new NSMutableDictionary({capacity: 3});
       userInfoDict.setObjectForKey("nativescript-local-notifications", "__NotificationType");
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
+      userInfoDict.setObjectForKey(options.priority || 0, "priority");
       content.userInfo = userInfoDict;
 
       // Notification trigger and repeat
@@ -233,6 +235,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         });
       }
     }
+    return scheduledIds;
   }
 
   private static calendarWithMondayAsFirstDay(): NSCalendar {
@@ -242,18 +245,20 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     return cal;
   }
 
-  private static schedulePendingNotificationsLegacy(pending: ScheduleOptions[]): void {
+  private static schedulePendingNotificationsLegacy(pending: ScheduleOptions[]): Array<number> {
+    const scheduledIds: Array<number> = [];
     for (const n in pending) {
       const options = LocalNotificationsImpl.merge(pending[n], LocalNotificationsImpl.defaults);
 
       LocalNotificationsImpl.ensureID(options);
+      scheduledIds.push(options.id);
 
       const notification = UILocalNotification.new();
       notification.fireDate = options.at ? options.at : new Date();
       notification.alertTitle = options.title;
       notification.alertBody = options.body;
 
-      notification.timeZone = utils.ios.getter(NSTimeZone, NSTimeZone.defaultTimeZone);
+      notification.timeZone = NSTimeZone.defaultTimeZone;
       notification.applicationIconBadgeNumber = options.badge;
 
       // these are sent back to the plugin when a notification is received
@@ -285,6 +290,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       UIApplication.sharedApplication.scheduleLocalNotification(notification);
     }
+    return scheduledIds;
   }
 
   addOrProcessNotification(notificationDetails: ReceivedNotification): void {
@@ -408,8 +414,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
         if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
           UNUserNotificationCenter.currentNotificationCenter().getPendingNotificationRequestsWithCompletionHandler((notRequests: NSArray<UNNotificationRequest>) => {
-            for (let i = 0; i < notRequests.count; i++) {
-              scheduledIds.push(notRequests[i].identifier);
+            if (notRequests) {
+              for (let i = 0; i < notRequests.count; i++) {
+                scheduledIds.push(notRequests[i].identifier);
+              }
             }
             resolve(scheduledIds.map(Number));
           });
@@ -429,19 +437,19 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
     });
   }
 
-  schedule(options: ScheduleOptions[]): Promise<void> {
+  schedule(options: ScheduleOptions[]): Promise<Array<number>> {
     return new Promise((resolve, reject) => {
       try {
         if (!LocalNotificationsImpl.hasPermission()) {
           this.requestPermission().then(granted => {
             if (granted) {
-              LocalNotificationsImpl.schedulePendingNotifications(options);
-              resolve();
+              resolve(LocalNotificationsImpl.schedulePendingNotifications(options));
+            } else {
+              reject("Permission not granted");
             }
           });
         } else {
-          LocalNotificationsImpl.schedulePendingNotifications(options);
-          resolve();
+          resolve(LocalNotificationsImpl.schedulePendingNotifications(options));
         }
       } catch (ex) {
         console.log("Error in LocalNotifications.schedule: " + ex);
@@ -517,7 +525,7 @@ class LocalNotificationsDelegateObserverImpl implements DelegateObserver {
 
     this.receivedInForeground = true;
 
-    if (notification.request.content.userInfo.valueForKey("forceShowWhenInForeground")) {
+    if (notification.request.content.userInfo.valueForKey("forceShowWhenInForeground") || notification.request.content.userInfo.valueForKey("priority")) {
       completionHandler(UNNotificationPresentationOptions.Badge | UNNotificationPresentationOptions.Sound | UNNotificationPresentationOptions.Alert);
     } else {
       completionHandler(UNNotificationPresentationOptions.Badge | UNNotificationPresentationOptions.Sound);
