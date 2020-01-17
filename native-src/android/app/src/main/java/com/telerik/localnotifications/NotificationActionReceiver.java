@@ -79,7 +79,7 @@ public class NotificationActionReceiver extends IntentService {
 
     LocalNotificationsPlugin.executeOnMessageReceivedCallback(opts);
 
-    if (opts.has("id") && !opts.optBoolean("ongoing", false)) {
+    if (opts.has("id") && !opts.optBoolean("ongoing", false) && opts.optInt("repeatInterval", 0) == 0) {
       int id = opts.getInt("id");
 
       // Clear the notification from the tray, unless it's marker as ongoing/sticky:
