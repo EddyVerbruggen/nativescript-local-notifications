@@ -1,13 +1,7 @@
+import { DelegateObserver, SharedNotificationDelegate } from "nativescript-shared-notification-delegate";
 import * as fileSystemModule from "tns-core-modules/file-system";
 import { fromUrl } from "tns-core-modules/image-source";
-import {
-  LocalNotificationsApi,
-  LocalNotificationsCommon,
-  ReceivedNotification,
-  ScheduleInterval,
-  ScheduleOptions
-} from "./local-notifications-common";
-import { DelegateObserver, SharedNotificationDelegate } from "nativescript-shared-notification-delegate";
+import { LocalNotificationsApi, LocalNotificationsCommon, ReceivedNotification, ScheduleInterval, ScheduleOptions } from "./local-notifications-common";
 
 declare const Notification: any;
 
@@ -124,7 +118,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       // Notification content
       const content = UNMutableNotificationContent.new();
 
-      const { title, subtitle, body } = options;
+      const {title, subtitle, body} = options;
       content.title = body || subtitle ? title : undefined;
       content.subtitle = body ? subtitle : undefined;
       // On iOS, a notification with no body won't show up, so the subtitle or title will be used in this case as body
@@ -170,17 +164,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
           if (action.type === "input") {
             actions.push(UNTextInputNotificationAction.actionWithIdentifierTitleOptionsTextInputButtonTitleTextInputPlaceholder(
-              "" + action.id,
-              action.title,
-              notificationActionOptions,
-              action.submitLabel || "Submit",
-              action.placeholder));
+                "" + action.id,
+                action.title,
+                notificationActionOptions,
+                action.submitLabel || "Submit",
+                action.placeholder));
 
           } else if (action.type === "button") {
             actions.push(UNNotificationAction.actionWithIdentifierTitleOptions(
-              "" + action.id,
-              action.title,
-              notificationActionOptions));
+                "" + action.id,
+                action.title,
+                notificationActionOptions));
 
           } else {
             console.log("Unsupported action type: " + action.type);
@@ -188,10 +182,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
         });
         const notificationCategory = UNNotificationCategory.categoryWithIdentifierActionsIntentIdentifiersOptions(
-          categoryIdentifier,
-          <any>actions,
-          <any>[],
-          UNNotificationCategoryOptions.CustomDismissAction);
+            categoryIdentifier,
+            <any>actions,
+            <any>[],
+            UNNotificationCategoryOptions.CustomDismissAction);
 
         content.categoryIdentifier = categoryIdentifier;
 
@@ -206,32 +200,32 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       if (!options.image) {
         UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(
-          UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
-          (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
+            UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
+            (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
       } else {
         fromUrl(options.image).then(image => {
           const [imageName, imageNameWithExtension] = LocalNotificationsImpl.getImageName(options.image, "png");
           const path: string = fileSystemModule.path.join(
-            fileSystemModule.knownFolders.temp().path,
-            imageNameWithExtension,
+              fileSystemModule.knownFolders.temp().path,
+              imageNameWithExtension,
           );
           const saved = image.saveToFile(path, "png");
           if (saved || fileSystemModule.File.exists(path)) {
             try {
               content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(
-                UNNotificationAttachment.attachmentWithIdentifierURLOptionsError(
-                  imageName,
-                  NSURL.fileURLWithPath(path),
-                  null
-                ));
+                  UNNotificationAttachment.attachmentWithIdentifierURLOptionsError(
+                      imageName,
+                      NSURL.fileURLWithPath(path),
+                      null
+                  ));
             } catch (err) {
               console.log("Error adding image attachment - ignoring the image. Error: " + err);
               // Just fall back to a normal notification...
             }
           }
           UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(
-            UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
-            (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
+              UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
+              (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
         });
       }
     }
@@ -318,8 +312,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         // iOS >= 10
         const center = UNUserNotificationCenter.currentNotificationCenter();
         center.requestAuthorizationWithOptionsCompletionHandler(
-          UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound,
-          (granted: boolean, error: NSError) => resolve(granted));
+            UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound,
+            (granted: boolean, error: NSError) => resolve(granted));
 
       } else {
         // iOS < 10
@@ -469,6 +463,7 @@ class LocalNotificationsDelegateObserverImpl implements DelegateObserver {
   constructor(owner: WeakRef<LocalNotificationsImpl>) {
     this._owner = owner;
   }
+
   /**
    * Called when the app was opened by a notification.
    */
@@ -478,8 +473,8 @@ class LocalNotificationsDelegateObserverImpl implements DelegateObserver {
       return;
     }
     const request = notificationResponse.notification.request,
-      notificationContent = request.content,
-      action = notificationResponse.actionIdentifier;
+        notificationContent = request.content,
+        action = notificationResponse.actionIdentifier;
 
     // let's ignore dismiss actions
     if (action === UNNotificationDismissActionIdentifier) {
@@ -518,7 +513,7 @@ class LocalNotificationsDelegateObserverImpl implements DelegateObserver {
    */
   userNotificationCenterWillPresentNotificationWithCompletionHandler(center: UNUserNotificationCenter, notification: UNNotification, completionHandler: (presentationOptions: UNNotificationPresentationOptions) => void, next: () => void): void {
     if (notification.request.content.userInfo.valueForKey("__NotificationType") !== "nativescript-local-notifications"
-      || notification.request.trigger instanceof UNPushNotificationTrigger) {
+        || notification.request.trigger instanceof UNPushNotificationTrigger) {
       next();
       return;
     }
