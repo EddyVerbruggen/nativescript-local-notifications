@@ -7,6 +7,7 @@ import {
   ScheduleInterval,
   ScheduleOptions
 } from "./local-notifications-common";
+import { DelegateObserver, SharedNotificationDelegate } from "nativescript-shared-notification-delegate";
 
 declare const Notification: any;
 
@@ -18,13 +19,13 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   private receivedNotificationCallback: (data: ReceivedNotification) => void;
   private notificationHandler: Notification;
   private notificationManager: NotificationManager;
-  private delegate: UNUserNotificationCenterDelegateImpl;
+  private observer: LocalNotificationsDelegateObserverImpl;
 
   constructor() {
     super();
     if (LocalNotificationsImpl.isUNUserNotificationCenterAvailable()) {
-      this.delegate = UNUserNotificationCenterDelegateImpl.initWithOwner(new WeakRef(this));
-      UNUserNotificationCenter.currentNotificationCenter().delegate = this.delegate;
+      this.observer = new LocalNotificationsDelegateObserverImpl(new WeakRef(this));
+      SharedNotificationDelegate.addObserver(this.observer);
 
     } else {
       // grab 'em here, store 'em in JS, and give them to the callback when addOnMessageReceivedCallback is wired
@@ -123,7 +124,7 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
       // Notification content
       const content = UNMutableNotificationContent.new();
 
-      const {title, subtitle, body} = options;
+      const { title, subtitle, body } = options;
       content.title = body || subtitle ? title : undefined;
       content.subtitle = body ? subtitle : undefined;
       // On iOS, a notification with no body won't show up, so the subtitle or title will be used in this case as body
@@ -136,7 +137,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         content.sound = UNNotificationSound.defaultSound;
       }
 
-      const userInfoDict = new NSMutableDictionary({capacity: 2});
+      const userInfoDict = new NSMutableDictionary({capacity: 3});
+      userInfoDict.setObjectForKey("nativescript-local-notifications", "__NotificationType");
       userInfoDict.setObjectForKey(options.forceShowWhenInForeground, "forceShowWhenInForeground");
       userInfoDict.setObjectForKey(options.priority || 0, "priority");
       content.userInfo = userInfoDict;
@@ -168,17 +170,17 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
           if (action.type === "input") {
             actions.push(UNTextInputNotificationAction.actionWithIdentifierTitleOptionsTextInputButtonTitleTextInputPlaceholder(
-                "" + action.id,
-                action.title,
-                notificationActionOptions,
-                action.submitLabel || "Submit",
-                action.placeholder));
+              "" + action.id,
+              action.title,
+              notificationActionOptions,
+              action.submitLabel || "Submit",
+              action.placeholder));
 
           } else if (action.type === "button") {
             actions.push(UNNotificationAction.actionWithIdentifierTitleOptions(
-                "" + action.id,
-                action.title,
-                notificationActionOptions));
+              "" + action.id,
+              action.title,
+              notificationActionOptions));
 
           } else {
             console.log("Unsupported action type: " + action.type);
@@ -186,10 +188,10 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
         });
         const notificationCategory = UNNotificationCategory.categoryWithIdentifierActionsIntentIdentifiersOptions(
-            categoryIdentifier,
-            <any>actions,
-            <any>[],
-            UNNotificationCategoryOptions.CustomDismissAction);
+          categoryIdentifier,
+          <any>actions,
+          <any>[],
+          UNNotificationCategoryOptions.CustomDismissAction);
 
         content.categoryIdentifier = categoryIdentifier;
 
@@ -204,32 +206,32 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
 
       if (!options.image) {
         UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(
-            UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
-            (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
+          UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
+          (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
       } else {
         fromUrl(options.image).then(image => {
           const [imageName, imageNameWithExtension] = LocalNotificationsImpl.getImageName(options.image, "png");
           const path: string = fileSystemModule.path.join(
-              fileSystemModule.knownFolders.temp().path,
-              imageNameWithExtension,
+            fileSystemModule.knownFolders.temp().path,
+            imageNameWithExtension,
           );
           const saved = image.saveToFile(path, "png");
           if (saved || fileSystemModule.File.exists(path)) {
             try {
               content.attachments = NSArray.arrayWithObject<UNNotificationAttachment>(
-                  UNNotificationAttachment.attachmentWithIdentifierURLOptionsError(
-                      imageName,
-                      NSURL.fileURLWithPath(path),
-                      null
-                  ));
+                UNNotificationAttachment.attachmentWithIdentifierURLOptionsError(
+                  imageName,
+                  NSURL.fileURLWithPath(path),
+                  null
+                ));
             } catch (err) {
               console.log("Error adding image attachment - ignoring the image. Error: " + err);
               // Just fall back to a normal notification...
             }
           }
           UNUserNotificationCenter.currentNotificationCenter().addNotificationRequestWithCompletionHandler(
-              UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
-              (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
+            UNNotificationRequest.requestWithIdentifierContentTrigger("" + options.id, content, trigger),
+            (error: NSError) => error ? console.log(`Error scheduling notification (id ${options.id}): ${error.localizedDescription}`) : null);
         });
       }
     }
@@ -316,8 +318,8 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
         // iOS >= 10
         const center = UNUserNotificationCenter.currentNotificationCenter();
         center.requestAuthorizationWithOptionsCompletionHandler(
-            UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound,
-            (granted: boolean, error: NSError) => resolve(granted));
+          UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound,
+          (granted: boolean, error: NSError) => resolve(granted));
 
       } else {
         // iOS < 10
@@ -457,33 +459,27 @@ export class LocalNotificationsImpl extends LocalNotificationsCommon implements 
   }
 }
 
-class UNUserNotificationCenterDelegateImpl extends NSObject implements UNUserNotificationCenterDelegate {
-  public static ObjCProtocols = [];
+class LocalNotificationsDelegateObserverImpl implements DelegateObserver {
 
   private _owner: WeakRef<LocalNotificationsImpl>;
   private receivedInForeground = false;
 
-  public static new(): UNUserNotificationCenterDelegateImpl {
-    try {
-      UNUserNotificationCenterDelegateImpl.ObjCProtocols.push(UNUserNotificationCenterDelegate);
-    } catch (ignore) {
-    }
-    return <UNUserNotificationCenterDelegateImpl>super.new();
-  }
+  observerUniqueKey = "nativescript-local-notifications";
 
-  public static initWithOwner(owner: WeakRef<LocalNotificationsImpl>): UNUserNotificationCenterDelegateImpl {
-    const delegate = <UNUserNotificationCenterDelegateImpl>UNUserNotificationCenterDelegateImpl.new();
-    delegate._owner = owner;
-    return delegate;
+  constructor(owner: WeakRef<LocalNotificationsImpl>) {
+    this._owner = owner;
   }
-
   /**
    * Called when the app was opened by a notification.
    */
-  userNotificationCenterDidReceiveNotificationResponseWithCompletionHandler(center: UNUserNotificationCenter, notificationResponse: UNNotificationResponse, completionHandler: () => void): void {
+  userNotificationCenterDidReceiveNotificationResponseWithCompletionHandler(center: UNUserNotificationCenter, notificationResponse: UNNotificationResponse, completionHandler: () => void, next: () => void): void {
+    if (notificationResponse.notification.request.content.userInfo.valueForKey("__NotificationType") !== "nativescript-local-notifications") {
+      next();
+      return;
+    }
     const request = notificationResponse.notification.request,
-        notificationContent = request.content,
-        action = notificationResponse.actionIdentifier;
+      notificationContent = request.content,
+      action = notificationResponse.actionIdentifier;
 
     // let's ignore dismiss actions
     if (action === UNNotificationDismissActionIdentifier) {
@@ -520,8 +516,10 @@ class UNUserNotificationCenterDelegateImpl extends NSObject implements UNUserNot
   /**
    * Called when the app is in the foreground.
    */
-  userNotificationCenterWillPresentNotificationWithCompletionHandler(center: UNUserNotificationCenter, notification: UNNotification, completionHandler: (presentationOptions: UNNotificationPresentationOptions) => void): void {
-    if (notification.request.trigger instanceof UNPushNotificationTrigger) {
+  userNotificationCenterWillPresentNotificationWithCompletionHandler(center: UNUserNotificationCenter, notification: UNNotification, completionHandler: (presentationOptions: UNNotificationPresentationOptions) => void, next: () => void): void {
+    if (notification.request.content.userInfo.valueForKey("__NotificationType") !== "nativescript-local-notifications"
+      || notification.request.trigger instanceof UNPushNotificationTrigger) {
+      next();
       return;
     }
 
