@@ -45,13 +45,11 @@ public class NotificationActionReceiver extends IntentService {
     }
 
     try {
-
       final JSONObject jsonData = new JSONObject();
       jsonData.put("event", Builder.NOTIFICATION_ID);
       LocalNotificationsPlugin.executeOnMessageClickedCallback(jsonData);
 
       onClick(intent.getAction(), bundle);
-
     } catch (JSONException e) {
       Log.e(TAG, e.getMessage(), e);
     }
