@@ -12,7 +12,7 @@ public class LocalNotificationsPlugin {
   private static JSONObject cachedData;
   private static LocalNotificationsPluginListener onMessageReceivedCallback;
   private static LocalNotificationsPluginListener onMessageClearedCallback;
-
+  private static LocalNotificationsPluginListener onMessageClickedCallback;
   /**
    * Set the on message received callback
    *
@@ -42,6 +42,26 @@ public class LocalNotificationsPlugin {
       cachedData = data;
     }
   }
+
+  /**
+   * Set the on message clicked callback
+   *
+   * @param callbacks
+   */
+  public static void setOnMessageClickedCallback(LocalNotificationsPluginListener callbacks) {
+    onMessageClickedCallback = callbacks;
+  }
+
+  /**
+   * Execute the onMessageClickedCallback with the click on notification Message.
+   * @param data
+   */
+  public static void executeOnMessageClickedCallback(JSONObject data) {
+    if (onMessageClickedCallback != null) {
+      onMessageClickedCallback.success(data);
+    }
+  }
+
 
   /**
    * Set the on message cleared callback

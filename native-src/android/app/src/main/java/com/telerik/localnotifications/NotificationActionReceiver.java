@@ -6,9 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.RemoteInput;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,7 +45,13 @@ public class NotificationActionReceiver extends IntentService {
     }
 
     try {
+
+      final JSONObject jsonData = new JSONObject();
+      jsonData.put("event", Builder.NOTIFICATION_ID);
+      LocalNotificationsPlugin.executeOnMessageClickedCallback(jsonData);
+
       onClick(intent.getAction(), bundle);
+
     } catch (JSONException e) {
       Log.e(TAG, e.getMessage(), e);
     }
