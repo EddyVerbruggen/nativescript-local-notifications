@@ -17,6 +17,8 @@ Just like remote push notifications, but a few orders of magnitude easier to set
 
 > ⚠️ Plugin version 4.0.0 should be used with NativeScript 6+. If you have an older `tns --version`, please use an older plugin version.
 
+> ⚠️ Looking for NativeScript 7 compatibilty? Go to [the NativeScript/plugins repo](https://github.com/NativeScript/plugins/tree/master/packages/local-notifications).
+
 ## Installation
 From the command prompt go to your app's root folder and execute:
 ```bash
