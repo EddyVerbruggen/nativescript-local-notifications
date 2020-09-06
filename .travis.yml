@@ -9,7 +9,7 @@ matrix:
       os: osx
       env:
         - WebPack="iOS"
-      osx_image: xcode10.2
+      osx_image: xcode11.2
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
@@ -32,7 +32,7 @@ matrix:
       script:
         - cd src && npm run build && cd ../demo && tns build android
     - os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11.2
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
